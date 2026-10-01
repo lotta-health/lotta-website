@@ -1,0 +1,252 @@
+/* Lotta — shared styles for the inner pages (Privacy, Terms, Journal).
+   Same tokens, menu and footer as the home page (option-b.html). */
+:root{
+  --dark:#241D19; --lift:#EEEBE6; --ww:#F9F5EF; --bg:#F9F5EF; --ink:#241D19; --muted:#6E645B;
+  --blue-ink:#2F68B8; --orange-ink:#FF6416; --line:rgba(36,29,25,.12);
+  --blue:#8EBFFB; --blue-hi:#A9CFFC; --sky:#6993EB; --orange:#FF6416; --almond:#FEE8CB; --matcha:#75873C;
+  --gut:20px; --nav:64px;
+  --f-display:"Instrument Sans","Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+  --f-body:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+  color-scheme:light;
+}
+@media (min-width:700px){:root{--gut:32px}}
+@media (min-width:1100px){:root{--gut:48px; --nav:72px}}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%; background:var(--bg); scroll-behavior:smooth; scroll-padding-top:110px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:17px; line-height:1.65; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
+h1,h2,h3,p,ul,ol{margin:0}
+a{color:inherit}
+button,input{font:inherit; color:inherit}
+svg{display:block}
+::selection{background:var(--blue); color:var(--dark)}
+:focus-visible{outline:2px solid var(--blue); outline-offset:3px; border-radius:8px}
+.nw{white-space:nowrap}
+.wrap{width:100%; max-width:1440px; margin:0 auto; padding:0 var(--gut)}
+.kicker{display:inline-flex; align-items:center; gap:10px; font-family:var(--f-display); font-size:13px; font-weight:500; letter-spacing:.16em; text-transform:uppercase; color:var(--orange-ink); line-height:1.2}
+.kicker::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor; box-shadow:0 0 12px 1px currentColor}
+html.show-ph .ph{background:rgba(255,150,36,.30); box-shadow:0 0 0 2px rgba(255,150,36,.30); border-radius:3px}
+
+/* Buttons */
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:52px; padding:0 24px; border:0; border-radius:999px; font-size:16px; font-weight:600; text-decoration:none; cursor:pointer; transition:background-color .3s, transform .3s var(--ease)}
+.btn svg{width:18px; height:18px}
+.btn-primary{background:var(--orange); color:#fff}
+.btn-primary:hover{background:#EE5710}
+.btn-sm{min-height:44px; padding:0 18px; font-size:15px}
+
+/* Menu: the floating frosted pill, as on the home page once scrolled */
+.logo{display:block; background:currentColor; -webkit-mask:url(assets/lotta-logo.png) center/contain no-repeat; mask:url(assets/lotta-logo.png) center/contain no-repeat; aspect-ratio:1000/318}
+.nav{position:fixed; top:0; left:0; right:0; z-index:50; padding:10px 10px 0}
+.nav-in{position:relative; max-width:1000px; height:58px; margin:0 auto; padding:0 8px 0 22px; display:flex; align-items:center; justify-content:space-between; gap:16px; border-radius:999px; background:rgba(249,245,239,.8); -webkit-backdrop-filter:blur(18px) saturate(1.3); backdrop-filter:blur(18px) saturate(1.3); box-shadow:inset 0 0 0 1px rgba(255,255,255,.55), 0 10px 34px -14px rgba(36,29,25,.22)}
+.nav-logo{display:flex; align-items:center; min-height:44px; color:var(--orange); border-radius:8px}
+.nav-logo .logo{width:80px; height:25px}
+.nav-links{display:none}
+@media (min-width:900px){
+  .nav{padding-top:12px}
+  .nav-links{display:flex; gap:2px; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%)}
+  .nav-links a{position:relative; display:inline-flex; align-items:center; min-height:44px; padding:0 16px; font-size:15px; font-weight:500; text-decoration:none; color:rgba(36,29,25,.78); transition:color .4s var(--ease)}
+  .nav-links a::after{content:""; position:absolute; left:16px; right:16px; bottom:9px; height:1.5px; border-radius:2px; background:currentColor; transform:scaleX(0); transform-origin:100% 50%; transition:transform .55s var(--ease)}
+  .nav-links a:hover, .nav-links a[aria-current="page"]{color:var(--ink)}
+  .nav-links a:hover::after, .nav-links a[aria-current="page"]::after{transform:scaleX(1); transform-origin:0 50%}
+}
+
+/* Page head */
+.page{padding:calc(var(--nav) + 72px) 0 104px}
+.page-head{max-width:880px}
+.page-title{margin-top:18px; font-family:var(--f-display); font-weight:400; font-size:clamp(2.6rem, 1.6rem + 4vw, 5rem); line-height:1.02; letter-spacing:-.04em; text-wrap:balance}
+.page-sub{margin-top:18px; max-width:46ch; font-size:19px; color:var(--muted); text-wrap:pretty}
+.page-meta{margin-top:20px; font-size:14px; color:var(--muted)}
+.draft-note{margin-top:28px; max-width:720px; padding:16px 20px; border-radius:16px; background:rgba(255,150,36,.14); box-shadow:inset 0 0 0 1px rgba(255,150,36,.35); font-size:15px; line-height:1.55}
+.draft-note b{font-weight:700}
+
+/* Long-form legal text with a table of contents */
+.doc{margin-top:56px; display:grid; gap:40px}
+.doc-body{max-width:68ch}
+.doc-body section{padding-top:36px; margin-top:36px; border-top:1px solid var(--line)}
+.doc-body section:first-child{padding-top:0; margin-top:0; border-top:0}
+.doc-body h2{font-family:var(--f-display); font-weight:500; font-size:clamp(1.4rem, 1.2rem + .7vw, 1.75rem); line-height:1.15; letter-spacing:-.02em}
+.doc-body p, .doc-body ul{margin-top:14px}
+.doc-body ul{padding-left:0; list-style:none; display:grid; gap:10px}
+.doc-body li{position:relative; padding-left:22px}
+.doc-body li::before{content:""; position:absolute; left:4px; top:.72em; width:6px; height:6px; border-radius:50%; background:var(--orange)}
+.doc-body a{color:var(--blue-ink); text-underline-offset:3px}
+.doc-body b{font-weight:700}
+@media (min-width:1000px){
+  .doc{grid-template-columns:290px minmax(0,1fr); gap:72px}
+}
+
+/* Journal */
+.jr-grid{margin-top:56px; display:grid; gap:20px}
+@media (min-width:760px){ .jr-grid{grid-template-columns:repeat(2, minmax(0,1fr))} }
+@media (min-width:1100px){ .jr-grid{grid-template-columns:repeat(3, minmax(0,1fr))} }
+.jr-empty{position:relative; overflow:hidden; margin-top:56px; padding:40px 24px; border-radius:32px; background:linear-gradient(180deg,#8EBFFB 0%,#C9DDF7 46%,#FEE8CB 78%,#FFC49B 100%); text-align:center}
+.jr-empty::after{content:""; position:absolute; left:50%; top:58%; width:min(760px, 90%); aspect-ratio:1; transform:translateX(-50%); border-radius:50%; background:radial-gradient(closest-side, rgba(255,100,22,.55), rgba(255,150,36,.25) 55%, rgba(255,150,36,0)); pointer-events:none}
+.jr-empty > *{position:relative; z-index:1}
+.jr-empty h2{margin:0 auto; max-width:18ch; font-family:var(--f-display); font-weight:400; font-size:clamp(1.8rem, 1.3rem + 2vw, 3rem); line-height:1.05; letter-spacing:-.035em; text-wrap:balance}
+.jr-empty p{margin:14px auto 0; max-width:40ch; font-size:17px; color:rgba(36,29,25,.8)}
+.nl-form{margin:26px auto 0; max-width:460px; display:flex; gap:8px; padding:6px; border-radius:999px; background:rgba(249,245,239,.7); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px); box-shadow:inset 0 0 0 1px rgba(255,255,255,.7)}
+.nl-form input{flex:1; min-width:0; height:48px; padding:0 18px; border:0; border-radius:999px; background:transparent; font-size:16px}
+.nl-form input:focus{outline:none}
+.nl-form:focus-within{box-shadow:inset 0 0 0 1.5px var(--blue-ink)}
+.nl-form .btn{min-height:48px}
+.nl-err{margin-top:10px; font-size:14px; color:var(--orange-ink)}
+.nl-thanks{margin-top:22px; font-weight:600}
+[hidden]{display:none!important}
+@media (min-width:900px){ .jr-empty{padding:72px 48px} }
+
+/* Footer */
+.foot{position:relative; padding:96px 0 28px; overflow:hidden; border-top:1px solid var(--line)}
+.foot-top{display:grid; gap:36px}
+.foot-tag{max-width:13ch; font-family:var(--f-display); font-size:clamp(1.8rem, 1.2rem + 2vw, 3.1rem); line-height:1.04; letter-spacing:-.035em}
+.foot-links{padding:0; list-style:none; display:grid}
+.foot-links a{display:inline-flex; align-items:center; gap:8px; min-height:44px; font-size:16px; color:rgba(36,29,25,.82); text-decoration:none; border-radius:6px}
+.foot-links a:hover{color:var(--ink)}
+.foot-links a[aria-current="page"]{color:var(--ink); font-weight:600}
+.foot-links svg{width:14px; height:14px; opacity:.6}
+.foot-contact{display:grid; gap:10px; align-content:start}
+.foot-mail{font-size:17px; font-weight:600}
+.foot-note{font-size:16px; color:var(--muted)}
+.foot-legal{margin-top:64px; padding-top:20px; border-top:1px solid var(--line); font-size:14px; color:var(--muted)}
+@media (min-width:900px){
+  .foot{padding:120px 0 32px}
+  .foot-top{grid-template-columns:minmax(0,1.5fr) minmax(0,.7fr) minmax(0,1fr); gap:48px}
+}
+
+/* Legal pages built from the Notion texts (make-pages.py, legal/*.md) */
+.page-intro{margin-top:26px; max-width:62ch; display:grid; gap:12px; font-size:18px; color:rgba(36,29,25,.86)}
+.page-intro b{color:var(--ink)}
+.doc-body h3{margin-top:28px; font-family:var(--f-display); font-weight:600; font-size:18px; line-height:1.3; letter-spacing:-.01em}
+.doc-body ol{margin-top:14px; padding-left:22px; display:grid; gap:10px}
+.doc-body ol li{padding-left:4px}
+.doc-body ol li::before{content:none}
+.doc-body blockquote{margin:16px 0 0; padding:16px 20px; border-left:3px solid var(--orange); border-radius:0 12px 12px 0; background:rgba(36,29,25,.04); font-size:16px; line-height:1.8}
+.tbl{margin-top:16px; overflow-x:auto; border-radius:14px; box-shadow:inset 0 0 0 1px var(--line)}
+.tbl table{width:100%; border-collapse:collapse; font-size:15px; line-height:1.5}
+.tbl th{padding:12px 14px; text-align:left; vertical-align:bottom; font-family:var(--f-display); font-weight:600; font-size:13px; letter-spacing:.02em; background:rgba(36,29,25,.04); border-bottom:1px solid var(--line)}
+.tbl td{padding:12px 14px; vertical-align:top; border-top:1px solid var(--line)}
+.tbl tbody tr:first-child td{border-top:0}
+.doc-close{margin-top:48px; padding-top:28px; border-top:1px solid var(--line); color:var(--muted)}
+.doc-close p{margin:0}
+@media (max-width:640px){
+  .tbl{box-shadow:none; border-radius:0}
+  .tbl table, .tbl tbody, .tbl tr, .tbl td{display:block; width:100%}
+  .tbl thead{display:none}
+  .tbl tr{padding:12px 0; border-top:1px solid var(--line)}
+  .tbl td{padding:4px 0; border:0}
+  .tbl td::before{content:attr(data-label); display:block; font-size:12px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--muted)}
+}
+
+/* ---- Contents panel (redesign 1 Oct) ---- */
+.toc-card{padding:18px 14px 14px; border-radius:22px; background:rgba(255,255,255,.62); box-shadow:inset 0 0 0 1px rgba(36,29,25,.07), 0 24px 48px -32px rgba(36,29,25,.4)}
+.toc-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:0 8px}
+.toc-title{font-family:var(--f-display); font-size:15px; font-weight:600; letter-spacing:-.01em; color:var(--ink)}
+.toc-count{font-size:13px; font-weight:600; color:var(--muted); font-variant-numeric:tabular-nums}
+.toc-cur{color:var(--orange-ink)}
+.toc-prog{height:3px; margin:12px 8px 10px; border-radius:3px; background:rgba(36,29,25,.08); overflow:hidden}
+.toc-prog i{display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg, #FF9624, var(--orange)); transform-origin:0 50%; transform:scaleX(0)}
+.toc-list{margin:0; padding:0 2px 0 0; list-style:none; display:grid; gap:2px}
+.toc-list a{display:grid; grid-template-columns:26px minmax(0,1fr); align-items:baseline; gap:6px; padding:8px 10px; border-radius:12px; font-size:14.5px; line-height:1.35; color:rgba(36,29,25,.66); text-decoration:none; transition:background-color .25s, color .25s, box-shadow .25s}
+.toc-list .n{font-size:12.5px; font-weight:600; font-variant-numeric:tabular-nums; color:rgba(36,29,25,.38); transition:color .25s}
+.toc-list a:hover{background:rgba(36,29,25,.045); color:var(--ink)}
+.toc-list a.on{background:#fff; color:var(--ink); font-weight:600; box-shadow:0 1px 2px rgba(36,29,25,.08), inset 3px 0 0 var(--orange)}
+.toc-list a.on .n{color:var(--orange-ink)}
+.toc-group{margin:12px 10px 4px; font-family:var(--f-display); font-size:11.5px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--muted)}
+.toc-top{display:inline-flex; margin:10px 10px 2px; font-size:13px; font-weight:600; color:var(--blue-ink); text-decoration:none}
+.toc-top:hover{text-decoration:underline; text-underline-offset:3px}
+@media (max-width:999.98px){
+  .toc-prog, .toc-count, .toc-top{display:none}
+}
+@media (min-width:1000px){
+  /* sticky on its own layer: steadier while scrolling (also inside the scaled preview) */
+  .toc{position:sticky; top:calc(var(--nav) + 36px); align-self:start; transform:translateZ(0); will-change:transform}
+  .toc-list{max-height:calc(100vh - var(--nav) - 190px); overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin}
+}
+
+/* ---- Section headings and "Short version" (redesign 1 Oct) ---- */
+.doc-body h2{display:flex; align-items:baseline; gap:12px; font-size:clamp(1.5rem, 1.25rem + .8vw, 1.9rem)}
+.h-num{flex:none; font-size:.62em; font-weight:600; letter-spacing:.02em; color:var(--orange-ink); font-variant-numeric:tabular-nums}
+.short{position:relative; margin-top:18px; padding:18px 22px 20px; border-radius:18px; background:linear-gradient(135deg, rgba(254,232,203,.85) 0%, rgba(255,241,224,.6) 55%, rgba(249,245,239,.5) 100%); box-shadow:inset 0 0 0 1px rgba(255,150,36,.22)}
+.short::before{content:""; position:absolute; left:0; top:18px; bottom:18px; width:3px; border-radius:0 3px 3px 0; background:var(--orange)}
+.doc-body .short-l{margin:0; font-family:var(--f-display); font-size:11.5px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--orange-ink)}
+.doc-body .short-t{margin-top:6px; font-family:var(--f-display); font-size:19px; line-height:1.45; letter-spacing:-.01em; color:var(--ink)}
+.doc-body section{scroll-margin-top:calc(var(--nav) + 32px)}
+
+/* ---- One legal page: Privacy, Terms and US Consumer Health Data (1 Oct, after Octo Health) ---- */
+.vh{position:absolute!important; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap}
+mark.pending{padding:1px 5px; border-radius:5px; background:rgba(255,150,36,.24); color:var(--ink)}
+.lg{padding:calc(var(--nav) + 44px) 0 120px}
+.lg-main{min-width:0; margin-top:28px}
+.lg-label{font-family:var(--f-display); font-size:12px; font-weight:500; letter-spacing:.22em; text-transform:uppercase; color:var(--muted)}
+.lg-docs{margin:0; padding:0; list-style:none}
+.lg-doc-a{display:flex; align-items:center; text-decoration:none; color:rgba(36,29,25,.55); transition:color .3s, padding .5s var(--ease)}
+.lg-doc-a:hover{color:var(--ink)}
+.lg-doc.on .lg-doc-a{color:var(--ink)}
+.lg-dash{flex:none; width:0; height:1.5px; border-radius:2px; background:var(--orange); transition:width .5s var(--ease), margin .5s var(--ease)}
+.lg-n-s{display:none}
+
+/* the documents */
+.lg-article{scroll-margin-top:calc(var(--nav) + 40px)}
+.lg-article + .lg-article{margin-top:120px; padding-top:112px; border-top:1px solid var(--line)}
+html.lg-tabs .lg-article{margin-top:0; padding-top:0; border-top:0}
+.lg-title:focus{outline:none}
+.lg-title{margin-top:16px; font-family:var(--f-display); font-weight:400; font-size:clamp(2.4rem, 1.6rem + 2.6vw, 3.9rem); line-height:1.02; letter-spacing:-.04em; text-wrap:balance}
+.lg-intro{margin-top:28px; display:grid; gap:16px; font-size:20px; line-height:1.6; color:rgba(36,29,25,.66); text-wrap:pretty}
+.lg-intro b{font-weight:600; color:var(--ink)}
+.lg-meta{margin-top:26px; font-size:14px; color:var(--muted)}
+.lg-article section{margin-top:72px; scroll-margin-top:calc(var(--nav) + 32px)}
+.lg-article h3{display:flex; align-items:baseline; gap:12px; color:var(--ink); font-family:var(--f-display); font-weight:500; font-size:clamp(1.5rem, 1.25rem + .8vw, 1.9rem); line-height:1.15; letter-spacing:-.02em; text-wrap:balance}
+.lg-article h4{margin-top:32px; font-family:var(--f-display); font-weight:600; font-size:18px; line-height:1.3; letter-spacing:-.01em}
+.lg-article section > p, .lg-article section > ul, .lg-article section > ol, .lg-close p{margin-top:14px; color:rgba(36,29,25,.8)}
+.lg-article b{font-weight:700; color:var(--ink)}
+.lg-article a{color:var(--ink); text-decoration:underline; text-decoration-color:rgba(255,100,22,.6); text-decoration-thickness:1.5px; text-underline-offset:3px; transition:text-decoration-color .25s}
+.lg-article a:hover{text-decoration-color:var(--orange)}
+.lg-article ul{padding-left:0; list-style:none; display:grid; gap:10px}
+.lg-article ul li{position:relative; padding-left:22px}
+.lg-article ul li::before{content:""; position:absolute; left:4px; top:.72em; width:6px; height:6px; border-radius:50%; background:var(--sky)}
+.lg-head .kicker{color:var(--orange)}
+.lg-article .tbl th{background:rgba(105,147,235,.14)}
+.lg-article ol{padding-left:22px; display:grid; gap:10px}
+.lg-article ol li{padding-left:4px}
+.lg-article blockquote{margin:16px 0 0; padding:16px 20px; border-left:2px solid var(--orange); background:rgba(36,29,25,.035); font-size:16px; line-height:1.8}
+.lg-article .tbl{color:rgba(36,29,25,.85)}
+/* "Short version": a quiet lead-in, not a box */
+.lg-article .short{margin-top:20px; padding:18px 22px 20px; border-radius:18px; border:0; background:var(--sky); box-shadow:none; color:#fff; text-shadow:0 1px 2px rgba(36,29,25,.14)}
+.lg-article .short::before{content:none}
+.lg-article .short-l{font-family:var(--f-display); font-size:11.5px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:#fff}
+.lg-article .short-t{margin-top:6px; font-family:var(--f-display); font-size:19.5px; font-weight:500; line-height:1.45; letter-spacing:-.01em; color:#fff; text-wrap:pretty}
+.lg-article .short b{color:#fff}
+.lg-close{margin-top:64px; padding-top:28px; border-top:1px solid var(--line)}
+.lg-close p{margin:0; color:var(--muted)}
+
+/* phone and tablet: the three documents as a row of tabs that stays under the menu */
+@media (max-width:999.98px){
+  .lg{padding-top:0}
+  .lg-side{position:sticky; top:0; z-index:20; margin:0 calc(var(--gut) * -1); padding:calc(var(--nav) + 18px) var(--gut) 10px; background:rgba(249,245,239,.9); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px)}
+  .lg-label, .lg-dash, .lg-n{display:none}
+  .lg-n-s{display:inline}
+  .lg-docs{position:relative; display:flex; gap:6px; overflow-x:auto; scrollbar-width:none}
+  .lg-docs::-webkit-scrollbar{display:none}
+  .lg-doc{flex:none}
+  .lg-doc-a{min-height:40px; padding:0 16px; border-radius:999px; font-size:15px; font-weight:500; background:rgba(36,29,25,.06)}
+  .lg-doc.on .lg-doc-a{background:var(--sky); color:var(--ink)}
+  .lg-article, .lg-article section{scroll-margin-top:calc(var(--nav) + 90px)}
+  .lg-article + .lg-article{margin-top:88px; padding-top:72px}
+  .lg-intro{font-size:18px}
+}
+
+/* desktop: the side menu, as on Octo Health */
+@media (min-width:1000px){
+  .lg{padding:calc(var(--nav) + 104px) 0 140px}
+  .lg-wrap{display:grid; grid-template-columns:292px minmax(0,720px); column-gap:clamp(56px, 7vw, 120px); justify-content:center}
+  .lg-main{margin-top:0}
+  .lg-side{position:sticky; top:calc(var(--nav) + 40px); align-self:start; transform:translateZ(0)}
+  .lg-label{margin-bottom:22px}
+  .lg-docs{display:grid; gap:2px}
+  .lg-doc-a{min-height:44px; padding:6px 0 6px 18px; font-size:17px; line-height:1.3}
+  .lg-doc.on .lg-doc-a{padding-left:0; font-weight:500}
+  .lg-doc.on .lg-dash{width:18px; margin-right:14px}
+}
+@media (prefers-reduced-motion:reduce){ .lg-doc-a, .lg-dash{transition:none} }
+.lg-article .h-num{color:var(--orange)}
