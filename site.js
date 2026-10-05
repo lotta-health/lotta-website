@@ -11,7 +11,7 @@
     POSTHOG_HOST: 'https://eu.i.posthog.com',    // EU cloud
     BREVO_FORM_URL: 'https://9417a05b.sibforms.com/serve/MUIFAGuHn1DqJ3h-Myv-GfecIRgSws_YhJJXLSUVJiyT4WGLNfcWzW7mbD6waLOZU9y1exKqHTWIMO0RwbAHtnwdyCEw1Tp5YY0PMzmv2HSZbn7S960eaPqphIMdUsTBLxEW_r9c5MhxxzdoyfQb7lZwmyZhU1oFTzGjn4Vn280PUrlpBJZe6EewvA_trl2ri8mM8DC8AW37qT38-g==',                          // Brevo subscription form action URL (…sibforms.com/serve/…) — supplied once she creates the form
     NEWSLETTER_FORM_URL: 'https://9417a05b.sibforms.com/serve/MUIFACu9f64gIC9RUNhUJQCoELJAsXLeWhCB6xlYKK3KmXoMcIZJz3kRQjWmqPv7VUoSCRJX6k6XsgS5Koq5WS2TdzFnplyy5tRwbhnyjqDwqrHMXkqhxVUfUYWcEji07hYHCP0X25xrxYPJ70dBf9q80jiJiFKYOJh5q2KxN9ARpSAXppf5rumLzXHRHpxjiEw_1GU0UB8KoEMaDg==', // Brevo form "Lotta newsletter" -> list Newsletter (30 Sep: no Substack; the blog lives on the site)
-    SEND_STAGE: true,                            // on since 1 Oct 2026: Filipa's consent words are on the pop-up (a required box for the GLP-1 answer, which is health data); Brevo field JOURNEY_STAGE
+    SEND_STAGE: true,                            // on since 1 Oct 2026. Until 5 Oct the pop-up had Filipa's two required boxes (one just for the GLP-1 answer, which is health data); from 5 Oct one required box covers the whole form, GLP-1 answer included (Margarida's wording). Brevo field JOURNEY_STAGE
 
     // Brevo contact attribute names exactly as they appear in the form's HTML embed code (name="…").
     // EMAIL and FIRSTNAME are Brevo defaults in an English-language account; COUNTRY and JOURNEY_STAGE are
