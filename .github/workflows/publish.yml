@@ -1,0 +1,107 @@
+# Publishes www.lotta.health, and keeps its blog in step with Ghost.
+#
+# In plain words. This job runs on GitHub, in three situations:
+#   1. when the website's files change (Margarida publishes with her two commands);
+#   2. every ten minutes, to look for changes in Ghost (a new article, an edit, an article taken down);
+#   3. when someone presses "Run workflow" on GitHub, or Ghost sends a signal (ready for later).
+# Each time it puts the site together from the files in this repository, rebuilds the blog pages fresh
+# from the articles published in Ghost (tools/build-blog.mjs), and publishes the result.
+# On the ten-minute check it publishes only if something in Ghost has changed.
+#
+# It only takes effect once the repository's setting  Settings > Pages > Source  is "GitHub Actions".
+# Until then the site keeps publishing straight from the main branch, as before, and this job steps aside.
+# To go back to the old way at any time: set that same setting back to "Deploy from a branch" (main, / root).
+#
+# Good to know: GitHub pauses timed jobs in a repository that has had no activity for 60 days, and e-mails first.
+# Any publish with the two commands counts as activity.
+#
+# This file is copied here by deploy.mjs from the website's working folder; change it there, not here.
+
+name: Publish the website
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '7-59/10 * * * *'        # every ten minutes, off the hour (GitHub's busiest moment)
+  workflow_dispatch:
+  repository_dispatch:
+    types: [ghost-published]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# one publish at a time; a publish that has started is allowed to finish
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  # 1. A quick look: is this job in charge yet, and is there anything new to publish?
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      go: ${{ steps.decide.outputs.go }}
+    steps:
+      - name: Fetch the website's files
+        uses: actions/checkout@v4
+
+      - name: Decide
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          type=$(gh api "repos/${{ github.repository }}/pages" --jq .build_type 2>/dev/null || echo unknown)
+          if [ "$type" != "workflow" ]; then
+            echo "::notice::The site still publishes straight from the main branch (Settings > Pages > Source). This job is ready and steps aside until that setting is changed to GitHub Actions."
+            echo "go=no" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          new=$(node tools/build-blog.mjs --stamp 2>/dev/null || echo unreachable)
+          old=$(curl -fsS --max-time 20 "https://www.lotta.health/blog/stamp.txt?t=$(date +%s)" 2>/dev/null || echo none)
+          echo "Ghost now: $new   On the live site: $old   Started by: ${{ github.event_name }}"
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$new" = "unreachable" ]; then
+            echo "::notice::Ghost could not be reached on this check. Nothing is published; the next check tries again."
+            echo "go=no" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "schedule" ] && [ "$new" = "$old" ]; then
+            echo "Nothing has changed in Ghost since the last publish."
+            echo "go=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=yes" >> "$GITHUB_OUTPUT"
+          fi
+
+  # 2. The publish itself, only when the look above says so.
+  publish:
+    needs: check
+    if: needs.check.outputs.go == 'yes'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Fetch the website's files
+        uses: actions/checkout@v4
+
+      - name: Put the site together
+        run: |
+          mkdir _site
+          rsync -a --exclude '.git' --exclude '.github' --exclude 'tools' --exclude '_site' ./ _site/
+          # The blog pages in this repository are the fallback: if Ghost cannot be reached, they are published as they are.
+          node tools/build-blog.mjs --live --out _site --shell legal.html \
+            || echo "::warning::The blog could not be rebuilt from Ghost. The blog pages already in the repository were published instead."
+          test -f _site/index.html && test -f _site/blog/index.html
+
+      - name: Prepare the publish
+        uses: actions/configure-pages@v5
+
+      - name: Hand the site over
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Publish
+        id: deployment
+        uses: actions/deploy-pages@v5

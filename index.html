@@ -307,7 +307,8 @@ html.motion .journey.pre .jp-wrap *{transition:none!important}
 /* Four cards in a row (5 Oct, after Superpower's "How it works"): a picture tile with one app component floating on it in
    frosted glass, then the card's name and its points underneath. Two by two on tablets, one under another on phones.
    The bento it replaces is in option-b-v30-before-inside-row-5oct.html. All four tiles carry photographs Margarida chose
-   (prepared by originals/make-tiles.html), each with one component on clear glass at the bottom. */
+   (1 and 4 prepared by originals/make-tiles.html; 2 and 3 are square cuts of the two Pexels sand pictures kept in originals/),
+   each with one component on clear glass at the bottom. */
 .inside{position:relative; padding:104px 0 112px}
 .in-head{display:grid; gap:16px}
 .in-cap{margin-top:28px; font-size:15px; color:var(--muted); text-align:center}
@@ -320,9 +321,9 @@ html.motion .journey.pre .jp-wrap *{transition:none!important}
 .wi-tile .grain{z-index:0; opacity:.14}
 .wi-tile > :not(.grain){position:relative; z-index:1}
 .wi-t1{background-image:url(assets/inside-1.jpg); background-position:50% 0}
-.wi-t2{background-image:url(assets/inside-2.jpg); background-position:50% 0}
-.wi-t2 .wi-clear{--tint:.5; padding:12px 14px 10px}
-.wi-t3{background-image:url(assets/inside-3.jpg); background-position:50% 0}
+.wi-t2{background-image:url(assets/inside-2-sand.webp); background-position:50% 50%}
+.wi-t2 .wi-clear{padding:12px 14px 10px}
+.wi-t3{background-image:url(assets/inside-3-dunes.webp); background-position:50% 50%}
 .wi-t4{background-image:url(assets/inside-4.jpg); background-position:50% 0}
 .wi-t{margin-top:22px; font-family:var(--f-display); font-weight:400; font-size:clamp(1.7rem, 1.35rem + .8vw, 2rem); line-height:1.08; letter-spacing:-.03em; text-wrap:balance}
 .wi-pts{margin-top:14px}
@@ -352,7 +353,7 @@ html.motion .journey.pre .jp-wrap *{transition:none!important}
 .wi-clear .wi-bar b span{color:rgba(255,255,255,.88)}
 .wi-clear .wi-bar > i{background:rgba(255,255,255,.3)}
 .wi-clear .wi-bar > i em{background:#fff}
-.wi-t3 .wi-clear{--tint:.3}
+.wi-t3 .wi-clear{--tint:.42}   /* the orange dunes are bright: this is the clearest glass that keeps the small white words readable on them */
 .wi-clear.wi-read small{color:#fff}
 .wi-clear.wi-read span{color:rgba(255,255,255,.88)}
 html.motion .wi-ph li.now::after{content:""; position:absolute; left:0; top:50%; width:12px; height:12px; margin-top:-6px; border-radius:50%; background:#FF6416; pointer-events:none; animation:wi-pulse 2.6s cubic-bezier(.25,.1,.25,1) infinite}
@@ -929,7 +930,7 @@ html.motion .phone-lift{will-change:transform}
     <nav class="nav-links" aria-label="Main">
       <a href="#inside">What's inside</a>
       <a href="#journey">The journey</a>
-      <a href="#blog">Blog</a>
+      <a href="blog/">Blog</a>
     </nav>
     <div class="nav-cta">
       <a class="btn btn-primary btn-sm" href="#beta">Join the beta</a>
@@ -946,7 +947,7 @@ html.motion .phone-lift{will-change:transform}
   <nav class="sheet-links" aria-label="Main">
     <a href="#inside">What's inside<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
     <a href="#journey">The journey<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
-    <a href="#blog">Blog<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+    <a href="blog/">Blog<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
   </nav>
   <a class="btn btn-primary btn-block" href="#beta">Join the beta</a>
 </div>
@@ -1106,7 +1107,7 @@ html.motion .phone-lift{will-change:transform}
       <div class="cover-img" aria-hidden="true"><div class="ci"></div></div>
       <div class="cover-body">
         <p class="cover-meta"><span class="cover-new">New</span><span class="ph">5 min read</span></p>
-        <h3 class="cover-t"><a class="cover-link post-link" href="blog.html">Meet Lotta: why we're building it</a></h3>
+        <h3 class="cover-t"><a class="cover-link post-link" href="blog/">Meet Lotta: why we're building it</a></h3>
         <p class="cover-hook">Most of the <span class="nw">GLP-1</span> journey doesn't happen inside a doctor's office.</p>
         <span class="cover-cta" aria-hidden="true">Read the article<svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
       </div>
@@ -1243,7 +1244,7 @@ html.motion .phone-lift{will-change:transform}
       <ul class="foot-links">
         <li><a href="https://www.instagram.com/joinlotta/" target="_blank" rel="noopener">Instagram<svg aria-hidden="true"><use href="#i-out"/></svg></a></li>
         <li><a href="https://www.linkedin.com/company/lotta-health" target="_blank" rel="noopener">LinkedIn<svg aria-hidden="true"><use href="#i-out"/></svg></a></li>
-        <li><a href="blog.html">Blog</a></li>
+        <li><a href="blog/">Blog</a></li>
         <li><a href="legal.html#privacy">Privacy Policy</a></li>
         <li><a href="legal.html#consumer-health-data">Consumer Health Data (US)</a></li>
         <li><a href="legal.html#terms">Terms &amp; Conditions</a></li>
@@ -1338,7 +1339,8 @@ html.motion .phone-lift{will-change:transform}
 
   /* ---------- Menu bar ---------- */
   var nav = q('#nav');
-  var navLinks = qa('.nav-links a'), spy = navLinks.map(function (a) { return q(a.getAttribute('href')); });
+  /* "Blog" leads to the blog page, not to a part of this page, so it has no section to follow */
+  var navLinks = qa('.nav-links a'), spy = navLinks.map(function (a) { var h = a.getAttribute('href'); return h.charAt(0) === '#' ? q(h) : null; });
   function setNav() {
     var y = window.scrollY || html.scrollTop, deskNav = window.innerWidth >= 900;
     var wasScrolled = nav.classList.contains('is-scrolled'), nowScrolled = y > window.innerHeight * .34;
