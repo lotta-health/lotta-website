@@ -131,6 +131,7 @@ function fallbackCover() {
 }
 async function replaceAsync(s, re, fn) { const jobs = []; s.replace(re, (...m) => { jobs.push(fn(...m)); return ''; }); const done = await Promise.all(jobs); return s.replace(re, () => done.shift()); }
 
+const REF_TAG = new RegExp('([?&])ref=' + new URL(GHOST.url).host.replace(/\./g, '\\.') + '(&|$)');                  // Ghost's own tag on outgoing links
 const GHOST_LINK = new RegExp('href="' + GHOST.url.replace(/[.*+?^$()|[\]\\{}]/g, '\\$&') + '/([^"/]*)/?"', 'g');   // a link in an article to another page of the Ghost copy
 let raw = SAMPLE ? SAMPLES : await fromGhost();
 if (!raw.length && !LIVE) { raw = SAMPLES; SAMPLE = true; stoodIn = true; }
@@ -168,6 +169,13 @@ for (const g of raw) {
   // A short line that is entirely bold is a section heading (Margarida's rule, 5 Oct): text pasted from Word or Google Docs arrives that way.
   // Not when it ends like a sentence or a label (. , ; :), and not when it is longer than 80 characters.
   html = html.replace(/<p>\s*<(strong|b)>([^<]{2,80})<\/\1>\s*(?:<br\s*\/?>)?\s*<\/p>/g, (m, t, text) => /[.,;:]\s*$/.test(text.replace(/&nbsp;/g, ' ')) ? m : `<h2>${text.trim()}</h2>`);
+  // The article's title is the page's main heading, so its sections are second-level headings whichever size was picked in Ghost:
+  // an article written with only the smaller heading has its headings moved up one size.
+  if (!/<h2[\s>]/i.test(html) && /<h3[\s>]/i.test(html)) html = html.replace(/<(\/?)h([3-5])(\s[^>]*)?>/gi, (m, c, n, a = '') => `<${c}h${n - 1}${a}>`);
+  // a heading typed in bold is still just a heading: the bold is dropped so all headings look alike
+  html = html.replace(/<(h[2-4])(\s[^>]*)?>\s*<(strong|b)>([\s\S]*?)<\/\3>\s*<\/\1>/gi, (m, h, a = '', t, inner) => `<${h}${a}>${inner}</${h}>`);
+  // Ghost adds "?ref=<its own address>" to links that leave it; that address is private, so the addition is removed
+  html = html.replace(/href="([^"]*)"/g, (m, u) => `href="${u.replace(REF_TAG, (x, a, b) => b ? a : '').replace(/[?&]$/, '')}"`);
   // every section heading gets a name of its own, so a list of sections can point at it later
   const seen = new Set();
   html = html.replace(/<h2(\s[^>]*)?>([\s\S]*?)<\/h2>/g, (m, attrs = '', inner) => {
