@@ -753,13 +753,19 @@ html.js .faq-item:not(.open) .faq-a-in{visibility:hidden; transition:visibility 
 .thanks-ic svg{width:28px; height:28px}
 .thanks-t{margin:22px auto 0; max-width:16ch; font-family:var(--f-display); font-size:clamp(1.75rem, 1.3rem + 1.6vw, 2.6rem); line-height:1.08; letter-spacing:-.03em}
 
-/* ============ Footer: a card that rises over the sunrise ============
+/* ============ Footer: a card that rises over a glow of colour ============
    Chosen on 5 Oct 2026 ("2, the rising card", after Superpower's footer), with her six changes: groups in the order
    Lotta, Connect, Legal; their titles small, capital and orange; "Consumer Health Data" without "(US)"; no "Join the beta";
    no address; the sign-up as one box with the button inside it.
-   The same footer is on the inner pages (make-pages.py, pages.css). Since 5 Oct (evening) the sunrise behind it is the still
-   picture here too: Margarida took the moving one out together with the closing sign-up card. */
-.foot{position:relative; isolation:isolate; padding:clamp(150px, 17vw, 240px) clamp(10px, 1.4vw, 20px) clamp(10px, 1.4vw, 20px); background:url(assets/sunrise-poster.jpg) 50% 42%/cover no-repeat}
+   The same footer is on the inner pages (make-pages.py, pages.css).
+   Behind it, since 5 Oct (night): the "Colour glow" of "Lotta FAQ Layouts", her choice in place of the sunrise (the moving
+   one went with the closing sign-up card; the still one was online for a few minutes). No picture: a sun of orange, saffron
+   and almond drawn with colour, centred a little below the card's top edge so it looks the same whatever the footer's height. */
+.foot{--band:clamp(150px, 17vw, 240px); position:relative; isolation:isolate; padding:var(--band) clamp(10px, 1.4vw, 20px) clamp(10px, 1.4vw, 20px);
+  background:
+    radial-gradient(ellipse max(72vw, 430px) 560px at 50% calc(var(--band) + 300px), #FF6416 0, #FF6416 30%, #FF9624 50%, #FEE8CB 74%, rgba(254,232,203,0) 100%),
+    linear-gradient(180deg, rgba(255,150,36,0) var(--band), #FF9624 calc(var(--band) + 280px), #FF6416 100%),
+    var(--bg)}
 .foot::before{content:""; position:absolute; inset:0 0 auto; height:clamp(120px, 13vw, 190px); z-index:-1; background:linear-gradient(180deg, var(--bg) 0, rgba(249,245,239,.5) 45%, rgba(249,245,239,0))}
 .foot-card{padding:clamp(28px, 4vw, 60px) clamp(22px, 3.4vw, 52px) 0; border-radius:28px; background:var(--ww); box-shadow:0 -30px 80px -50px rgba(36,29,25,.4)}
 .foot-top{display:grid; gap:44px}
@@ -1296,7 +1302,7 @@ html.motion .phone-lift{will-change:transform}
   </div>
 </dialog>
 
-<!-- ============ 8. Footer: the card rises over the still sunrise (the closing sign-up card and the film are in saved-sections/closing-card-5oct.html) ============ -->
+<!-- ============ 8. Footer: the card rises over the colour glow (the closing sign-up card and the film are in saved-sections/closing-card-5oct.html) ============ -->
   <footer class="foot">
     <div class="foot-card rv">
       <div class="foot-top">

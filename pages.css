@@ -97,8 +97,13 @@ html.show-ph .ph{background:rgba(255,150,36,.30); box-shadow:0 0 0 2px rgba(255,
 @media (min-width:900px){ .jr-empty{padding:72px 48px} }
 
 /* Footer: the same card as on the home page (option-b.html), chosen on 5 Oct 2026 ("2, the rising card").
-   On the home page it rises over the sunrise that closes the page; here it brings a band of that sunrise with it. */
-.foot{position:relative; isolation:isolate; padding:clamp(150px, 17vw, 240px) clamp(10px, 1.4vw, 20px) clamp(10px, 1.4vw, 20px); background:url(assets/sunrise-poster.jpg) 50% 42%/cover no-repeat}
+   Behind it, on every page since 5 Oct (night): the "Colour glow", her choice in place of the sunrise picture. No picture:
+   a sun of orange, saffron and almond drawn with colour, centred a little below the card's top edge. */
+.foot{--band:clamp(150px, 17vw, 240px); position:relative; isolation:isolate; padding:var(--band) clamp(10px, 1.4vw, 20px) clamp(10px, 1.4vw, 20px);
+  background:
+    radial-gradient(ellipse max(72vw, 430px) 560px at 50% calc(var(--band) + 300px), #FF6416 0, #FF6416 30%, #FF9624 50%, #FEE8CB 74%, rgba(254,232,203,0) 100%),
+    linear-gradient(180deg, rgba(255,150,36,0) var(--band), #FF9624 calc(var(--band) + 280px), #FF6416 100%),
+    var(--bg)}
 .foot::before{content:""; position:absolute; inset:0 0 auto; height:clamp(120px, 13vw, 190px); z-index:-1; background:linear-gradient(180deg, var(--bg) 0, rgba(249,245,239,.5) 45%, rgba(249,245,239,0))}
 .foot-card{padding:clamp(28px, 4vw, 60px) clamp(22px, 3.4vw, 52px) 0; border-radius:28px; background:var(--ww); box-shadow:0 -30px 80px -50px rgba(36,29,25,.4)}
 .foot-top{display:grid; gap:44px}
