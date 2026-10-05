@@ -1388,6 +1388,18 @@ html.motion .phone-lift{will-change:transform}
   });
 
   /* ---------- Anchor links ---------- */
+  /* Where a link to a part of this page lands (Margarida, 5 Oct). What counts is the part's own content, without its spacing above
+     and below: when that fits in the space under the menu it is centred there; when it is taller, its top sits just under the menu.
+     A full section never lands lower than its own top edge, so no strip of the section before it shows behind the menu. */
+  function landAt(t) {
+    var r = t.getBoundingClientRect(), cs = getComputedStyle(t), top = r.top + window.scrollY;
+    var pt = parseFloat(cs.paddingTop) || 0, pb = parseFloat(cs.paddingBottom) || 0;
+    var cTop = top + pt, cH = Math.max(0, r.height - pt - pb);
+    var bar = q('.nav-in', nav), barB = bar ? bar.getBoundingClientRect().bottom : 72, free = window.innerHeight - barB, GAP = 32;
+    var y = cH + 2 * GAP <= free ? cTop - barB - (free - cH) / 2 : cTop - barB - GAP;
+    if (t.tagName === 'SECTION') y = Math.max(Math.ceil(top) + 1, y);        // + 1: not even a hairline of the section before
+    return Math.max(0, Math.round(y));
+  }
   d.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('a[href^="#"]');
     if (!a) return;
@@ -1399,8 +1411,8 @@ html.motion .phone-lift{will-change:transform}
     e.preventDefault();
     closeSheet(false);
     if (id === '#top') { if (lenis) lenis.scrollTo(0, { duration: 1.6 }); else window.scrollTo(0, 0); }
-    else if (lenis) lenis.scrollTo(t, { offset: -80, duration: 1.6, easing: function (x) { return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; } });
-    else { var y = t.getBoundingClientRect().top + window.scrollY - 80; window.scrollTo(0, y); }
+    else if (lenis) lenis.scrollTo(landAt(t), { duration: 1.6, easing: function (x) { return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; } });
+    else window.scrollTo(0, landAt(t));
     var focusEl = t;
     if (!focusEl.hasAttribute('tabindex')) focusEl.setAttribute('tabindex', '-1');
     setTimeout(function () { try { focusEl.focus({ preventScroll: true }); } catch (_) {} }, lenis ? 1650 : 0);
