@@ -450,6 +450,9 @@ html.motion .wi-ph li.now::after{content:""; position:absolute; left:0; top:50%;
 .share.is-done .i-ln{display:none}
 .share-url{position:relative; z-index:2; margin-top:10px; padding:10px 12px; border-radius:10px; background:rgba(36,29,25,.08); font-size:14px; -webkit-user-select:all; user-select:all; word-break:break-all}
 .share-url[hidden]{display:none}
+/* two articles: two cards side by side; three or more keep the row of three */
+@media (min-width:900px){ .posts.posts-2{grid-template-columns:repeat(2, minmax(0,1fr))} }
+.post-img .pi[style]{background-size:cover; background-position:center; background-repeat:no-repeat}
 .sub-link{margin-top:28px; display:inline-flex; align-items:center; gap:10px; min-height:44px; font-weight:600; color:var(--blue-ink); border-radius:8px}
 .sub-link svg{width:18px; height:18px; transition:transform .45s var(--ease)}
 .sub-link:hover svg{transform:translate(2px,-2px)}
@@ -1103,15 +1106,18 @@ html.motion .phone-lift{will-change:transform}
       <p class="sec-sub rv">Honest conversations about life on <span class="nw">GLP-1s</span>.</p>
     </header>
 
+    <!-- blog:latest  What sits between these two lines is written by build-blog.mjs from the articles published in Ghost.
+         One article: the big cover. Two or more: a row of cards with the latest three (the original "Sunrise" blog block,
+         kept in saved-sections/blog-cards-1oct.html). Changes made here by hand are overwritten. -->
     <article class="cover rv">
-      <div class="cover-img" aria-hidden="true"><div class="ci"></div></div>
+      <div class="cover-img" aria-hidden="true"><div class="ci" style="background-image:url('assets/blog/meet-lotta-why-were-building-it.jpg')"></div></div>
       <div class="cover-body">
-        <p class="cover-meta"><span class="cover-new">New</span><span class="ph">5 min read</span></p>
-        <h3 class="cover-t"><a class="cover-link post-link" href="blog/">Meet Lotta: why we're building it</a></h3>
-        <p class="cover-hook">Most of the <span class="nw">GLP-1</span> journey doesn't happen inside a doctor's office.</p>
+        <p class="cover-meta"><span class="cover-new">New</span><span>2 min read</span></p>
+        <h3 class="cover-t"><a class="cover-link post-link" href="blog/meet-lotta-why-were-building-it">Meet Lotta: why we're building it</a></h3>
         <span class="cover-cta" aria-hidden="true">Read the article<svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
       </div>
     </article>
+    <!-- /blog:latest -->
 
     <div class="news rv" id="newsletter">
       <div class="news-copy">

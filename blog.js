@@ -16,13 +16,15 @@
       (first ? ' fetchpriority="high"' : ' loading="lazy"') + ' decoding="async"' + (p.pos ? ' style="object-position:' + esc(p.pos) + '"' : '') + '>';
   }
   function go(p) { return '<a class="bl-go" href="' + esc(p.href) + '">' + txt(p.title) + '</a>'; }
+  /* the round ">" on the highlighted articles (the cover and the tiles beside it); it slides forward when the card is pointed at (pages.css) */
+  var ARROW = '<span class="bl-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9.5 5.5 16 12l-6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
 
   function cover(p) {
     return '<article class="bl-ph bl-cover">' + pic(p, '(min-width:1000px) 66vw, 100vw', true) + '<div class="bl-in"><p class="bl-meta">' +
       (p.isNew ? '<span class="bl-new">New</span>' : p.tag ? '<span class="bl-new">' + esc(p.tag) + '</span>' : '') + esc(p.read) + '</p>' +
-      '<h2 class="bl-t">' + go(p) + '</h2>' + (p.excerpt ? '<p class="bl-hook">' + txt(p.excerpt) + '</p>' : '') + '</div></article>';
+      '<h2 class="bl-t">' + go(p) + '</h2>' + (p.excerpt ? '<p class="bl-hook">' + txt(p.excerpt) + '</p>' : '') + '</div>' + ARROW + '</article>';
   }
-  function tile(p) { return '<article class="bl-ph bl-tile">' + pic(p, '(min-width:1000px) 33vw, 100vw') + '<div class="bl-in"><h3 class="bl-t">' + go(p) + '</h3></div></article>'; }
+  function tile(p) { return '<article class="bl-ph bl-tile">' + pic(p, '(min-width:1000px) 33vw, 100vw') + '<div class="bl-in"><h3 class="bl-t">' + go(p) + '</h3></div>' + ARROW + '</article>'; }
   function card(p) {
     return '<li class="bl-card"><div class="bl-pic">' + pic(p, '(min-width:1000px) 33vw, (min-width:700px) 50vw, 100vw') + '</div><p class="bl-cmeta">' + (p.tag ? '<b>' + esc(p.tag) + '</b> · ' : '') + esc(p.date) + '</p>' +
       '<h3 class="bl-ct">' + go(p) + '</h3>' + (p.excerpt ? '<p class="bl-chook">' + txt(p.excerpt) + '</p>' : '') + '</li>';

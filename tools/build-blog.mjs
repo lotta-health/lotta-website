@@ -8,6 +8,8 @@
 //   node build-blog.mjs --live --out DIR --shell FILE
 //                                   the form the live site uses (clean addresses such as /blog/meet-lotta); run by deploy.mjs,
 //                                   and by the refresh job on GitHub (github/publish.yml), where this file sits in tools/
+//   --home FILE                     also rewrites the blog block on the home page in FILE: one article = the big cover, two or more = a row of
+//                                   cards with the latest three. In the preview this is option-b.html by itself; the live form must be told.
 //   node build-blog.mjs --stamp     prints a short fingerprint of what is published in Ghost right now, and writes nothing.
 //                                   The refresh job compares it with blog/stamp.txt on the live site to see whether anything changed.
 //
@@ -34,6 +36,7 @@ const LIVE = flag('live'); let SAMPLE = flag('sample');
 if (LIVE && SAMPLE) { console.error('Sample articles are for the preview only; they cannot be built for the live site.'); process.exit(1); }
 const OUT = opt('out', HERE), SHELL = opt('shell', join(HERE, 'legal.html'));
 const DIR = SAMPLE ? 'blog-sample' : 'blog';
+const HOME = opt('home', LIVE || SAMPLE ? '' : join(OUT, 'option-b.html'));
 let stoodIn = false;        // true when the preview shows sample articles because Ghost has none yet
 const warnings = [];
 const warn = m => { warnings.push(m); };
@@ -131,7 +134,7 @@ function fallbackCover() {
 }
 async function replaceAsync(s, re, fn) { const jobs = []; s.replace(re, (...m) => { jobs.push(fn(...m)); return ''; }); const done = await Promise.all(jobs); return s.replace(re, () => done.shift()); }
 
-const REF_TAG = new RegExp('([?&])ref=' + new URL(GHOST.url).host.replace(/\./g, '\\.') + '(&|$)');                  // Ghost's own tag on outgoing links
+const REF_TAG = new RegExp('([?&])ref=' + new URL(GHOST.url).host.replace(/\./g, '\\.') + '(&?)');                   // Ghost's own tag on outgoing links, wherever it sits in the address
 const GHOST_LINK = new RegExp('href="' + GHOST.url.replace(/[.*+?^$()|[\]\\{}]/g, '\\$&') + '/([^"/]*)/?"', 'g');   // a link in an article to another page of the Ghost copy
 let raw = SAMPLE ? SAMPLES : await fromGhost();
 if (!raw.length && !LIVE) { raw = SAMPLES; SAMPLE = true; stoodIn = true; }
@@ -152,7 +155,7 @@ for (const g of raw) {
   p.img = cover.href; p.imgAbs = cover.abs; p.srcset = ''; p.alt = plain(g.feature_image_alt);
   if (g.feature_image && ghostImage(g.feature_image) && cover.href.startsWith('../')) {       // a second, smaller file for phones and for the small cards
     const small = await keep(g.feature_image, g.slug + '-1000', 1000);
-    if (small.href.startsWith('../')) p.srcset = `${small.href} 1000w, ${cover.href} 1600w`;
+    if (small.href.startsWith('../')) { p.srcset = `${small.href} 1000w, ${cover.href} 1600w`; p.imgS = small.href; }
   }
   p.face = g.primary_author?.profile_image ? (await keep(g.primary_author.profile_image.replace(/^\/\//, 'https://'), 'author-' + (g.primary_author.slug || 'x'), 160)).href : '';
   // the article's own words: pictures are copied over, links to the Ghost copy point at our pages instead
@@ -221,6 +224,8 @@ ${FONTS}
 <link rel="stylesheet" href="../pages.css">
 ${ld && !SAMPLE ? `<script type="application/ld+json">${json(ld)}</script>` : ''}
 <script>
+  /* A page opened by a link starts at its top, whatever the browser carried over from the page before; Back, Forward and reload keep their place. */
+  (function () { try { var n = performance.getEntriesByType('navigation')[0]; if (!location.hash && (!n || n.type === 'navigate')) { var top = function () { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }; top(); document.addEventListener('DOMContentLoaded', top); window.addEventListener('pageshow', function (e) { if (!e.persisted) top(); }); } } catch (e) {} })();
   /* viewer message: highlight placeholder words (same switch as the home page) */
   window.addEventListener('message', function (e) { if (e.data && e.data.type === 'lotta-ph') document.documentElement.classList.toggle('show-ph', !!e.data.on); });
 </script>
@@ -341,6 +346,63 @@ ${p.html}
 </script>`);
 }
 
+/* ---------- the home page's blog block ----------
+   One article: the big cover, whose button opens it. Two or more: a row of cards with the latest three, each opening its article
+   (the original "Sunrise" blog block). People reach the blog page itself from the top menu, so the block has no link to it. */
+const fromHome = u => u.replace(/^\.\.\//, '');                                  // an address as seen from the home page, not from inside blog/
+function homeBlock(list) {
+  if (list.length === 1) {
+    const p = list[0], img = fromHome(p.img);
+    return `
+    <article class="cover rv">
+      <div class="cover-img" aria-hidden="true"><div class="ci"${img ? ` style="background-image:url('${esc(img)}')"` : ''}></div></div>
+      <div class="cover-body">
+        <p class="cover-meta">${p.isNew ? '<span class="cover-new">New</span>' : p.tag ? `<span class="cover-new">${esc(p.tag)}</span>` : ''}<span>${esc(p.read)}</span></p>
+        <h3 class="cover-t"><a class="cover-link post-link" href="${DIR}/${postHref(p.slug)}">${txt(p.title)}</a></h3>${p.excerpt ? `\n        <p class="cover-hook">${txt(p.excerpt)}</p>` : ''}
+        <span class="cover-cta" aria-hidden="true">Read the article<svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </div>
+    </article>
+    `;
+  }
+  const three = list.slice(0, 3);
+  return `
+    <ul class="posts${three.length === 2 ? ' posts-2' : ''}" data-stagger>${three.map(p => {
+    const img = fromHome(p.imgS || p.img), url = postUrl(p.slug);
+    return `
+      <li class="post">
+        <article class="post-card">
+          <div class="post-img"><div class="pi"${img ? ` style="background-image:url('${esc(img)}')"` : ''}></div>${p.tag ? `<span class="tag">${esc(p.tag)}</span>` : ''}</div>
+          <div class="post-body">
+            <h3 class="post-t"><a class="post-link" href="${DIR}/${postHref(p.slug)}">${txt(p.title)}</a></h3>${p.excerpt ? `\n            <p class="post-hook">${txt(p.excerpt)}</p>` : ''}
+            <div class="post-meta"><span>${esc(p.read)}</span><button class="share" type="button" data-url="${url}"><svg class="i-ln" aria-hidden="true"><use href="#i-link"/></svg><svg class="i-ok" aria-hidden="true"><use href="#i-check"/></svg><span class="share-l">Share</span></button></div>
+            <p class="share-url" hidden>${url}</p>
+            <p class="share-status sr-only" aria-live="polite"></p>
+          </div>
+        </article>
+      </li>`; }).join('')}
+    </ul>
+    `;
+}
+const MARK = /(<!-- blog:latest[\s\S]*?-->)[\s\S]*?(<!-- \/blog:latest -->)/;
+let homeNote = '';
+if (HOME && !SAMPLE) {
+  if (!existsSync(HOME)) warn(`the home page ${HOME} was not found, so its blog block was not updated`);
+  else if (!posts.length) homeNote = 'The home page\'s blog block was left as it is: no article is published.';
+  else {
+    const page = readFileSync(HOME, 'utf8');
+    if (!MARK.test(page)) warn('the home page has no "blog:latest" marks, so its blog block was not updated');
+    else {
+      writeFileSync(HOME, page.replace(MARK, (m, a, b) => a + homeBlock(posts) + b));
+      homeNote = posts.length === 1 ? `The home page's blog block shows "${posts[0].title}" and its button opens that article.` : `The home page's blog block shows the latest ${Math.min(3, posts.length)} articles as a row of cards.`;
+    }
+  }
+}
+// with the sample articles: a copy of the home page whose blog block shows them, to judge the row of cards (preview only)
+if (flag('sample') && existsSync(join(OUT, 'option-b.html'))) {
+  const page = readFileSync(join(OUT, 'option-b.html'), 'utf8');
+  if (MARK.test(page)) { writeFileSync(join(OUT, 'option-b-blog-sample.html'), page.replace(MARK, (m, a, b) => a + homeBlock(posts) + b)); homeNote = 'A copy of the home page with the sample articles in its blog block: option-b-blog-sample.html'; }
+}
+
 /* ---------- write ---------- */
 const dir = join(OUT, DIR);
 mkdirSync(dir, { recursive: true });
@@ -356,4 +418,5 @@ if (DIR === 'blog') {
 console.log(`${stoodIn ? 'Blog (preview form), SAMPLE ARTICLES because Ghost has none yet' : SAMPLE ? 'Sample blog' : LIVE ? 'Blog (live form)' : 'Blog (preview form)'}: ${posts.length} article${posts.length === 1 ? '' : 's'} written to ${dir}`);
 for (const p of posts) console.log(`  ${p.date.padEnd(13)} ${p.slug}${p.tags.length ? '   [' + p.tags.join(', ') + ']' : ''}`);
 if (!posts.length) console.log('  No articles are published in Ghost yet: the blog page shows "The first articles are on their way."');
+if (homeNote) console.log('  ' + homeNote);
 if (warnings.length) { console.log(`\nWARNINGS (${warnings.length}):`); for (const w of warnings) console.log('  ! ' + w); }

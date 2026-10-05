@@ -296,7 +296,30 @@ html.lg-tabs .lg-article{margin-top:0; padding-top:0; border-top:0}
 .bl-cmeta b{font-weight:600; color:var(--ink)}
 .bl-ct{margin-top:8px; font-family:var(--f-display); font-weight:500; font-size:1.4rem; line-height:1.1; letter-spacing:-.03em; text-wrap:balance}
 .bl-chook{margin-top:8px; font-size:16px; line-height:1.5; color:rgba(36,29,25,.78); text-wrap:pretty}
-@media (hover:hover){ .bl-card:hover .bl-ct, .bl-ph:hover .bl-t{text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:4px} }
+/* Pointing at an article card (Margarida, 5 Oct): its title is underlined with the same moving line as the links in the top menu,
+   and on the highlighted articles (the cover and the tiles beside it) a round ">" in white slides forward. */
+.bl-go{padding-bottom:.05em; background:linear-gradient(currentColor, currentColor) 100% 100% / 0 1.5px no-repeat; transition:background-size .55s var(--ease)}
+/* the cover's title is large and its lines sit close together, so its line is drawn a little higher, just under the letters */
+.bl-cover .bl-go{padding-bottom:0; background-position:100% calc(100% - .1em); background-size:0 2px}
+@media (hover:hover){
+  .bl-ph:hover .bl-go, .bl-card:hover .bl-go{background-position:0 100%; background-size:100% 1.5px}
+  .bl-cover:hover .bl-go{background-position:0 calc(100% - .1em); background-size:100% 2px}
+}
+.bl-cover:focus-within .bl-go{background-position:0 calc(100% - .1em); background-size:100% 2px}
+.bl-ph:focus-within .bl-go, .bl-card:focus-within .bl-go{background-position:0 100%; background-size:100% 1.5px}
+@media (prefers-reduced-motion:reduce){ .bl-go{transition:none} }
+.bl-arrow{position:absolute; right:clamp(16px, 2.4vw, 28px); bottom:clamp(16px, 2.4vw, 28px); width:48px; height:48px; border-radius:50%; display:grid; place-items:center; pointer-events:none;
+  color:#fff; background:rgba(36,29,25,.24); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); box-shadow:inset 0 0 0 2px rgba(255,255,255,.88);   /* a faint dark tint, so the white ring and ">" also read on a pale picture */
+  transition:transform .55s var(--ease), background-color .45s var(--ease)}
+.bl-arrow svg{width:20px; height:20px}
+.bl-tile .bl-arrow{right:16px; bottom:16px; width:38px; height:38px}
+.bl-tile .bl-arrow svg{width:17px; height:17px}
+/* the words keep clear of it */
+.bl-cover .bl-in > :last-child{margin-right:64px}
+.bl-tile .bl-in{padding-right:66px}
+@media (hover:hover){ .bl-ph:hover .bl-arrow{transform:translateX(7px); background:rgba(36,29,25,.4)} }
+.bl-ph:focus-within .bl-arrow{transform:translateX(7px)}
+@media (prefers-reduced-motion:reduce){ .bl-arrow{transition:none} }
 @media (min-width:700px){ .bl-grid{grid-template-columns:repeat(2, minmax(0,1fr))} }
 @media (min-width:1000px){
   .bl-mosaic{grid-template-columns:minmax(0,2.05fr) minmax(0,1fr); min-height:600px}

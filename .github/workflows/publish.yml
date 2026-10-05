@@ -5,7 +5,8 @@
 #   2. every ten minutes, to look for changes in Ghost (a new article, an edit, an article taken down);
 #   3. when someone presses "Run workflow" on GitHub, or Ghost sends a signal (ready for later).
 # Each time it puts the site together from the files in this repository, rebuilds the blog pages fresh
-# from the articles published in Ghost (tools/build-blog.mjs), and publishes the result.
+# from the articles published in Ghost (tools/build-blog.mjs), points the home page's blog block at the newest article,
+# and publishes the result.
 # On the ten-minute check it publishes only if something in Ghost has changed.
 #
 # It only takes effect once the repository's setting  Settings > Pages > Source  is "GitHub Actions".
@@ -90,7 +91,7 @@ jobs:
           mkdir _site
           rsync -a --exclude '.git' --exclude '.github' --exclude 'tools' --exclude '_site' ./ _site/
           # The blog pages in this repository are the fallback: if Ghost cannot be reached, they are published as they are.
-          node tools/build-blog.mjs --live --out _site --shell legal.html \
+          node tools/build-blog.mjs --live --out _site --shell legal.html --home _site/index.html \
             || echo "::warning::The blog could not be rebuilt from Ghost. The blog pages already in the repository were published instead."
           test -f _site/index.html && test -f _site/blog/index.html
 

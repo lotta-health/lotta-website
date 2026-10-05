@@ -21,6 +21,8 @@
 <link rel="stylesheet" href="../pages.css">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Blog","name":"Between Appointments","description":"Honest conversations about life on GLP-1s, from Lotta.","url":"https://www.lotta.health/blog/","publisher":{"@type":"Organization","name":"Lotta","url":"https://www.lotta.health/"}}</script>
 <script>
+  /* A page opened by a link starts at its top, whatever the browser carried over from the page before; Back, Forward and reload keep their place. */
+  (function () { try { var n = performance.getEntriesByType('navigation')[0]; if (!location.hash && (!n || n.type === 'navigate')) { var top = function () { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }; top(); document.addEventListener('DOMContentLoaded', top); window.addEventListener('pageshow', function (e) { if (!e.persisted) top(); }); } } catch (e) {} })();
   /* viewer message: highlight placeholder words (same switch as the home page) */
   window.addEventListener('message', function (e) { if (e.data && e.data.type === 'lotta-ph') document.documentElement.classList.toggle('show-ph', !!e.data.on); });
 </script>
@@ -45,7 +47,7 @@
         <h1 class="bl-title">Between Appointments</h1>
         <p class="bl-sub">Honest conversations about life on <span class="nw">GLP-1s</span>.</p>
       </header>
-      <div class="bl-main" id="bl-main"><div class="bl-mosaic bl-one"><article class="bl-ph bl-cover"><img class="bl-img" src="../assets/blog/meet-lotta-why-were-building-it.jpg" srcset="../assets/blog/meet-lotta-why-were-building-it-1000.jpg 1000w, ../assets/blog/meet-lotta-why-were-building-it.jpg 1600w" sizes="(min-width:1000px) 66vw, 100vw" alt="" fetchpriority="high" decoding="async"><div class="bl-in"><p class="bl-meta"><span class="bl-new">New</span>2 min read</p><h2 class="bl-t"><a class="bl-go" href="meet-lotta-why-were-building-it">Meet Lotta: why we're building it</a></h2></div></article></div></div>
+      <div class="bl-main" id="bl-main"><div class="bl-mosaic bl-one"><article class="bl-ph bl-cover"><img class="bl-img" src="../assets/blog/meet-lotta-why-were-building-it.jpg" srcset="../assets/blog/meet-lotta-why-were-building-it-1000.jpg 1000w, ../assets/blog/meet-lotta-why-were-building-it.jpg 1600w" sizes="(min-width:1000px) 66vw, 100vw" alt="" fetchpriority="high" decoding="async"><div class="bl-in"><p class="bl-meta"><span class="bl-new">New</span>2 min read</p><h2 class="bl-t"><a class="bl-go" href="meet-lotta-why-were-building-it">Meet Lotta: why we're building it</a></h2></div><span class="bl-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9.5 5.5 16 12l-6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></article></div></div>
       <section class="bl-band" aria-labelledby="bl-band-h">
         <div><h2 id="bl-band-h"><span class="ph">Get new articles in your inbox.</span></h2><p><span class="ph">One e-mail when something new is out. Unsubscribe at any time.</span></p></div>
         <div>

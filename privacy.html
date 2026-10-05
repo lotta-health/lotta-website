@@ -13,6 +13,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="pages.css">
 <script>
+  /* A page opened by a link starts at its top, whatever the browser carried over from the page before; Back, Forward and reload keep their place. */
+  (function () { try { var n = performance.getEntriesByType('navigation')[0]; if (!location.hash && (!n || n.type === 'navigate')) { var top = function () { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }; top(); document.addEventListener('DOMContentLoaded', top); window.addEventListener('pageshow', function (e) { if (!e.persisted) top(); }); } } catch (e) {} })();
   /* viewer message: highlight placeholder words (same switch as the home page) */
   window.addEventListener('message', function (e) { if (e.data && e.data.type === 'lotta-ph') document.documentElement.classList.toggle('show-ph', !!e.data.on); });
 </script>
