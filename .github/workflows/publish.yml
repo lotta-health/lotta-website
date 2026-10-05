@@ -7,7 +7,9 @@
 # Each time it puts the site together from the files in this repository, rebuilds the blog pages fresh
 # from the articles published in Ghost (tools/build-blog.mjs), points the home page's blog block at the newest article,
 # and publishes the result.
-# On the ten-minute check it publishes only if something in Ghost has changed.
+# On the ten-minute check it publishes only if something in Ghost has changed,
+# or if the website's files here are newer than what is on the live site (a publish that did not go through
+# is picked up by the next check, without anyone having to publish again).
 #
 # It only takes effect once the repository's setting  Settings > Pages > Source  is "GitHub Actions".
 # Until then the site keeps publishing straight from the main branch, as before, and this job steps aside.
@@ -34,11 +36,6 @@ permissions:
   pages: write
   id-token: write
 
-# one publish at a time; a publish that has started is allowed to finish
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
   # 1. A quick look: is this job in charge yet, and is there anything new to publish?
   check:
@@ -49,6 +46,8 @@ jobs:
     steps:
       - name: Fetch the website's files
         uses: actions/checkout@v4
+        with:
+          ref: main        # always the newest files, so a job that was kept waiting never puts an older version back
 
       - name: Decide
         id: decide
@@ -62,12 +61,19 @@ jobs:
           fi
           new=$(node tools/build-blog.mjs --stamp 2>/dev/null || echo unreachable)
           old=$(curl -fsS --max-time 20 "https://www.lotta.health/blog/stamp.txt?t=$(date +%s)" 2>/dev/null || echo none)
-          echo "Ghost now: $new   On the live site: $old   Started by: ${{ github.event_name }}"
-          if [ "${{ github.event_name }}" = "schedule" ] && [ "$new" = "unreachable" ]; then
+          here=$(git rev-parse HEAD)
+          live=$(curl -fsS --max-time 20 "https://www.lotta.health/published.txt?t=$(date +%s)" 2>/dev/null || echo unknown)
+          echo "Ghost now: $new   On the live site: $old   Website files here: ${here:0:7}   On the live site: ${live:0:7}   Started by: ${{ github.event_name }}"
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "go=yes" >> "$GITHUB_OUTPUT"
+          elif [ "$live" != "unknown" ] && [ "$live" != "$here" ]; then
+            echo "::notice::The website's files here are newer than what is on the live site: an earlier publish did not go through. Publishing now."
+            echo "go=yes" >> "$GITHUB_OUTPUT"
+          elif [ "$new" = "unreachable" ]; then
             echo "::notice::Ghost could not be reached on this check. Nothing is published; the next check tries again."
             echo "go=no" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event_name }}" = "schedule" ] && [ "$new" = "$old" ]; then
-            echo "Nothing has changed in Ghost since the last publish."
+          elif [ "$new" = "$old" ]; then
+            echo "Nothing has changed in Ghost, or in the website's files, since the last publish."
             echo "go=no" >> "$GITHUB_OUTPUT"
           else
             echo "go=yes" >> "$GITHUB_OUTPUT"
@@ -79,12 +85,19 @@ jobs:
     if: needs.check.outputs.go == 'yes'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # One publish at a time; a publish that has started is allowed to finish. If two are waiting, the newer one takes
+    # the older one's place; every publish carries the newest files, so nothing the older one had is lost.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Fetch the website's files
         uses: actions/checkout@v4
+        with:
+          ref: main        # always the newest files, so a job that was kept waiting never puts an older version back
 
       - name: Put the site together
         run: |
@@ -93,6 +106,8 @@ jobs:
           # The blog pages in this repository are the fallback: if Ghost cannot be reached, they are published as they are.
           node tools/build-blog.mjs --live --out _site --shell legal.html --home _site/index.html \
             || echo "::warning::The blog could not be rebuilt from Ghost. The blog pages already in the repository were published instead."
+          # which version of the website's files this publish carries; the ten-minute check reads it back
+          git rev-parse HEAD > _site/published.txt
           test -f _site/index.html && test -f _site/blog/index.html
 
       - name: Prepare the publish

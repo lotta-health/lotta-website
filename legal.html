@@ -27,6 +27,7 @@
       <a href="/#inside">What's inside</a>
       <a href="/#journey">The journey</a>
       <a href="blog/">Blog</a>
+      <a href="/#faq">FAQ</a>
     </nav>
     <a class="btn btn-primary btn-sm" href="/#join-beta">Join the beta</a>
   </div>
@@ -691,24 +692,65 @@
 </main>
 
 <footer class="foot">
-  <div class="wrap">
+  <div class="foot-card">
     <div class="foot-top">
-      <p class="foot-tag">For life on and after <span class="nw">GLP-1</span>.</p>
-      <ul class="foot-links">
-        <li><a href="blog/">Blog</a></li>
-        <li><a href="https://www.instagram.com/joinlotta/" target="_blank" rel="noopener">Instagram<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
-        <li><a href="https://www.linkedin.com/company/lotta-health" target="_blank" rel="noopener">LinkedIn<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
-        <li><a href="legal.html#privacy">Privacy Policy</a></li>
-        <li><a href="legal.html#consumer-health-data">Consumer Health Data (US)</a></li>
-        <li><a href="legal.html#terms">Terms &amp; Conditions</a></li>
-      </ul>
-      <div class="foot-contact">
-        <p class="foot-mail">hello@lotta.health</p>
-        <p class="foot-note">Lotta does not replace healthcare professionals.</p>
+      <div class="foot-brand">
+        <a class="foot-logo" href="/" aria-label="Lotta, home"><span class="logo" role="img" aria-hidden="true"></span></a>
+        <p class="foot-say"><label for="fn-email"><b>Get the new articles by e-mail.</b></label> New posts about your journey, as soon as they're out.</p>
+        <form class="foot-nl" id="fn-form" novalidate>
+          <input id="fn-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="Your e-mail" required aria-describedby="fn-err">
+          <button class="btn btn-primary btn-sm" type="submit">Subscribe</button>
+        </form>
+        <p class="foot-err" id="fn-err" hidden>Please enter a valid e-mail address.</p>
+        <p class="foot-thanks" id="fn-thanks" tabindex="-1" hidden><span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12.6 4.4 4.4L19 7.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Thank you. We've sent you a welcome e-mail.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h2 class="foot-lab">Lotta</h2>
+          <ul class="foot-links">
+            <li><a href="/#inside"><span>What's inside</span></a></li>
+            <li><a href="/#journey"><span>The journey</span></a></li>
+            <li><a href="blog/"><span>Blog</span></a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h2 class="foot-lab">Connect</h2>
+          <ul class="foot-links">
+            <li><a href="https://www.instagram.com/joinlotta/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3.9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="7" r="1.15" fill="currentColor"/></svg><span>Instagram</span></a></li>
+            <li><a href="https://www.linkedin.com/company/lotta-health" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.1 10.6v5.9M11.6 16.5v-5.9M11.6 13.4c0-1.7.9-2.9 2.3-2.9 1.3 0 2 .95 2 2.6v3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.1" cy="7.7" r="1.05" fill="currentColor"/></svg><span>LinkedIn</span></a></li>
+            <li><p class="foot-mail">hello@lotta.health</p></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h2 class="foot-lab">Legal</h2>
+          <ul class="foot-links">
+            <li><a href="legal.html#privacy"><span>Privacy Policy</span></a></li>
+            <li><a href="legal.html#consumer-health-data"><span>Consumer Health Data</span></a></li>
+            <li><a href="legal.html#terms"><span>Terms &amp; Conditions</span></a></li>
+          </ul>
+        </div>
       </div>
     </div>
-    <p class="foot-legal">© 2026 Lotta, Lda · Rua Morais Soares 75, R/C, <span class="nw">1900-342</span> Lisboa, Portugal</p>
+    <div class="foot-base"><p>© 2026 Lotta, Lda</p><p>Lotta does not replace healthcare professionals.</p></div>
   </div>
+  <script>
+    /* The footer's newsletter box: check the address, hand it to site.js, then say thank you. */
+    (function () {
+      var f = document.getElementById('fn-form'); if (!f) return;
+      var i = document.getElementById('fn-email'), err = document.getElementById('fn-err'), th = document.getElementById('fn-thanks');
+      var OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+      function bad(on) { err.hidden = !on; f.classList.toggle('is-bad', on); if (on) i.setAttribute('aria-invalid', 'true'); else i.removeAttribute('aria-invalid'); }
+      f.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var v = i.value.trim();
+        if (!OK.test(v)) { bad(true); i.focus(); return; }
+        bad(false);
+        if (window.lottaSend) window.lottaSend('newsletter', { email: v });
+        f.hidden = true; th.hidden = false; th.focus({ preventScroll: true });
+      });
+      i.addEventListener('input', function () { if (!err.hidden && OK.test(i.value.trim())) bad(false); });
+    })();
+  </script>
 </footer>
 <script src="site.js" defer></script>
 <script>

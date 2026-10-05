@@ -708,67 +708,95 @@ html.motion .bq-meta::before{animation:bq-pulse 2.6s cubic-bezier(.25,.1,.25,1) 
 @media (prefers-reduced-motion:reduce){ .bq-prog i::after, .bq-glass{transition:none} }
 
 
-/* ============ FAQ (section taken out 1 Oct; markup saved in saved-sections/faq-1oct.html) ============ */
-.faq{position:relative; padding:104px 0 112px}
+/* ============ FAQ: the picture beside the questions ============
+   Back on 5 Oct 2026 as the last section of the page, in the place of the closing sign-up card (saved in
+   saved-sections/closing-card-5oct.html). Layout "2, picture beside the questions" from "Lotta FAQ Layouts", after the membership
+   block on Superpower's home page: the plus becomes a minus, the answer unfolds in a third of a second, and several answers
+   can stay open. The layout it had until 1 Oct is in saved-sections/faq-1oct.html. */
+.faq{position:relative; padding:88px 0 96px}
 .faq-grid{display:grid; gap:36px}
-.faq-list{border-top:1px solid var(--line)}
-.faq-item{border-bottom:1px solid var(--line)}
-.faq-q{width:100%; min-height:76px; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:20px 0; border:0; background:none; text-align:left; cursor:pointer; font-family:var(--f-display); font-size:clamp(1.25rem, 1.05rem + .7vw, 1.65rem); font-weight:400; line-height:1.25; letter-spacing:-.02em; color:var(--ink); border-radius:6px}
-.faq-q:hover .faq-ic{background:rgba(36,29,25,.14)}
-.faq-ic{position:relative; flex:none; width:40px; height:40px; border-radius:50%; background:rgba(36,29,25,.07); color:var(--ink); transition:transform .55s var(--ease), background-color .35s, color .35s}
-.faq-ic::before,.faq-ic::after{content:""; position:absolute; left:50%; top:50%; width:14px; height:1.5px; margin:-.75px 0 0 -7px; border-radius:2px; background:currentColor}
+.faq-grid > *{min-width:0}
+.faq-pic{position:relative; overflow:hidden; border-radius:24px; aspect-ratio:4/3; background:var(--lift)}
+.faq-img{position:absolute; left:0; top:-7%; width:100%; height:114%; max-width:none; object-fit:cover}
+.faq-h{font-size:clamp(2.2rem, 1.4rem + 2.9vw, 3.5rem); line-height:1.05}
+.faq-list{margin-top:32px}
+.faq-item{border-top:1px solid var(--line)}
+.faq-item:last-child{border-bottom:1px solid var(--line)}
+.faq-q{width:100%; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:24px 0; border:0; background:none; text-align:left; cursor:pointer; font-family:var(--f-body); font-size:18px; font-weight:500; line-height:1.3; color:var(--ink); border-radius:6px}
+.faq-ic{position:relative; flex:none; width:16px; height:16px; color:var(--muted); transition:color .3s}
+.faq-ic::before,.faq-ic::after{content:""; position:absolute; left:0; top:50%; width:16px; height:2px; margin-top:-1px; border-radius:2px; background:currentColor; transition:transform .3s, opacity .3s}
 .faq-ic::after{transform:rotate(90deg)}
-.faq-item.open .faq-ic{transform:rotate(135deg); background:var(--blue); color:var(--dark)}
-.faq-a{display:grid; grid-template-rows:1fr; transition:grid-template-rows .6s var(--ease)}
+.faq-item.open .faq-ic::after{transform:rotate(180deg); opacity:0}
+.faq-q:hover .faq-ic{color:var(--ink)}
+.faq-a{display:grid; grid-template-rows:1fr; transition:grid-template-rows .35s ease}
 html.js .faq-item:not(.open) .faq-a{grid-template-rows:0fr}
-.faq-a-in{overflow:hidden}
-html.js .faq-item:not(.open) .faq-a-in{visibility:hidden; transition:visibility 0s .6s}
-.faq-a p{padding:0 48px 26px 0; max-width:62ch; font-size:17px; color:var(--muted)}
-@media (min-width:900px){
-  .faq{padding:160px 0}
-  .faq-grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:64px}
-  .faq-head{position:sticky; top:calc(var(--nav) + 48px); align-self:start}
+.faq-a-in{overflow:hidden; min-height:0}
+html.js .faq-item:not(.open) .faq-a-in{visibility:hidden; transition:visibility 0s .35s}
+.faq-a p{padding:0 36px 24px 0; font-size:17px; line-height:1.55; color:var(--muted)}
+.faq-a p + p{margin-top:-10px}
+.faq-a a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px; border-radius:4px}
+.faq-more{margin-top:26px; font-size:15px; color:var(--muted)}
+.faq-more b{font-weight:600; color:var(--ink); -webkit-user-select:all; user-select:all}
+@media (min-width:1000px){
+  .faq{padding:140px 0 150px}
+  .faq-grid{grid-template-columns:minmax(0,1.37fr) minmax(0,1fr); gap:58px; align-items:start}
+  .faq-pic-wrap{position:sticky; top:96px}
+  .faq-pic{aspect-ratio:1/1; max-height:calc(100vh - 128px)}
+  .faq-side{padding-top:8px}
 }
 
-/* ============ Closing / beta ============ */
-.beta{position:relative; isolation:isolate; overflow:hidden; min-height:100vh; min-height:100svh; padding:128px var(--gut) 120px; display:grid; place-items:center}
-.beta-media{position:absolute; left:0; right:0; top:-8%; bottom:-8%; z-index:-2}
-.beta-media video{width:100%; height:100%; object-fit:cover}
-.beta-media .grain{opacity:.16}
-.beta-shade{position:absolute; inset:0; z-index:-1; background:linear-gradient(180deg, var(--bg) 0%, rgba(249,245,239,.35) 14%, rgba(249,245,239,0) 36%, rgba(249,245,239,0) 66%, rgba(249,245,239,.4) 88%, var(--bg) 100%)}
-.form-card{position:relative; width:100%; max-width:620px; padding:30px 20px 26px; border-radius:32px; background:rgba(249,245,239,.88); -webkit-backdrop-filter:blur(28px) saturate(1.2); backdrop-filter:blur(28px) saturate(1.2); box-shadow:inset 0 0 0 1px rgba(255,255,255,.8), 0 50px 100px -40px rgba(36,29,25,.35)}
-.beta-h{font-size:clamp(2rem, 1.2rem + 2.8vw, 3.6rem)}
-.beta-sub{margin-top:14px; font-size:17px; color:rgba(36,29,25,.86)}
-.beta-sub .meta{display:block; margin-top:4px; font-size:15px; color:var(--muted)}
-.form-card .btn-block{margin-top:26px}
+/* ============ The pop-up's last screen (the closing sign-up card that sat here is in saved-sections/closing-card-5oct.html) ============ */
 .fine{margin-top:16px; font-size:14px; color:var(--muted); text-align:center}
 .thanks{padding:24px 0 8px; text-align:center}
 .thanks[hidden]{display:none}
 .thanks-ic{width:64px; height:64px; margin:0 auto; border-radius:50%; background:var(--blue); color:var(--dark); display:grid; place-items:center}
 .thanks-ic svg{width:28px; height:28px}
 .thanks-t{margin:22px auto 0; max-width:16ch; font-family:var(--f-display); font-size:clamp(1.75rem, 1.3rem + 1.6vw, 2.6rem); line-height:1.08; letter-spacing:-.03em}
-@media (min-width:700px){ .form-card{padding:48px 48px 36px} }
 
-/* ============ Footer ============ */
-.foot{position:relative; padding:96px 0 28px; overflow:hidden}
-.foot-glow{position:absolute; left:50%; bottom:-70vw; width:130vw; height:100vw; margin-left:-65vw; border-radius:50%; background:radial-gradient(closest-side, rgba(255,100,22,.22), rgba(255,150,36,.07) 55%, rgba(255,150,36,0)); pointer-events:none}
-.foot .wrap{position:relative}
-.foot-top{display:grid; gap:36px}
-.foot-tag{max-width:13ch; font-family:var(--f-display); font-size:clamp(1.8rem, 1.2rem + 2vw, 3.1rem); line-height:1.04; letter-spacing:-.035em}
-.foot-links{display:grid; gap:0}
-.foot-links a{display:inline-flex; align-items:center; gap:8px; min-height:44px; font-size:16px; color:rgba(36,29,25,.82); transition:color .3s; border-radius:6px}
+/* ============ Footer: a card that rises over the sunrise ============
+   Chosen on 5 Oct 2026 ("2, the rising card", after Superpower's footer), with her six changes: groups in the order
+   Lotta, Connect, Legal; their titles small, capital and orange; "Consumer Health Data" without "(US)"; no "Join the beta";
+   no address; the sign-up as one box with the button inside it.
+   The same footer is on the inner pages (make-pages.py, pages.css). Since 5 Oct (evening) the sunrise behind it is the still
+   picture here too: Margarida took the moving one out together with the closing sign-up card. */
+.foot{position:relative; isolation:isolate; padding:clamp(150px, 17vw, 240px) clamp(10px, 1.4vw, 20px) clamp(10px, 1.4vw, 20px); background:url(assets/sunrise-poster.jpg) 50% 42%/cover no-repeat}
+.foot::before{content:""; position:absolute; inset:0 0 auto; height:clamp(120px, 13vw, 190px); z-index:-1; background:linear-gradient(180deg, var(--bg) 0, rgba(249,245,239,.5) 45%, rgba(249,245,239,0))}
+.foot-card{padding:clamp(28px, 4vw, 60px) clamp(22px, 3.4vw, 52px) 0; border-radius:28px; background:var(--ww); box-shadow:0 -30px 80px -50px rgba(36,29,25,.4)}
+.foot-top{display:grid; gap:44px}
+.foot-brand{display:grid; gap:18px; align-content:start; max-width:460px; min-width:0}
+.foot-brand > *{min-width:0}
+.foot-logo{display:block; width:150px; color:var(--orange); border-radius:8px}
+.foot-say{font-size:15px; line-height:1.5; color:var(--muted)}
+.foot-say b{color:var(--ink); font-weight:600}
+.foot-nl{display:flex; align-items:center; min-height:56px; padding:5px 5px 5px 22px; border-radius:999px; background:#fff; box-shadow:inset 0 0 0 1px rgba(36,29,25,.22); transition:box-shadow .25s}
+.foot-nl:focus-within{box-shadow:inset 0 0 0 2px var(--blue-ink)}
+.foot-nl.is-bad{box-shadow:inset 0 0 0 2px #B5470F}
+.foot-nl input{flex:1; min-width:0; height:46px; padding:0; border:0; border-radius:0; background:transparent; font-size:16px; color:var(--ink); outline:0; -webkit-appearance:none; appearance:none}
+.foot-nl input::placeholder{color:rgba(36,29,25,.62)}
+.foot-nl .btn{flex:none; background:var(--orange); color:#fff}
+.foot-nl .btn:hover{background:#EE5710}
+.foot-err{display:flex; align-items:center; gap:8px; margin-top:-6px; font-size:14px; color:#B5470F}
+.foot-err::before{content:""; flex:none; width:6px; height:6px; border-radius:50%; background:currentColor}
+.foot-thanks{display:flex; align-items:center; gap:12px; min-height:56px; font-size:16px; font-weight:600}
+.foot-thanks .ok{flex:none; width:36px; height:36px; border-radius:50%; background:var(--blue); color:var(--dark); display:grid; place-items:center}
+.foot-thanks .ok svg{width:18px; height:18px}
+.foot-err[hidden],.foot-thanks[hidden],.foot-nl[hidden]{display:none}
+.foot-cols{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:32px 24px}
+.foot-col{display:grid; gap:10px; align-content:start; min-width:0}
+.foot-col:last-child{grid-column:1 / -1}
+.foot-lab{font-family:var(--f-display); font-size:12px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; line-height:1.2; color:var(--orange)}
+.foot-links{display:grid; gap:0; align-content:start}
+.foot-links a{display:inline-flex; align-items:center; gap:8px; min-height:40px; font-size:16px; color:rgba(36,29,25,.86); transition:color .3s; border-radius:6px}
 .foot-links a:hover{color:var(--ink)}
-.foot-links svg{width:14px; height:14px; opacity:.6}
-.foot-contact{display:grid; gap:10px; align-content:start}
-.foot-mail{font-size:17px; font-weight:600; -webkit-user-select:all; user-select:all; width:max-content; max-width:100%}
-.foot-note{font-size:16px; color:var(--muted)}
-.foot-logo-wrap{margin-top:64px; overflow:hidden; padding-bottom:1%}
-.foot-logo{width:100%; color:var(--ink)}
-.foot-legal{margin-top:24px; padding-top:20px; border-top:1px solid var(--line); font-size:14px; color:var(--muted)}
-@media (min-width:900px){
-  .foot{padding:140px 0 32px}
-  .foot-top{grid-template-columns:minmax(0,1.5fr) minmax(0,.7fr) minmax(0,1fr); gap:48px}
-  .foot-logo-wrap{margin-top:96px}
+.foot-links a span{padding-bottom:1px; background:linear-gradient(currentColor, currentColor) 100% 100%/0 1.5px no-repeat; transition:background-size .55s var(--ease)}
+@media (hover:hover){ .foot-links a:hover span{background-position:0 100%; background-size:100% 1.5px} }
+.foot-links svg{flex:none; width:18px; height:18px; opacity:.8}
+.foot-mail{display:flex; align-items:center; min-height:40px; font-size:16px; font-weight:600; -webkit-user-select:all; user-select:all}
+.foot-base{margin-top:48px; padding:22px 0 26px; border-top:1px solid var(--line); display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px 32px; font-size:13px; line-height:1.5; color:var(--muted)}
+@media (min-width:1000px){
+  .foot-top{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); gap:72px}
+  .foot-cols{grid-template-columns:repeat(3, minmax(0,1fr))}
+  .foot-col:last-child{grid-column:auto}
 }
 
 /* ============ Reduced motion ============ */
@@ -934,6 +962,7 @@ html.motion .phone-lift{will-change:transform}
       <a href="#inside">What's inside</a>
       <a href="#journey">The journey</a>
       <a href="blog/">Blog</a>
+      <a href="#faq">FAQ</a>
     </nav>
     <div class="nav-cta">
       <a class="btn btn-primary btn-sm" href="#beta">Join the beta</a>
@@ -951,6 +980,7 @@ html.motion .phone-lift{will-change:transform}
     <a href="#inside">What's inside<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
     <a href="#journey">The journey<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
     <a href="blog/">Blog<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+    <a href="#faq">FAQ<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
   </nav>
   <a class="btn btn-primary btn-block" href="#beta">Join the beta</a>
 </div>
@@ -1006,7 +1036,7 @@ html.motion .phone-lift{will-change:transform}
       </div>
       <h3 class="wi-t">Personalized for you</h3>
       <ul class="wi-pts">
-        <li>Keep track of your day, with what matters now</li>
+        <li>Keep track of your day-to-day, all in one place</li>
         <li>Created for where you are: starting, active, tapering and maintenance</li>
         <li>Personalized insights based on your journey</li>
       </ul>
@@ -1035,8 +1065,8 @@ html.motion .phone-lift{will-change:transform}
       <h3 class="wi-t">Eat with confidence</h3>
       <ul class="wi-pts">
         <li>Log your food by picture, barcode or manually</li>
-        <li>Focus on what matters: protein, fiber and hydration</li>
-        <li>Reminders to eat and drink</li>
+        <li>Set reminders to stay on track with your macros and hydration</li>
+        <li>Track your weekly meals and save recipes that help you keep things easy</li>
       </ul>
     </li>
     <!-- 4 -->
@@ -1046,7 +1076,7 @@ html.motion .phone-lift{will-change:transform}
       </div>
       <h3 class="wi-t">Learn as you go</h3>
       <ul class="wi-pts">
-        <li>Evidence-based information, matched to where you are on your journey</li>
+        <li>Evidence-based articles, for where you are on your journey</li>
         <li>Insights based on your symptoms, eating habits and your body</li>
         <li>Tips and tricks for real life on <span class="nw">GLP-1s</span></li>
       </ul>
@@ -1070,11 +1100,11 @@ html.motion .phone-lift{will-change:transform}
         <i class="jp-stem" style="--i:0; left:0; top:60%"></i><i class="jp-stem" style="--i:1; left:20.357%; top:30%"></i><i class="jp-stem" style="--i:2; left:40.714%; top:70%"></i><i class="jp-stem" style="--i:3; left:61.071%; top:35%"></i><i class="jp-stem" style="--i:4; left:81.429%; top:55%"></i><i class="jp-dot" style="--i:0; left:0; top:60%"></i><i class="jp-dot" style="--i:1; left:20.357%; top:30%"></i><i class="jp-dot" style="--i:2; left:40.714%; top:70%"></i><i class="jp-dot" style="--i:3; left:61.071%; top:35%"></i><i class="jp-dot" style="--i:4; left:81.429%; top:55%"></i>
       </div>
       <ol class="jp-stops">
-        <li class="jp-stop" style="--i:0"><svg class="jp-seg" viewBox="0 0 40 100" preserveAspectRatio="none" aria-hidden="true"><path d="M20 0 C46 30 46 70 20 100"/></svg><span class="jp-num">01</span><h3 class="jp-name">Considering</h3><p class="jp-q">“Is this right for me? What should I expect?”</p></li>
-        <li class="jp-stop" style="--i:1"><svg class="jp-seg" viewBox="0 0 40 100" preserveAspectRatio="none" aria-hidden="true"><path d="M20 0 C-6 30 -6 70 20 100"/></svg><span class="jp-num">02</span><h3 class="jp-name">Starting</h3><p class="jp-q">“How do I actually do this in real life?”</p></li>
-        <li class="jp-stop" style="--i:2"><svg class="jp-seg" viewBox="0 0 40 100" preserveAspectRatio="none" aria-hidden="true"><path d="M20 0 C46 30 46 70 20 100"/></svg><span class="jp-num">03</span><h3 class="jp-name">On treatment</h3><p class="jp-q">“Is this normal? Am I doing it wrong?”</p></li>
-        <li class="jp-stop" style="--i:3"><svg class="jp-seg" viewBox="0 0 40 100" preserveAspectRatio="none" aria-hidden="true"><path d="M20 0 C-6 30 -6 70 20 100"/></svg><span class="jp-num">04</span><h3 class="jp-name">Tapering</h3><p class="jp-q">“My body changed, but my head has not caught up.”</p></li>
-        <li class="jp-stop" style="--i:4"><svg class="jp-seg" viewBox="0 0 40 100" preserveAspectRatio="none" aria-hidden="true"><path d="M20 0 C46 30 42 64 30 100"/></svg><span class="jp-num">05</span><h3 class="jp-name">Maintaining</h3><p class="jp-q">“What happens now? Will I regain?”</p></li>
+        <li class="jp-stop" style="--i:0"><svg class="jp-seg" viewBox="0 0 40 100" preserveAspectRatio="none" aria-hidden="true"><path d="M20 0 C46 30 46 70 20 100"/></svg><span class="jp-num">01</span><h3 class="jp-name">Considering</h3><p class="jp-q">“Is it right for me? What should I consider?”</p></li>
+        <li class="jp-stop" style="--i:1"><svg class="jp-seg" viewBox="0 0 40 100" preserveAspectRatio="none" aria-hidden="true"><path d="M20 0 C-6 30 -6 70 20 100"/></svg><span class="jp-num">02</span><h3 class="jp-name">Starting</h3><p class="jp-q">“How can I prepare for it now?”</p></li>
+        <li class="jp-stop" style="--i:2"><svg class="jp-seg" viewBox="0 0 40 100" preserveAspectRatio="none" aria-hidden="true"><path d="M20 0 C46 30 46 70 20 100"/></svg><span class="jp-num">03</span><h3 class="jp-name">On treatment</h3><p class="jp-q">“How do I balance everything?”</p></li>
+        <li class="jp-stop" style="--i:3"><svg class="jp-seg" viewBox="0 0 40 100" preserveAspectRatio="none" aria-hidden="true"><path d="M20 0 C-6 30 -6 70 20 100"/></svg><span class="jp-num">04</span><h3 class="jp-name">Tapering</h3><p class="jp-q">“My habits changed, but my head has not caught up.”</p></li>
+        <li class="jp-stop" style="--i:4"><svg class="jp-seg" viewBox="0 0 40 100" preserveAspectRatio="none" aria-hidden="true"><path d="M20 0 C46 30 42 64 30 100"/></svg><span class="jp-num">05</span><h3 class="jp-name">Maintaining</h3><p class="jp-q">“What happens now? What should I do to keep my results?”</p></li>
       </ol>
     </div>
     <p class="j-close">Progress isn't linear. Support shouldn't be either.</p>
@@ -1136,20 +1166,45 @@ html.motion .phone-lift{will-change:transform}
   </div>
 </section>
 
-<!-- 7. Questions and answers: taken out 1 Oct 2026 until the answers are final; saved as is in saved-sections/faq-1oct.html -->
-
-<!-- ============ 8. Closing sign-up ============ -->
-<section class="beta" id="beta" aria-labelledby="beta-h">
-  <div class="beta-media" aria-hidden="true">
-    <video class="beta-video" data-video="sunrise" muted playsinline loop autoplay preload="metadata" poster="assets/sunrise-poster.jpg" aria-hidden="true"></video>
-    <div class="grain"></div>
-  </div>
-  <div class="beta-shade" aria-hidden="true"></div>
-
-  <div class="form-card rv">
-    <h2 class="h2 beta-h" id="beta-h">Be one of the first to try Lotta.</h2>
-    <p class="beta-sub">Help shape Lotta.<span class="meta">iOS only · opening November</span></p>
-    <a class="btn btn-primary btn-block" href="#beta">Join the beta<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+<!-- ============ 7. Questions and answers ============ -->
+<!-- The six questions and answers are Margarida's, of 5 Oct 2026, word for word (saved-sections/faq-answers-5oct.md):
+     change them only on her word. "here" opens the beta pop-up, like every link to #beta on this page.
+     The picture is the one of the beta pop-up. Each question opens and closes by itself; the first is open from the start. -->
+<section class="faq" id="faq" aria-labelledby="faq-h">
+  <div class="wrap faq-grid">
+    <div class="faq-pic-wrap">
+      <div class="faq-pic" aria-hidden="true"><img class="faq-img" src="assets/beta-popup.webp" width="1880" height="1253" alt="" loading="lazy" decoding="async"></div>
+    </div>
+    <div class="faq-side">
+      <h2 class="h2 faq-h ph" id="faq-h">Questions and answers</h2>
+      <div class="faq-list" data-stagger>
+        <div class="faq-item open">
+          <h3><button class="faq-q" type="button" id="fq1" aria-expanded="true" aria-controls="fa1"><span>What is Lotta and what is it for?</span><span class="faq-ic" aria-hidden="true"></span></button></h3>
+          <div class="faq-a" id="fa1" role="region" aria-labelledby="fq1"><div class="faq-a-in"><p>Lotta is a long-term companion app designed to help people navigate every stage of their <span class="nw">GLP-1</span> journey, combining evidence-based guidance, practical tools and compassionate support to create lasting lifestyle change.</p></div></div>
+        </div>
+        <div class="faq-item">
+          <h3><button class="faq-q" type="button" id="fq2" aria-expanded="false" aria-controls="fa2"><span>What medications and brands does it support?</span><span class="faq-ic" aria-hidden="true"></span></button></h3>
+          <div class="faq-a" id="fa2" role="region" aria-labelledby="fq2"><div class="faq-a-in"><p>Lotta covers all approved brands available on the market, based on your location, as well as all available treatment types, including custom dosing.</p></div></div>
+        </div>
+        <div class="faq-item">
+          <h3><button class="faq-q" type="button" id="fq3" aria-expanded="false" aria-controls="fa3"><span>Is Lotta for active <span class="nw">GLP-1</span> takers only?</span><span class="faq-ic" aria-hidden="true"></span></button></h3>
+          <div class="faq-a" id="fa3" role="region" aria-labelledby="fq3"><div class="faq-a-in"><p>No. Lotta is built with the entire journey for <span class="nw">GLP-1</span> takers in mind, from the moment you start considering it to after you've entered maintenance.</p></div></div>
+        </div>
+        <div class="faq-item">
+          <h3><button class="faq-q" type="button" id="fq4" aria-expanded="false" aria-controls="fa4"><span>Does Lotta replace my clinician?</span><span class="faq-ic" aria-hidden="true"></span></button></h3>
+          <div class="faq-a" id="fa4" role="region" aria-labelledby="fq4"><div class="faq-a-in"><p>No. Lotta is not a medical device and it does not diagnose, predict, advise, identify symptoms, provide any treatment plans or suggestions. In an emergency, call your local emergency number or go to your nearest emergency department.</p></div></div>
+        </div>
+        <div class="faq-item">
+          <h3><button class="faq-q" type="button" id="fq5" aria-expanded="false" aria-controls="fa5"><span>What happens during the beta?</span><span class="faq-ic" aria-hidden="true"></span></button></h3>
+          <div class="faq-a" id="fa5" role="region" aria-labelledby="fq5"><div class="faq-a-in"><p>During the beta we will give testers free access to the app and collect your feedback on the features, how it looks, what you'd like to see and what feels helpful to you. Participating users will receive a link via Apple's TestFlight and will be able to download the beta app and sign up.</p><p>You can apply for the beta <a href="#beta">here</a>. Please note that the beta will only be available for iOS.</p></div></div>
+        </div>
+        <div class="faq-item">
+          <h3><button class="faq-q" type="button" id="fq6" aria-expanded="false" aria-controls="fa6"><span>How does Lotta protect my personal data?</span><span class="faq-ic" aria-hidden="true"></span></button></h3>
+          <div class="faq-a" id="fa6" role="region" aria-labelledby="fq6"><div class="faq-a-in"><p>We don't sell it, we don't use it for targeted advertising, and we don't use it to train AI models. You can ask for a copy of your data, correct it or delete it by reaching out to <span class="nw">privacy@lotta.health</span>. You can find further information on our <a href="legal.html#privacy">Privacy Policy</a>.</p></div></div>
+        </div>
+      </div>
+      <p class="faq-more rv"><span class="ph">Still have a question?</span> <b>hello@lotta.health</b></p>
+    </div>
   </div>
 </section>
 
@@ -1241,29 +1296,68 @@ html.motion .phone-lift{will-change:transform}
   </div>
 </dialog>
 
-<!-- ============ 9. Footer ============ -->
-<footer class="foot">
-  <div class="foot-glow" aria-hidden="true"></div>
-  <div class="wrap">
-    <div class="foot-top rv">
-      <p class="foot-tag">For life on and after <span class="nw">GLP-1</span>.</p>
-      <ul class="foot-links">
-        <li><a href="https://www.instagram.com/joinlotta/" target="_blank" rel="noopener">Instagram<svg aria-hidden="true"><use href="#i-out"/></svg></a></li>
-        <li><a href="https://www.linkedin.com/company/lotta-health" target="_blank" rel="noopener">LinkedIn<svg aria-hidden="true"><use href="#i-out"/></svg></a></li>
-        <li><a href="blog/">Blog</a></li>
-        <li><a href="legal.html#privacy">Privacy Policy</a></li>
-        <li><a href="legal.html#consumer-health-data">Consumer Health Data (US)</a></li>
-        <li><a href="legal.html#terms">Terms &amp; Conditions</a></li>
-      </ul>
-      <div class="foot-contact">
-        <p class="foot-mail">hello@lotta.health</p>
-        <p class="foot-note">Lotta does not replace healthcare professionals.</p>
+<!-- ============ 8. Footer: the card rises over the still sunrise (the closing sign-up card and the film are in saved-sections/closing-card-5oct.html) ============ -->
+  <footer class="foot">
+    <div class="foot-card rv">
+      <div class="foot-top">
+        <div class="foot-brand">
+          <a class="foot-logo" href="#top" aria-label="Lotta, back to the top"><span class="logo" role="img" aria-hidden="true"></span></a>
+          <p class="foot-say"><label for="fn-email"><b>Get the new articles by e-mail.</b></label> New posts about your journey, as soon as they're out.</p>
+          <form class="foot-nl" id="fn-form" novalidate>
+            <input id="fn-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="Your e-mail" required aria-describedby="fn-err">
+            <button class="btn btn-primary btn-sm" type="submit">Subscribe</button>
+          </form>
+          <p class="foot-err" id="fn-err" hidden>Please enter a valid e-mail address.</p>
+          <p class="foot-thanks" id="fn-thanks" tabindex="-1" hidden><span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12.6 4.4 4.4L19 7.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Thank you. We've sent you a welcome e-mail.</p>
+        </div>
+        <div class="foot-cols">
+          <div class="foot-col">
+            <h2 class="foot-lab">Lotta</h2>
+            <ul class="foot-links">
+              <li><a href="#inside"><span>What's inside</span></a></li>
+              <li><a href="#journey"><span>The journey</span></a></li>
+              <li><a href="blog/"><span>Blog</span></a></li>
+            </ul>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-lab">Connect</h2>
+            <ul class="foot-links">
+              <li><a href="https://www.instagram.com/joinlotta/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3.9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="7" r="1.15" fill="currentColor"/></svg><span>Instagram</span></a></li>
+              <li><a href="https://www.linkedin.com/company/lotta-health" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.1 10.6v5.9M11.6 16.5v-5.9M11.6 13.4c0-1.7.9-2.9 2.3-2.9 1.3 0 2 .95 2 2.6v3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.1" cy="7.7" r="1.05" fill="currentColor"/></svg><span>LinkedIn</span></a></li>
+              <li><p class="foot-mail">hello@lotta.health</p></li>
+            </ul>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-lab">Legal</h2>
+            <ul class="foot-links">
+              <li><a href="legal.html#privacy"><span>Privacy Policy</span></a></li>
+              <li><a href="legal.html#consumer-health-data"><span>Consumer Health Data</span></a></li>
+              <li><a href="legal.html#terms"><span>Terms &amp; Conditions</span></a></li>
+            </ul>
+          </div>
+        </div>
       </div>
+      <div class="foot-base"><p>© 2026 Lotta, Lda</p><p>Lotta does not replace healthcare professionals.</p></div>
     </div>
-    <div class="foot-logo-wrap"><span class="logo foot-logo" role="img" aria-label="Lotta"></span></div>
-    <p class="foot-legal">© 2026 Lotta, Lda · Rua Morais Soares 75, R/C, <span class="nw">1900-342</span> Lisboa, Portugal</p>
-  </div>
-</footer>
+    <script>
+      /* The footer's newsletter box: check the address, hand it to site.js, then say thank you. */
+      (function () {
+        var f = document.getElementById('fn-form'); if (!f) return;
+        var i = document.getElementById('fn-email'), err = document.getElementById('fn-err'), th = document.getElementById('fn-thanks');
+        var OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        function bad(on) { err.hidden = !on; f.classList.toggle('is-bad', on); if (on) i.setAttribute('aria-invalid', 'true'); else i.removeAttribute('aria-invalid'); }
+        f.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var v = i.value.trim();
+          if (!OK.test(v)) { bad(true); i.focus(); return; }
+          bad(false);
+          if (window.lottaSend) window.lottaSend('newsletter', { email: v });
+          f.hidden = true; th.hidden = false; th.focus({ preventScroll: true });
+        });
+        i.addEventListener('input', function () { if (!err.hidden && OK.test(i.value.trim())) bad(false); });
+      })();
+    </script>
+  </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -1345,7 +1439,7 @@ html.motion .phone-lift{will-change:transform}
 
   /* ---------- Menu bar ---------- */
   var nav = q('#nav');
-  /* "Blog" leads to the blog page, not to a part of this page, so it has no section to follow */
+  /* "Blog" leads to the blog page, not to a part of this page, so it has no section to follow; "FAQ" follows the last section */
   var navLinks = qa('.nav-links a'), spy = navLinks.map(function (a) { var h = a.getAttribute('href'); return h.charAt(0) === '#' ? q(h) : null; });
   function setNav() {
     var y = window.scrollY || html.scrollTop, deskNav = window.innerWidth >= 900;
@@ -1418,15 +1512,15 @@ html.motion .phone-lift{will-change:transform}
     setTimeout(function () { try { focusEl.focus({ preventScroll: true }); } catch (_) {} }, lenis ? 1650 : 0);
   });
 
-  /* ---------- FAQ: one open at a time ---------- */
-  var faqItems = qa('.faq-item'), refreshT;
-  function setOpen(it, on) { it.classList.toggle('open', on); q('.faq-q', it).setAttribute('aria-expanded', on ? 'true' : 'false'); }
-  faqItems.forEach(function (it) {
-    q('.faq-q', it).addEventListener('click', function () {
-      var wasOpen = it.classList.contains('open');
-      faqItems.forEach(function (o) { setOpen(o, false); });
-      if (!wasOpen) setOpen(it, true);
-      if (window.ScrollTrigger && motion) { clearTimeout(refreshT); refreshT = setTimeout(function () { ScrollTrigger.refresh(); }, 650); }
+  /* ---------- FAQ: each question opens and closes by itself; several can stay open ---------- */
+  var refreshT;
+  qa('.faq-item').forEach(function (it) {
+    var b = q('.faq-q', it);
+    b.addEventListener('click', function () {
+      var on = !it.classList.contains('open');
+      it.classList.toggle('open', on); b.setAttribute('aria-expanded', on ? 'true' : 'false');
+      /* the page got taller or shorter: let the scroll-driven movement measure again once the answer has finished moving */
+      if (window.ScrollTrigger && motion) { clearTimeout(refreshT); refreshT = setTimeout(function () { ScrollTrigger.refresh(); }, 420); }
     });
   });
 
@@ -1775,8 +1869,12 @@ html.motion .phone-lift{will-change:transform}
     qa('[data-stagger]').forEach(function (g) {
       gsap.from(g.children, { y: 48, autoAlpha: 0, duration: 1.1, ease: 'expo.out', stagger: .09, scrollTrigger: { trigger: g, start: 'top 88%', once: true } });
     });
-    gsap.from('.foot-logo', { yPercent: 60, duration: 1.4, ease: 'expo.out', scrollTrigger: { trigger: '.foot-logo-wrap', start: 'top 95%', once: true } });
-    gsap.fromTo('.beta-media', { yPercent: -6, scale: 1.14 }, { yPercent: 6, scale: 1, ease: 'none', scrollTrigger: { trigger: '.beta', start: 'top bottom', end: 'bottom top', scrub: true } });
+    /* the FAQ's picture opens up as it arrives, and drifts slightly inside its frame while the section passes */
+    var fp = q('.faq-pic');
+    if (fp) {
+      gsap.fromTo(fp, { clipPath: 'inset(7% 7% 7% 7% round 24px)' }, { clipPath: 'inset(0% 0% 0% 0% round 24px)', duration: 1.4, ease: 'expo.out', clearProps: 'clipPath', scrollTrigger: { trigger: fp, start: 'top 88%', once: true } });
+      gsap.fromTo('.faq-img', { yPercent: -4.5, scale: 1.12 }, { yPercent: 4.5, scale: 1, ease: 'none', scrollTrigger: { trigger: '.faq', start: 'top bottom', end: 'bottom top', scrub: true } });
+    }
   }
 
   function tilt() {
@@ -1800,7 +1898,7 @@ html.motion .phone-lift{will-change:transform}
     try { gsap.globalTimeline.clear(); } catch (_) {}
     try { if (lenis) { lenis.destroy(); lenis = null; } } catch (_) {}
     html.classList.remove('motion'); html.classList.remove('intro');
-    try { gsap.set(qa('.loader,.loader-num,.sun,.sun-in,.sun-v,.phone-lift,.hero-copy,.phone-rig,.h1 .w > span,.lede,.cta-row,.beta-line,.nav-in,.nav-links,.nav-cta,.not-t,.st,.rv,[data-stagger] > *,.w > span,.foot-logo,.beta-media'), { clearProps: 'all' }); } catch (_) {}
+    try { gsap.set(qa('.loader,.loader-num,.sun,.sun-in,.sun-v,.phone-lift,.hero-copy,.phone-rig,.h1 .w > span,.lede,.cta-row,.beta-line,.nav-in,.nav-links,.nav-cta,.not-t,.st,.rv,[data-stagger] > *,.w > span,.faq-pic,.faq-img'), { clearProps: 'all' }); } catch (_) {}
   }
 
   try {

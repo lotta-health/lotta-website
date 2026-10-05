@@ -62,7 +62,7 @@ if (!existsSync(SHELL)) { console.error(`Cannot find ${SHELL} (the page the menu
 const shellSrc = readFileSync(SHELL, 'utf8');
 const grab = (re, what) => { const m = shellSrc.match(re); if (!m) { console.error(`Could not find the ${what} in ${SHELL}.`); process.exit(1); } return m[0]; };
 const up = html => html.replace(/\b(href|src)="(?!#|\/|https?:|mailto:|tel:|data:)([^"]*)"/g, '$1="../$2"');   // the blog pages sit one folder down
-const current = html => html.replace(/ aria-current="page"/g, '').replace(/(<a href="[^"]*blog\/(?:index\.html)?")>Blog</g, '$1 aria-current="page">Blog<');
+const current = html => html.replace(/ aria-current="page"/g, '').replace(/(<a href="[^"]*blog\/(?:index\.html)?")>(<span>)?Blog</g, '$1 aria-current="page">$2Blog<');
 const NAV = current(up(grab(/<header class="nav">[\s\S]*?<\/header>/, 'menu')));
 const FOOT = current(up(grab(/<footer class="foot">[\s\S]*?<\/footer>/, 'footer')));
 const ICON = (shellSrc.match(/<link rel="icon"[^>]*>/) || [''])[0];
@@ -240,12 +240,8 @@ const NL_FORM = `<form class="nl-form" id="nl-form" novalidate>
         </form>
         <p class="nl-err" id="nl-err" hidden>Please enter a valid e-mail address.</p>
         <p class="nl-thanks" id="nl-thanks" tabindex="-1" hidden>Thank you. We've sent you a welcome e-mail.</p>`;
-const BAND = `<section class="bl-band" aria-labelledby="bl-band-h">
-        <div><h2 id="bl-band-h"><span class="ph">Get new articles in your inbox.</span></h2><p><span class="ph">One e-mail when something new is out. Unsubscribe at any time.</span></p></div>
-        <div>
-        ${NL_FORM}
-        </div>
-      </section>`;
+// The almond sign-up box that used to close the blog page and every article was taken out on 5 Oct 2026:
+// the footer now carries the newsletter sign-up on every page.
 const EMPTY = `<section class="jr-empty" aria-labelledby="jr-empty-h">
         <h2 id="jr-empty-h"><span class="ph">The first articles are on their way.</span></h2>
         <p><span class="ph">Get them in your inbox as soon as they are out.</span></p>
@@ -290,11 +286,11 @@ function listPage() {
         <h1 class="bl-title">${esc(BLOG.name)}</h1>
         <p class="bl-sub">${txt(BLOG.sub)}</p>${pills}
       </header>
-      ${posts.length ? `<div class="bl-main" id="bl-main">${drawMain(lean)}</div>\n      ${BAND}` : EMPTY}
+      ${posts.length ? `<div class="bl-main" id="bl-main">${drawMain(lean)}</div>` : EMPTY}
     </div>
   </div>
 </main>
-` + TAIL((posts.length ? `<script type="application/json" id="bl-data">${json(lean)}</script>\n<script src="../blog.js" defer></script>\n` : '') + NL_JS);
+` + TAIL(posts.length ? `<script type="application/json" id="bl-data">${json(lean)}</script>\n<script src="../blog.js" defer></script>\n` : NL_JS);   // the small sign-up script is only needed while the blog is empty
 }
 
 /* ---------- one article ---------- */
@@ -329,11 +325,10 @@ ${p.html}
         <h2 class="bl-h" id="art-more-h">Keep reading</h2>
         <ul class="bl-grid">${drawCards(others)}</ul>
       </section>` : ''}
-      ${BAND}
     </div>
   </article>
 </main>
-` + TAIL(NL_JS + `
+` + TAIL(`
 <script>
 (function () {
   var b = document.getElementById('art-share'); if (!b) return;

@@ -96,22 +96,46 @@ html.show-ph .ph{background:rgba(255,150,36,.30); box-shadow:0 0 0 2px rgba(255,
 [hidden]{display:none!important}
 @media (min-width:900px){ .jr-empty{padding:72px 48px} }
 
-/* Footer */
-.foot{position:relative; padding:96px 0 28px; overflow:hidden; border-top:1px solid var(--line)}
-.foot-top{display:grid; gap:36px}
-.foot-tag{max-width:13ch; font-family:var(--f-display); font-size:clamp(1.8rem, 1.2rem + 2vw, 3.1rem); line-height:1.04; letter-spacing:-.035em}
-.foot-links{padding:0; list-style:none; display:grid}
-.foot-links a{display:inline-flex; align-items:center; gap:8px; min-height:44px; font-size:16px; color:rgba(36,29,25,.82); text-decoration:none; border-radius:6px}
+/* Footer: the same card as on the home page (option-b.html), chosen on 5 Oct 2026 ("2, the rising card").
+   On the home page it rises over the sunrise that closes the page; here it brings a band of that sunrise with it. */
+.foot{position:relative; isolation:isolate; padding:clamp(150px, 17vw, 240px) clamp(10px, 1.4vw, 20px) clamp(10px, 1.4vw, 20px); background:url(assets/sunrise-poster.jpg) 50% 42%/cover no-repeat}
+.foot::before{content:""; position:absolute; inset:0 0 auto; height:clamp(120px, 13vw, 190px); z-index:-1; background:linear-gradient(180deg, var(--bg) 0, rgba(249,245,239,.5) 45%, rgba(249,245,239,0))}
+.foot-card{padding:clamp(28px, 4vw, 60px) clamp(22px, 3.4vw, 52px) 0; border-radius:28px; background:var(--ww); box-shadow:0 -30px 80px -50px rgba(36,29,25,.4)}
+.foot-top{display:grid; gap:44px}
+.foot-brand{display:grid; gap:18px; align-content:start; max-width:460px; min-width:0}
+.foot-brand > *{min-width:0}
+.foot-logo{display:block; width:150px; color:var(--orange); border-radius:8px}
+.foot-say{font-size:15px; line-height:1.5; color:var(--muted)}
+.foot-say b{color:var(--ink); font-weight:600}
+.foot-nl{display:flex; align-items:center; min-height:56px; padding:5px 5px 5px 22px; border-radius:999px; background:#fff; box-shadow:inset 0 0 0 1px rgba(36,29,25,.22); transition:box-shadow .25s}
+.foot-nl:focus-within{box-shadow:inset 0 0 0 2px var(--blue-ink)}
+.foot-nl.is-bad{box-shadow:inset 0 0 0 2px #B5470F}
+.foot-nl input{flex:1; min-width:0; height:46px; padding:0; border:0; border-radius:0; background:transparent; font-size:16px; color:var(--ink); outline:0; -webkit-appearance:none; appearance:none}
+.foot-nl input::placeholder{color:rgba(36,29,25,.62)}
+.foot-nl .btn{flex:none; background:var(--orange); color:#fff}
+.foot-nl .btn:hover{background:#EE5710}
+.foot-err{display:flex; align-items:center; gap:8px; margin-top:-6px; font-size:14px; color:#B5470F}
+.foot-err::before{content:""; flex:none; width:6px; height:6px; border-radius:50%; background:currentColor}
+.foot-thanks{display:flex; align-items:center; gap:12px; min-height:56px; font-size:16px; font-weight:600}
+.foot-thanks .ok{flex:none; width:36px; height:36px; border-radius:50%; background:var(--blue); color:var(--dark); display:grid; place-items:center}
+.foot-thanks .ok svg{width:18px; height:18px}
+.foot-cols{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:32px 24px}
+.foot-col{display:grid; gap:10px; align-content:start; min-width:0}
+.foot-col:last-child{grid-column:1 / -1}
+.foot-lab{font-family:var(--f-display); font-size:12px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; line-height:1.2; color:var(--orange)}
+.foot-links{padding:0; list-style:none; display:grid; gap:0; align-content:start}
+.foot-links a{display:inline-flex; align-items:center; gap:8px; min-height:40px; font-size:16px; color:rgba(36,29,25,.86); text-decoration:none; transition:color .3s; border-radius:6px}
 .foot-links a:hover{color:var(--ink)}
 .foot-links a[aria-current="page"]{color:var(--ink); font-weight:600}
-.foot-links svg{width:14px; height:14px; opacity:.6}
-.foot-contact{display:grid; gap:10px; align-content:start}
-.foot-mail{font-size:17px; font-weight:600}
-.foot-note{font-size:16px; color:var(--muted)}
-.foot-legal{margin-top:64px; padding-top:20px; border-top:1px solid var(--line); font-size:14px; color:var(--muted)}
-@media (min-width:900px){
-  .foot{padding:120px 0 32px}
-  .foot-top{grid-template-columns:minmax(0,1.5fr) minmax(0,.7fr) minmax(0,1fr); gap:48px}
+.foot-links a span{padding-bottom:1px; background:linear-gradient(currentColor, currentColor) 100% 100%/0 1.5px no-repeat; transition:background-size .55s var(--ease)}
+@media (hover:hover){ .foot-links a:hover span{background-position:0 100%; background-size:100% 1.5px} }
+.foot-links svg{flex:none; width:18px; height:18px; opacity:.8}
+.foot-mail{display:flex; align-items:center; min-height:40px; font-size:16px; font-weight:600; -webkit-user-select:all; user-select:all}
+.foot-base{margin-top:48px; padding:22px 0 26px; border-top:1px solid var(--line); display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px 32px; font-size:13px; line-height:1.5; color:var(--muted)}
+@media (min-width:1000px){
+  .foot-top{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); gap:72px}
+  .foot-cols{grid-template-columns:repeat(3, minmax(0,1fr))}
+  .foot-col:last-child{grid-column:auto}
 }
 
 /* Legal pages built from the Notion texts (make-pages.py, legal/*.md) */
@@ -328,14 +352,6 @@ html.lg-tabs .lg-article{margin-top:0; padding-top:0; border-top:0}
   .bl-grid{grid-template-columns:repeat(3, minmax(0,1fr)); gap:48px 28px}
 }
 /* the newsletter band under the articles */
-.bl-band{margin-top:88px; padding:40px 28px; border-radius:28px; background:var(--almond); display:grid; gap:20px; align-items:center}
-.bl-band > *{min-width:0}
-.bl-band h2{font-family:var(--f-display); font-weight:400; font-size:clamp(1.6rem, 1.2rem + 1.4vw, 2.3rem); line-height:1.06; letter-spacing:-.03em; text-wrap:balance}
-.bl-band p{margin-top:8px; color:rgba(36,29,25,.78)}
-.bl-band .nl-form{margin:0; max-width:480px; background:#fff; box-shadow:inset 0 0 0 1px var(--line); -webkit-backdrop-filter:none; backdrop-filter:none}
-.bl-band .nl-err{margin-top:10px}
-.bl-band .nl-thanks{margin-top:0}
-@media (min-width:860px){ .bl-band{grid-template-columns:minmax(0,1fr) minmax(0,480px); padding:52px 56px; gap:48px} }
 
 /* ---- One article ---- */
 .art{padding:calc(var(--nav) + 28px) 0 104px}

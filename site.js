@@ -55,7 +55,7 @@
      (for example a journey-stage chip, "On treatment"). So the two forms and their thank-you panels are
      excluded from autocapture, dead-click and rage-click capture. Custom events carry only fixed page text. */
   var phOn = false;
-  var PRIVATE_AREAS = ['#bq', '#beta-form', '#bf-thanks', '#nl-form', '#nl-thanks'];
+  var PRIVATE_AREAS = ['#bq', '#beta-form', '#bf-thanks', '#nl-form', '#nl-thanks', '#fn-form', '#fn-thanks'];
   var PRIVATE_SEL = [];
   PRIVATE_AREAS.forEach(function (s) { PRIVATE_SEL.push(s, s + ' *'); });
 
