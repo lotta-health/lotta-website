@@ -26,18 +26,40 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.lotta.health/#organization","name":"Lotta","alternateName":"Lotta Health","legalName":"Lotta, Lda","url":"https://www.lotta.health/","logo":{"@type":"ImageObject","url":"https://www.lotta.health/assets/lotta-logo.png","width":2400,"height":761},"description":"Lotta is a companion app for people on GLP-1 medication — through treatment, tapering, and the long maintenance after.","email":"hello@lotta.health","sameAs":["https://www.instagram.com/joinlotta/","https://www.linkedin.com/company/lotta-health"]},{"@type":"WebSite","@id":"https://www.lotta.health/#website","url":"https://www.lotta.health/","name":"Lotta","alternateName":["Lotta Health","lotta.health"],"inLanguage":"en","publisher":{"@id":"https://www.lotta.health/#organization"}},{"@type":"WebPage","@id":"https://www.lotta.health/#webpage","url":"https://www.lotta.health/","name":"Lotta — For life on and after GLP-1","description":"Lotta is a companion app for people on GLP-1 medication — through treatment, tapering, and the long maintenance after.","inLanguage":"en","isPartOf":{"@id":"https://www.lotta.health/#website"},"about":{"@id":"https://www.lotta.health/#organization"},"primaryImageOfPage":{"@type":"ImageObject","url":"https://www.lotta.health/assets/share-home.jpg","width":1200,"height":630}},{"@type":"FAQPage","@id":"https://www.lotta.health/#faq","isPartOf":{"@id":"https://www.lotta.health/#webpage"},"mainEntity":[{"@type":"Question","name":"What is Lotta and what is it for?","acceptedAnswer":{"@type":"Answer","text":"Lotta is a long-term companion app designed to help people navigate every stage of their GLP-1 journey, combining evidence-based guidance, practical tools and compassionate support to create lasting lifestyle change."}},{"@type":"Question","name":"What medications and brands does it support?","acceptedAnswer":{"@type":"Answer","text":"Lotta covers all approved brands available on the market, based on your location, as well as all available treatment types, including custom dosing."}},{"@type":"Question","name":"Is Lotta for active GLP-1 takers only?","acceptedAnswer":{"@type":"Answer","text":"No. Lotta is built with the entire journey for GLP-1 takers in mind, from the moment you start considering it to after you've entered maintenance."}},{"@type":"Question","name":"Does Lotta replace my clinician?","acceptedAnswer":{"@type":"Answer","text":"No. Lotta is not a medical device and it does not diagnose, predict, advise, identify symptoms, provide any treatment plans or suggestions. In an emergency, call your local emergency number or go to your nearest emergency department."}},{"@type":"Question","name":"What happens during the beta?","acceptedAnswer":{"@type":"Answer","text":"During the beta we will give testers free access to the app and collect your feedback on the features, how it looks, what you'd like to see and what feels helpful to you. Participating users will receive a link via Apple's TestFlight and will be able to download the beta app and sign up. You can apply for the beta here. Please note that the beta will only be available for iOS."}},{"@type":"Question","name":"How does Lotta protect my personal data?","acceptedAnswer":{"@type":"Answer","text":"We don't sell it, we don't use it for targeted advertising, and we don't use it to train AI models. You can ask for a copy of your data, correct it or delete it by reaching out to privacy@lotta.health. You can find further information on our Privacy Policy."}}]}]}</script>
 <!-- /search:data -->
 <meta name="theme-color" content="#6993EB">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap">
+<!-- The typefaces are files on this site (the fonts folder inside assets), no longer fetched from Google: a page never stays blank waiting for another
+     company's server, and a visitor's address is not handed to it. The two used on the first screen are fetched ahead. -->
+<link rel="preload" href="assets/fonts/instrument-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
 <script>
   (function () {
     var d = document.documentElement;
     d.classList.add('js');
+    setTimeout(function () { d.classList.add('bg-all'); }, 8000);   /* a safety net: eight seconds in, the lower pictures may all be fetched, whatever happened to the page's script */
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (/[?&]static\b/.test(location.search)) reduce = true; /* preview switch: ?static shows the reduced-motion page */
-    if (!reduce) { d.classList.add('motion'); d.classList.add('intro'); }
+    if (!reduce) {
+      d.classList.add('motion');
+      /* The opening (the counter, then the sunrise) plays once per visit. It is left out when it has already played in this tab, and
+         when the visitor arrives at a part of the page or through "Join the beta" on another page (an address ending in #something).
+         Adding ?intro to the address plays it regardless. */
+      var seen = false; try { seen = sessionStorage.getItem('lotta-opening') === '1'; } catch (e) {}
+      var toPart = location.hash.length > 1 && location.hash !== '#top' && location.hash.indexOf('placeholders') < 0;
+      if (/[?&]intro\b/.test(location.search) || !(seen || toPart)) d.classList.add('intro');
+    }
   })();
   if (location.hash.includes('placeholders')) document.documentElement.classList.add('show-ph'); window.addEventListener('message', e => { if (e.data && e.data.type === 'lotta-ph') document.documentElement.classList.toggle('show-ph', !!e.data.on); });
 </script>
 <style>
+/* ============ Typefaces: Instrument Sans (headlines), Manrope (text), Figtree (inside the drawn app screens) ============
+   The same files Google Fonts serves, kept in the fonts folder inside assets. "latin" covers English and Western European letters; "latin-ext"
+   (Central European letters and the like) is only fetched when a page shows such a letter. */
+@font-face{font-family:"Instrument Sans"; font-style:normal; font-weight:400 600; font-stretch:100%; font-display:swap; src:url(assets/fonts/instrument-sans-latin.woff2) format("woff2"); unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"Manrope"; font-style:normal; font-weight:400 700; font-display:swap; src:url(assets/fonts/manrope-latin.woff2) format("woff2"); unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"Figtree"; font-style:normal; font-weight:400 700; font-display:swap; src:url(assets/fonts/figtree-latin.woff2) format("woff2"); unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"Instrument Sans"; font-style:normal; font-weight:400 600; font-stretch:100%; font-display:swap; src:url(assets/fonts/instrument-sans-latin-ext.woff2) format("woff2"); unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:"Manrope"; font-style:normal; font-weight:400 700; font-display:swap; src:url(assets/fonts/manrope-latin-ext.woff2) format("woff2"); unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:"Figtree"; font-style:normal; font-weight:400 700; font-display:swap; src:url(assets/fonts/figtree-latin-ext.woff2) format("woff2"); unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+
 /* ============ Tokens ============ */
 :root{
   --dark:#241D19; --lift:#EEEBE6; --lift2:#E6E6E6; --deep:#17120F;
@@ -68,6 +90,11 @@ svg{display:block}
 ::selection{background:var(--blue); color:var(--dark)}
 :focus-visible{outline:2px solid var(--blue); outline-offset:3px; border-radius:8px}
 [tabindex="-1"]:focus{outline:none}
+.skip{position:fixed; left:12px; top:12px; z-index:200; padding:12px 18px; border-radius:999px; background:var(--ink); color:#fff; font-size:15px; font-weight:600; transform:translateY(-200%)}
+.skip:focus{transform:none; outline:2px solid #fff; outline-offset:2px}
+/* Pictures further down the page (the four cards, the journey's flowers, the article's cover) wait until the visitor is within about
+   one screen of them: a small script further down adds "bg-in". Without scripts they simply load as before. */
+html.js:not(.bg-all) .bg-late:not(.bg-in), html.js:not(.bg-all) .bg-late:not(.bg-in) .ci, html.js:not(.bg-all) .bg-late:not(.bg-in) .pi{background-image:none !important}
 .sr-only{position:absolute!important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
 html.show-ph .ph{background:rgba(255,150,36,.30);box-shadow:0 0 0 2px rgba(255,150,36,.30);border-radius:3px}
 
@@ -110,7 +137,7 @@ html.intro .loader{display:block; position:fixed; inset:0; z-index:100; backgrou
 .loader-bar i{display:block; height:100%; background:linear-gradient(90deg, var(--ww), var(--saffron) 60%, var(--orange)); transform-origin:0 50%; transform:scaleX(0)}
 
 /* ============ Logo ============ */
-.logo{display:block; background:currentColor; -webkit-mask:url(assets/lotta-logo.png) center/contain no-repeat; mask:url(assets/lotta-logo.png) center/contain no-repeat; aspect-ratio:1000/318}
+.logo{display:block; background:currentColor; -webkit-mask:url(assets/lotta-logo-sm.png) center/contain no-repeat; mask:url(assets/lotta-logo-sm.png) center/contain no-repeat; aspect-ratio:1000/318}   /* a 600px copy; the 2400px original is named in the data for search engines */
 
 /* ============ Nav ============ */
 .nav{position:fixed; top:0; left:0; right:0; z-index:50; height:var(--nav)}
@@ -495,6 +522,9 @@ html.motion .wi-ph li.now::after{content:""; position:absolute; left:0; top:50%;
 /* the cover picture, with a small blur over it (5 Oct); the box is a little larger than the card so the blurred edge never shows */
 /* two candidates for the cover (5 Oct): blog-cover-body.jpg (shown) and blog-cover-face.jpg (position 62% 12%) */
 .cover-img .ci{position:absolute; inset:-3%; background:url(assets/blog-cover-body.jpg) 50% 45%/cover no-repeat; filter:blur(3px); transition:transform 1s var(--ease)}
+/* the article's own cover, written in by build-blog.mjs as two addresses: the large copy, and a lighter one for phones */
+.cover-img .ci[style*="--cover"]{background-image:var(--cover)}
+@media (max-width:699.98px){ .cover-img .ci[style*="--cover-s"]{background-image:var(--cover-s)} }
 @media (max-width:699.98px){ .cover-img .ci{background-position:36% 45%} }
 .cover::after{content:""; position:absolute; inset:0; z-index:-1; pointer-events:none; background:linear-gradient(180deg, rgba(36,29,25,0) 30%, rgba(36,29,25,.22) 55%, rgba(36,29,25,.58) 100%)}
 @media (min-width:900px){ .cover::after{background:radial-gradient(110% 95% at 0% 100%, rgba(36,29,25,.6) 0%, rgba(36,29,25,.28) 42%, rgba(36,29,25,0) 72%)} }
@@ -527,7 +557,7 @@ html.motion .wi-ph li.now::after{content:""; position:absolute; left:0; top:50%;
 .fld{display:grid; gap:8px; margin-top:18px}
 .fld > label,.fld > legend{font-size:15px; font-weight:600; color:var(--ink); padding:0}
 .inp{width:100%; height:54px; padding:0 18px; border-radius:16px; border:1px solid rgba(36,29,25,.2); background:rgba(255,255,255,.78); color:var(--ink); font-size:16px; transition:border-color .25s, background-color .25s; -webkit-appearance:none; appearance:none}
-.inp::placeholder{color:rgba(36,29,25,.5)}
+.inp::placeholder{color:rgba(36,29,25,.7); opacity:1}
 .inp:hover{border-color:rgba(36,29,25,.4)}
 .inp:focus{outline:none; border-color:var(--blue-ink); background:#fff}
 .inp:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
@@ -554,12 +584,14 @@ select.inp option{color:var(--dark); background:#fff}
 
 /* ============ Beta pop-up ============ */
 /* A picture fills the whole pop-up (.bq-pic). Everything you read and fill in sits on one glass panel over it (.bq-glass), the
-   same clear glass as the cards in "What's inside". One question per step; the first screen lists the five steps.
+   same clear glass as the cards in "What's inside". One question per step; the first question carries the welcome lines.
      Computer (880px and wider): a wide card. The picture is clear on the left, the glass panel is on the right.
      Narrower windows:           a tall card. The picture shows at the top, the glass panel covers the rest.
      Phone (under 700px):        the tall layout, filling the whole screen.
-   The pop-up keeps one size on every screen. In the tall layout only the glass moves: lower on the first and last screens
+   The pop-up keeps one size on every screen. In the tall layout only the glass moves: lower on the last screen
    (more picture), higher on the questions, highest on the consent screen (so its text fits without scrolling).
+   In the tall layout and on phones the Continue button sits just under the box being filled in, so a phone's keyboard does not cover it;
+   on a computer it stays at the foot of the glass.
    The settings to play with are the lines just below.
    Earlier looks: option-b-v38-before-popup-picture-top-5oct.html (frosted card with the ball) and
    option-b-v39-before-popup-glass-on-picture-5oct.html (solid card, picture in a frame on top). */
@@ -588,8 +620,8 @@ html.bq-open{overflow:hidden}
 .bq-logo{position:absolute; left:22px; top:20px; width:78px; color:#fff; pointer-events:none}   /* the Lotta logo, white, on the picture */
 /* the glass panel */
 .bq{--bq-top:clamp(96px, 19%, 150px)}                                                  /* where the glass starts, on the questions */
-.bq.is-intro, .bq.is-done{--bq-top:clamp(84px, calc(100% - 600px), 44%)}               /* first and last screens: more picture */
-.bq[data-step="consent"]:not(.is-intro):not(.is-done){--bq-top:62px}                   /* consent: as much room as possible */
+.bq.is-done{--bq-top:clamp(84px, calc(100% - 600px), 44%)}                             /* last screen: more picture */
+.bq[data-step="consent"]:not(.is-done){--bq-top:62px}                                  /* consent: as much room as possible */
 .bq-glass{position:absolute; left:10px; right:10px; bottom:10px; top:var(--bq-top); display:flex; flex-direction:column; padding:18px 20px 20px; border-radius:22px;
   background:linear-gradient(160deg, rgba(255,255,255,.1), rgba(255,255,255,.02)), rgba(36,29,25,var(--bq-tint));
   -webkit-backdrop-filter:blur(var(--bq-blur)) saturate(1.3); backdrop-filter:blur(var(--bq-blur)) saturate(1.3);
@@ -597,36 +629,34 @@ html.bq-open{overflow:hidden}
   transition:top .55s var(--ease)}
 .bq :focus-visible{outline-color:#fff}
 /* close (on the picture), back and the progress line */
-.bq-btn{flex:none; width:36px; height:36px; border:0; border-radius:50%; display:grid; place-items:center; color:#fff; cursor:pointer; background:rgba(255,255,255,.16); box-shadow:inset 0 0 0 1px rgba(255,255,255,.42); transition:background-color .25s}
+.bq-btn{position:relative; flex:none; width:36px; height:36px; border:0; border-radius:50%; display:grid; place-items:center; color:#fff; cursor:pointer; background:rgba(255,255,255,.16); box-shadow:inset 0 0 0 1px rgba(255,255,255,.42); transition:background-color .25s}
 .bq-btn:hover{background:rgba(255,255,255,.32)}
 .bq-btn svg{width:16px; height:16px}
+.bq-btn::after{content:""; position:absolute; inset:-4px}                              /* the drawn circle stays 36px; the area that answers a finger is 44px */
 .bq-x{position:absolute; z-index:2; top:14px; right:14px; background:rgba(36,29,25,.34); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px)}
 .bq-x:hover{background:rgba(36,29,25,.55)}
 .bq-top{flex:none; display:flex; align-items:center; gap:14px}
-.bq-top.is-intro, .bq.is-done .bq-top{display:none}
+.bq.is-done .bq-top{display:none}
 .bq-back svg{transform:rotate(180deg)}
 .bq-back[disabled]{visibility:hidden}
 .bq-prog{flex:1; display:flex; gap:6px}
 .bq-prog i{position:relative; flex:1; height:4px; border-radius:4px; overflow:hidden; background:rgba(255,255,255,.3)}
 .bq-prog i::after{content:""; position:absolute; inset:0; border-radius:inherit; background:#fff; transform:scaleX(0); transform-origin:0 50%; transition:transform .5s var(--ease)}
 .bq-prog i.on::after{transform:scaleX(1)}
-/* the small line above each screen: "Join the beta", then "Step 2 of 5" */
+/* the small line above each question: "Step 2 of 5" */
 .bq-kick{flex:none; margin-top:14px; font-family:var(--f-display); font-size:var(--bq-text); font-weight:600; line-height:1.3; color:rgba(255,255,255,.92)}
-.bq.is-intro .bq-kick{margin-top:2px}
 .bq.is-done .bq-kick{display:none}
-/* first screen: the words, the five steps, Start */
-.bq-intro, .bq form, .bq-done{flex:1; min-height:0; display:flex; flex-direction:column}
-.bq-intro[hidden], .bq form[hidden], .bq-done[hidden]{display:none}
-.bq-intro{overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none}
-.bq-intro::-webkit-scrollbar{display:none}
-.bq-title{margin-top:8px; font-family:var(--f-display); font-weight:var(--bq-weight); font-size:clamp(1.75rem, 1.5rem + .9vw, 2.1rem); line-height:1.06; letter-spacing:-.03em; text-wrap:balance}
-.bq-sub{margin-top:10px; font-size:var(--bq-text); line-height:1.45; color:rgba(255,255,255,.92); text-wrap:pretty}
+.bq-kick:focus{outline:none}
+.bq form, .bq-done{flex:1; min-height:0; display:flex; flex-direction:column}
+.bq form[hidden], .bq-done[hidden]{display:none}
 .bq-note{margin-top:20px; font-size:var(--bq-text); font-weight:600; line-height:1.3; color:rgba(255,255,255,.92)}
-.bq-list{margin-top:8px; counter-reset:bq-n}
-.bq-list li{position:relative; display:flex; align-items:center; gap:14px; height:40px; font-size:var(--bq-text); font-weight:500; line-height:1; counter-increment:bq-n}
-.bq-list li::before{content:counter(bq-n); flex:none; width:26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--sky); color:#fff; font-family:var(--f-display); font-size:13px; font-weight:700; font-variant-numeric:tabular-nums}
-.bq-list li + li::after{content:""; position:absolute; left:12.25px; top:-4px; width:1.5px; height:8px; border-radius:2px; background:rgba(255,255,255,.5)}
-.bq-meta{margin-top:auto; padding-top:18px; font-size:var(--bq-text); line-height:1.3; text-align:center; color:rgba(255,255,255,.92)}
+/* the welcome lines above the first question (they were the first screen until 6 Oct) */
+.bq-lead{margin-top:8px; font-size:var(--bq-text); line-height:1.45; color:rgba(255,255,255,.92); text-wrap:pretty}
+.bq-lead b{font-weight:600; color:#fff}
+.bq-lead + .bq-q{margin-top:16px}
+/* "iOS only · opening November": on the first question only, 24px above the button, as it sat above Start */
+.bq-meta{flex:none; margin-top:auto; padding-top:18px; font-size:var(--bq-text); line-height:1.3; text-align:center; color:rgba(255,255,255,.92)}
+.bq-meta[hidden]{display:none}
 .bq-meta::before{content:""; display:inline-block; vertical-align:middle; width:8px; height:8px; margin:-2px 11px 0 0; border-radius:50%; background:#fff; box-shadow:0 0 0 4px rgba(255,255,255,.25)}
 /* the dot pulses, slowly, like the "Tapering" dot on the cards (still when the visitor asked for less motion) */
 html.motion .bq-meta::before{animation:bq-pulse 2.6s cubic-bezier(.25,.1,.25,1) infinite}
@@ -635,18 +665,19 @@ html.motion .bq-meta::before{animation:bq-pulse 2.6s cubic-bezier(.25,.1,.25,1) 
 .bq .btn-primary{flex:none; min-height:52px; font-size:var(--bq-text); background:#fff; color:var(--ink)}
 .bq .btn-primary:hover{background:var(--ww)}
 .bq .btn-primary:focus-visible{outline-color:#fff}
-.bq-start{margin-top:24px}
 .bq-next, .bq-close-done{margin-top:auto}
+.bq-meta:not([hidden]) + .bq-next{margin-top:24px}
+.bq .btn-primary[disabled]{opacity:.72; cursor:default}                                /* while the sign-up is being sent */
 /* the questions */
 /* a step scrolls inside the glass if a small phone can't fit it; its top and bottom edges fade, so cut-off words read as "there is more" */
-.bq-step{flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; padding:0 2px 14px; margin:0 -2px;
+.bq-step{flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; padding:0 6px 14px; margin:0 -6px;   /* 6px at the sides: the box's white outline reaches 4px beyond the box and must not be cut */
   -webkit-mask-image:linear-gradient(transparent, #000 8px, #000 calc(100% - 14px), transparent); mask-image:linear-gradient(transparent, #000 8px, #000 calc(100% - 14px), transparent)}
 .bq-step::-webkit-scrollbar{display:none}
 .bq-q{display:block; margin-top:8px; padding:0; font-family:var(--f-display); font-weight:var(--bq-weight); font-size:clamp(1.45rem, 1.25rem + .6vw, 1.7rem); line-height:1.12; letter-spacing:-.03em; text-wrap:balance}
 .bq-step .inp, .bq-step .chips-r, .bq-step .cb{margin-top:18px}
 .bq-step .cb .inp{margin-top:0}
 .bq .inp{height:52px; padding:0 16px; border-radius:14px; font-size:var(--bq-text); color:#fff; border-color:rgba(255,255,255,.5); background:rgba(255,255,255,.14)}
-.bq .inp::placeholder{color:rgba(255,255,255,.74)}
+.bq .inp::placeholder{color:#fff; opacity:1}
 .bq .inp:hover{border-color:rgba(255,255,255,.8)}
 .bq .inp:focus{background:rgba(255,255,255,.22); border-color:#fff}
 .bq .inp:focus-visible{outline-color:#fff}
@@ -655,6 +686,7 @@ html.motion .bq-meta::before{animation:bq-pulse 2.6s cubic-bezier(.25,.1,.25,1) 
 .bq .chip:hover span{background:rgba(255,255,255,.26); box-shadow:inset 0 0 0 1px rgba(255,255,255,.8)}
 .bq .chip input:checked + span{background:#fff; color:var(--ink); box-shadow:none}
 .bq .chip input:focus-visible + span{outline-color:#fff}
+.bq .chip::after{content:""; position:absolute; inset:-1px 0; pointer-events:none}
 .bq .err{margin-top:12px; font-size:var(--bq-text); line-height:1.35; font-weight:600; color:#fff; scroll-margin-bottom:18px}
 .bq .err::before{background:var(--saffron)}
 /* the consent screen */
@@ -675,7 +707,7 @@ html.motion .bq-meta::before{animation:bq-pulse 2.6s cubic-bezier(.25,.1,.25,1) 
 /* the country list: a white sheet with a search box */
 .cb{position:relative}
 .cb-btn{display:flex; align-items:center; justify-content:space-between; gap:10px; text-align:left; cursor:pointer}
-.cb-val{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:rgba(255,255,255,.74)}
+.cb-val{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#fff}
 .cb.has-val .cb-val{color:#fff}
 .cb-chev{flex:none; width:18px; height:18px; transition:transform .35s var(--ease)}
 .cb-btn[aria-expanded="true"] .cb-chev{transform:rotate(180deg)}
@@ -684,10 +716,12 @@ html.motion .bq-meta::before{animation:bq-pulse 2.6s cubic-bezier(.25,.1,.25,1) 
 .cb-search{display:flex; align-items:center; gap:8px; height:42px; padding:0 12px; border-radius:11px; background:var(--ww); box-shadow:inset 0 0 0 1px rgba(36,29,25,.1)}
 .cb-search svg{flex:none; width:16px; height:16px; color:var(--muted)}
 .cb-in{flex:1; min-width:0; height:100%; border:0; background:transparent; font:inherit; font-size:16px; color:var(--ink)}
+.cb-in::placeholder{color:var(--muted); opacity:1}
 .cb-in:focus{outline:none}
 .cb-search:focus-within{box-shadow:inset 0 0 0 1.5px var(--blue-ink)}
 .cb-list{margin-top:6px; max-height:216px; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin}
-.cb-list li{padding:10px 12px; border-radius:10px; font-size:var(--bq-text); line-height:1.3; cursor:pointer}
+.cb-list li{padding:11.5px 12px; border-radius:10px; font-size:var(--bq-text); line-height:1.3; cursor:pointer}
+.cb-list li.cb-sep{margin:4px 12px 6px; padding:0; height:1px; background:var(--line); cursor:default}   /* between the likely country and the full list */
 .cb-list li[hidden]{display:none}
 .cb-list li:hover, .cb-list li.act{background:rgba(142,191,251,.35)}
 .cb-list li[aria-selected="true"]{font-weight:600}
@@ -698,6 +732,9 @@ html.motion .bq-meta::before{animation:bq-pulse 2.6s cubic-bezier(.25,.1,.25,1) 
 .bq .thanks-ic svg{width:24px; height:24px}
 .bq .thanks-t{margin-top:18px; max-width:18ch; font-weight:var(--bq-weight); font-size:clamp(1.55rem, 1.3rem + .7vw, 1.85rem)}
 .bq-done .bq-note{margin-top:10px; font-size:var(--bq-text); font-weight:400; line-height:1.45; color:rgba(255,255,255,.92)}
+.bq-after{margin:14px auto 0; max-width:34ch; font-size:var(--bq-text); line-height:1.45; color:rgba(255,255,255,.92); text-wrap:pretty}
+.bq-links{margin-top:14px; display:flex; flex-wrap:wrap; justify-content:center; gap:4px 22px; font-size:var(--bq-text); font-weight:600}
+.bq-links a{display:inline-flex; align-items:center; min-height:44px; color:#fff; text-decoration:underline; text-decoration-color:rgba(255,255,255,.7); text-underline-offset:3px; border-radius:6px}
 /* computer: the wide card, picture on the left, glass on the right */
 @media (min-width:880px){
   .bq-card{max-width:940px; height:min(648px, calc(100dvh - 32px))}
@@ -707,8 +744,12 @@ html.motion .bq-meta::before{animation:bq-pulse 2.6s cubic-bezier(.25,.1,.25,1) 
   .bq-logo{left:32px; top:30px; width:96px}
   .bq-x:hover{background:rgba(255,255,255,.32)}
   .bq-top{padding-right:50px}
-  .bq.is-intro .bq-kick{margin-top:12px; padding-right:50px}
-  .bq-title{margin-top:10px}
+}
+/* narrower than a computer (phones, tablets): the button comes right after the box, where a keyboard cannot cover it */
+@media (max-width:879.98px){
+  .bq-step{flex:0 1 auto}
+  .bq-next{margin-top:6px}
+  .bq-meta{margin-top:0; padding-top:10px}
 }
 /* phone: the pop-up fills the screen */
 @media (max-width:699.98px){
@@ -716,7 +757,7 @@ html.motion .bq-meta::before{animation:bq-pulse 2.6s cubic-bezier(.25,.1,.25,1) 
   .bq[open]{display:block}
   .bq-veil{background:var(--ink); -webkit-backdrop-filter:none; backdrop-filter:none}
   .bq-card{max-width:none; height:100%; border-radius:0; box-shadow:none}
-  .bq[data-step="consent"]:not(.is-intro):not(.is-done){--bq-top:calc(env(safe-area-inset-top, 0px) + 62px)}
+  .bq[data-step="consent"]:not(.is-done){--bq-top:calc(env(safe-area-inset-top, 0px) + 62px)}
   .bq-glass{bottom:calc(env(safe-area-inset-bottom, 0px) + 10px); padding:18px 18px 18px}
   .bq-x{top:calc(env(safe-area-inset-top, 0px) + 14px)}
   .bq-logo{top:calc(env(safe-area-inset-top, 0px) + 20px)}
@@ -751,6 +792,7 @@ html.js .faq-item:not(.open) .faq-a-in{visibility:hidden; transition:visibility 
 .faq-a p{padding:0 36px 24px 0; font-size:17px; line-height:1.55; color:var(--muted)}
 .faq-a p + p{margin-top:-10px}
 .faq-a a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px; border-radius:4px}
+.faq-a a.mail{text-decoration:none; color:inherit}
 .faq-more{margin-top:26px; font-size:15px; color:var(--muted)}
 .faq-more b{font-weight:600; color:var(--ink); -webkit-user-select:all; user-select:all}
 @media (min-width:1000px){
@@ -797,6 +839,7 @@ html.js .faq-item:not(.open) .faq-a-in{visibility:hidden; transition:visibility 
 .foot-nl input::placeholder{color:rgba(36,29,25,.62)}
 .foot-nl .btn{flex:none; background:var(--orange); color:#fff}
 .foot-nl .btn:hover{background:#EE5710}
+.foot-nl .btn[disabled], .news-form .btn[disabled]{opacity:.72; cursor:default}
 .foot-err{display:flex; align-items:center; gap:8px; margin-top:-6px; font-size:14px; color:#B5470F}
 .foot-err::before{content:""; flex:none; width:6px; height:6px; border-radius:50%; background:currentColor}
 .foot-thanks{display:flex; align-items:center; gap:12px; min-height:56px; font-size:16px; font-weight:600}
@@ -806,7 +849,7 @@ html.js .faq-item:not(.open) .faq-a-in{visibility:hidden; transition:visibility 
 .foot-cols{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:32px 24px}
 .foot-col{display:grid; gap:10px; align-content:start; min-width:0}
 .foot-col:last-child{grid-column:1 / -1}
-.foot-lab{font-family:var(--f-display); font-size:12px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; line-height:1.2; color:var(--orange)}
+.foot-lab{font-family:var(--f-display); font-size:12px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; line-height:1.2; color:var(--orange-ink)}   /* the deeper orange: small words in the bright orange were too faint on this background (audit D2) */
 .foot-links{display:grid; gap:0; align-content:start}
 .foot-links a{display:inline-flex; align-items:center; gap:8px; min-height:40px; font-size:16px; color:rgba(36,29,25,.86); transition:color .3s; border-radius:6px}
 .foot-links a:hover{color:var(--ink)}
@@ -814,6 +857,9 @@ html.js .faq-item:not(.open) .faq-a-in{visibility:hidden; transition:visibility 
 @media (hover:hover){ .foot-links a:hover span{background-position:0 100%; background-size:100% 1.5px} }
 .foot-links svg{flex:none; width:18px; height:18px; opacity:.8}
 .foot-mail{display:flex; align-items:center; min-height:40px; font-size:16px; font-weight:600; -webkit-user-select:all; user-select:all}
+.foot-links .foot-mail a{color:inherit}                                                 /* the address opens the visitor's mail app; it looks as it did */
+.foot-links a, .foot-mail a{position:relative}
+.foot-links a::after{content:""; position:absolute; inset:-2px 0}                      /* the area that answers a finger: 44px tall; the words stay where they are */
 .foot-base{margin-top:48px; padding:22px 0 26px; border-top:1px solid var(--line); display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px 32px; font-size:13px; line-height:1.5; color:var(--muted)}
 @media (min-width:1000px){
   .foot-top{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); gap:72px}
@@ -943,9 +989,30 @@ html.motion .phone-lift{will-change:transform}
   .hero .cta-row{margin-top:20px}
   .hero .beta-line{margin-top:12px}
 }
+
+/* ============ The first screen's small white lines (audit D3; her words of 6 Oct 2026) ============
+   "Slightly deeper sky beneath them": a soft cloud of the site's deeper blue behind the paragraph. It belongs to the paragraph,
+   so it arrives and leaves with it, touches nothing else on the page, and fades to nothing at its edges.
+   "Move iOS only off the glow": on a computer the line "iOS only · opening November" sat on the pale edge of the sun's glow.
+   It now sits between the paragraph and the buttons, on the sky, as it sits above the button in the pop-up. To make the room,
+   the headline and the paragraph start 17px higher there; the buttons are where they were. On phones the line stays under the buttons. */
+.hero .lede{position:relative; isolation:isolate}
+.hero .cta-row, .hero .beta-line{position:relative; z-index:1}   /* the buttons and the line are drawn over the cloud, never under it */
+.hero .lede::before{content:""; position:absolute; z-index:-1; inset:-46px -120px -84px; border-radius:50%; pointer-events:none;
+  background:radial-gradient(closest-side, rgba(47,104,184,.52), rgba(47,104,184,.4) 45%, rgba(47,104,184,0))}
+@media (max-width:899.98px){ .hero .lede::before{inset:-40px -70px -150px} }   /* phones: it also reaches under the buttons and the line below them */
+@media (min-width:900px){
+  .hero .lede{margin-top:26px}
+  .hero .beta-line{order:2; margin:14px 0 0}
+  .hero .cta-row{order:3; margin-top:22px}
+  html.motion .hero-copy{top:calc(var(--nav) + 11vh - 17px)}
+  /* the still version (for visitors who switch movement off): the risen sun sat behind these lines; it rests lower on a computer */
+  html:not(.motion) .sun{transform:translate(-50%, 46%)}
+}
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 
 <!-- Icon sprite -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1021,7 +1088,7 @@ html.motion .phone-lift{will-change:transform}
 
     <div class="hero-copy">
       <h1 class="h1" id="hero-h"><span class="w"><span>For</span></span> <span class="w"><span>life</span></span> <span class="w"><span>on</span></span> <span class="w"><span>and</span></span> <span class="w"><span>after</span></span> <span class="w"><span><span class="nw">GLP-1.</span></span></span></h1>
-      <p class="lede"><span class="lede-a">Lotta is a long-term support platform designed to help people navigate every stage of their <span class="nw">GLP-1</span> journey,</span> <span class="lede-b">combining evidence-based guidance, practical tools and compassionate support to create lasting lifestyle change.</span></p>
+      <p class="lede"><span class="lede-a">Lotta is a companion app designed to help people navigate every stage of their <span class="nw">GLP-1</span> journey,</span> <span class="lede-b">combining evidence-based guidance, practical tools and compassionate support to create lasting lifestyle change.</span></p>
       <div class="cta-row">
         <a class="btn btn-primary" href="#beta">Join the beta<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
         <a class="btn btn-ghost" href="#newsletter">Get the newsletter</a>
@@ -1053,7 +1120,7 @@ html.motion .phone-lift{will-change:transform}
   <ul class="wi-row wrap" data-stagger>
     <!-- 1 -->
     <li class="wi-item">
-      <div class="wi-tile wi-t1 wi-photo" aria-hidden="true"><i class="grain"></i>
+      <div class="bg-late wi-tile wi-t1 wi-photo" aria-hidden="true"><i class="grain"></i>
         <div class="wi-glass wi-clear"><ol class="wi-ph"><li>Starting</li><li>Active</li><li class="now">Tapering<span>Now</span></li><li class="next">Maintenance</li></ol></div>
       </div>
       <h3 class="wi-t">Personalized for you</h3>
@@ -1065,7 +1132,7 @@ html.motion .phone-lift{will-change:transform}
     </li>
     <!-- 2 -->
     <li class="wi-item">
-      <div class="wi-tile wi-t2 wi-photo" aria-hidden="true"><i class="grain"></i>
+      <div class="bg-late wi-tile wi-t2 wi-photo" aria-hidden="true"><i class="grain"></i>
         <div class="wi-glass wi-clear"><svg class="wi-chart" viewBox="0 136 390 294" focusable="false"><use href="#medhub-float" width="390" height="844"/></svg></div>
       </div>
       <h3 class="wi-t">Track your health</h3>
@@ -1078,7 +1145,7 @@ html.motion .phone-lift{will-change:transform}
     </li>
     <!-- 3 -->
     <li class="wi-item">
-      <div class="wi-tile wi-t3 wi-photo" aria-hidden="true"><i class="grain"></i>
+      <div class="bg-late wi-tile wi-t3 wi-photo" aria-hidden="true"><i class="grain"></i>
         <div class="wi-glass wi-clear">
           <div class="wi-bar"><b>Protein<span>62 of 100 g</span></b><i><em style="width:62%"></em></i></div>
           <div class="wi-bar"><b>Fiber<span>14 of 25 g</span></b><i><em style="width:56%"></em></i></div>
@@ -1093,7 +1160,7 @@ html.motion .phone-lift{will-change:transform}
     </li>
     <!-- 4 -->
     <li class="wi-item">
-      <div class="wi-tile wi-t4 wi-photo" aria-hidden="true"><i class="grain"></i>
+      <div class="bg-late wi-tile wi-t4 wi-photo" aria-hidden="true"><i class="grain"></i>
         <div class="wi-glass wi-clear wi-read"><small>Learning space</small><b>What does sustainable progress actually mean?</b><span>5 min read</span></div>
       </div>
       <h3 class="wi-t">Learn as you go</h3>
@@ -1110,7 +1177,7 @@ html.motion .phone-lift{will-change:transform}
 <!-- ============ 4. The whole journey ============ -->
 <!-- The winding path: five stages in one row (a winding column on phones), over a picture that holds still. -->
 <section class="journey" id="journey" aria-labelledby="journey-h">
-  <div class="j-bg" aria-hidden="true"><div class="j-pic"></div></div>
+  <div class="j-bg" aria-hidden="true"><div class="bg-late j-pic"></div></div>
   <div class="j-in wrap">
     <header class="j-head">
       <p class="kicker rv">The whole journey</p>
@@ -1162,7 +1229,7 @@ html.motion .phone-lift{will-change:transform}
          One article: the big cover. Two or more: a row of cards with the latest three (the original "Sunrise" blog block,
          kept in saved-sections/blog-cards-1oct.html). Changes made here by hand are overwritten. -->
     <article class="cover rv">
-      <div class="cover-img" aria-hidden="true"><div class="ci" style="background-image:url('assets/blog/meet-lotta-why-were-building-it.jpg')"></div></div>
+      <div class="bg-late cover-img" aria-hidden="true"><div class="ci" style="--cover:url('assets/blog/meet-lotta-why-were-building-it-1600.webp'); --cover-s:url('assets/blog/meet-lotta-why-were-building-it-800.webp')"></div></div>
       <div class="cover-body">
         <p class="cover-meta"><span class="cover-new">New</span><span>2 min read</span></p>
         <h3 class="cover-t"><a class="cover-link post-link" href="blog/meet-lotta-why-were-building-it/">Meet Lotta: why we're building it</a></h3>
@@ -1177,11 +1244,12 @@ html.motion .phone-lift{will-change:transform}
         <p class="news-p">New posts about your journey, as soon as they're out.</p>
       </div>
       <div class="news-side">
-        <form class="news-form" id="nl-form" novalidate>
+        <form class="news-form" id="nl-form" novalidate onsubmit="return false">
           <input class="inp inp-pill" id="nl-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="Email" required aria-describedby="nl-err">
           <button class="btn btn-primary" type="submit"><span class="ph">Subscribe</span></button>
         </form>
-        <p class="err" id="nl-err" hidden><span class="ph">Please enter a valid email address.</span></p>
+        <p class="err" id="nl-err" role="alert" hidden><span class="ph">Please enter a valid email address.</span></p>
+        <p class="err" id="nl-fail" role="alert" hidden><span class="ph">That didn't go through. Please try again, or write to hello@lotta.health.</span></p>
         <p class="news-thanks" id="nl-thanks" tabindex="-1" hidden><span class="ok" aria-hidden="true"><svg><use href="#i-check"/></svg></span><span class="ph">Thank you. We've sent you a welcome e-mail.</span></p>
       </div>
     </div>
@@ -1222,10 +1290,10 @@ html.motion .phone-lift{will-change:transform}
         </div>
         <div class="faq-item">
           <h3><button class="faq-q" type="button" id="fq6" aria-expanded="false" aria-controls="fa6"><span>How does Lotta protect my personal data?</span><span class="faq-ic" aria-hidden="true"></span></button></h3>
-          <div class="faq-a" id="fa6" role="region" aria-labelledby="fq6"><div class="faq-a-in"><p>We don't sell it, we don't use it for targeted advertising, and we don't use it to train AI models. You can ask for a copy of your data, correct it or delete it by reaching out to <span class="nw">privacy@lotta.health</span>. You can find further information on our <a href="legal.html#privacy">Privacy Policy</a>.</p></div></div>
+          <div class="faq-a" id="fa6" role="region" aria-labelledby="fq6"><div class="faq-a-in"><p>We don't sell it, we don't use it for targeted advertising, and we don't use it to train AI models. You can ask for a copy of your data, correct it or delete it by reaching out to <a class="mail" href="mailto:privacy@lotta.health"><span class="nw">privacy@lotta.health</span></a>. You can find further information on our <a href="legal.html#privacy">Privacy Policy</a>.</p></div></div>
         </div>
       </div>
-      <p class="faq-more rv"><span class="ph">Still have a question?</span> <b>hello@lotta.health</b></p>
+      <p class="faq-more rv"><span class="ph">Still have a question?</span> <b><a href="mailto:hello@lotta.health">hello@lotta.health</a></b></p>
     </div>
   </div>
 </section>
@@ -1248,33 +1316,20 @@ html.motion .phone-lift{will-change:transform}
       <button class="bq-btn bq-back" type="button" aria-label="Back"><svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
       <div class="bq-prog" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
     </div>
-    <p class="bq-kick" id="bq-kick">Join the beta</p>
-    <!-- first screen -->
-    <div class="bq-intro">
-      <p class="bq-title">Be one of the first to try Lotta.</p>
-      <p class="bq-sub">Your feedback will shape what we build next.</p>
-      <p class="bq-note" id="bq-list-h"><span class="ph">5 quick questions, under a minute.</span></p>
-      <ol class="bq-list" aria-labelledby="bq-list-h">
-        <li><span class="ph">Your name</span></li>
-        <li><span class="ph">Your e-mail</span></li>
-        <li><span class="ph">Where you live</span></li>
-        <li><span class="ph">Your <span class="nw">GLP-1</span> journey</span></li>
-        <li><span class="ph">Your consent</span></li>
-      </ol>
-      <p class="bq-meta">iOS only · opening November</p>
-      <button class="btn btn-primary btn-block bq-start" type="button">Start<svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
-    </div>
-    <!-- the five questions -->
-    <form id="beta-form" novalidate hidden>
+    <p class="bq-kick" id="bq-kick" tabindex="-1">Step 1 of 5</p>
+    <!-- the five questions. Until 6 Oct 2026 a first screen came before them (the five steps listed, then Start); it is folded into
+         the first question now, one tap fewer (audit decision B4). The first screen as it was: saved-sections/popup-first-screen-6oct.html. -->
+    <form id="beta-form" novalidate onsubmit="return false">
       <div class="bq-step" data-check="name">
+        <p class="bq-lead"><b>Be one of the first to try Lotta.</b> Your feedback will shape what we build next. <span class="ph">5 quick questions, under a minute.</span></p>
         <label class="bq-q" for="bf-name">What should we call you?</label>
-        <input class="inp" id="bf-name" name="first-name" type="text" autocomplete="given-name" enterkeyhint="next" placeholder="Your name" aria-describedby="bf-name-err">
-        <p class="err" id="bf-name-err" hidden><span class="ph">Please add your name.</span></p>
+        <input class="inp" id="bf-name" name="first-name" type="text" autocomplete="given-name" enterkeyhint="next" placeholder="Your name" required aria-describedby="bf-name-err">
+        <p class="err" id="bf-name-err" role="alert" hidden><span class="ph">Please add your name.</span></p>
       </div>
       <div class="bq-step" data-check="email" hidden>
         <label class="bq-q" for="bf-email"><span class="bq-hi" hidden>Thanks, <span class="bq-name"></span>. </span>Where can we reach you?</label>
-        <input class="inp" id="bf-email" name="email" type="email" autocomplete="email" inputmode="email" enterkeyhint="next" placeholder="Your e-mail" aria-describedby="bf-email-err">
-        <p class="err" id="bf-email-err" hidden><span class="ph">Please enter a valid e-mail address.</span></p>
+        <input class="inp" id="bf-email" name="email" type="email" autocomplete="email" inputmode="email" enterkeyhint="next" placeholder="Your e-mail" required aria-describedby="bf-email-err">
+        <p class="err" id="bf-email-err" role="alert" hidden><span class="ph">Please enter a valid e-mail address.</span></p>
       </div>
       <div class="bq-step" data-check="country" hidden>
         <p class="bq-q" id="bf-country-lbl">Where do you live?</p>
@@ -1287,13 +1342,13 @@ html.motion .phone-lift{will-change:transform}
           </div>
           <input type="hidden" name="country" id="bf-country">
         </div>
-        <p class="err" id="bf-country-err" hidden><span class="ph">Please choose a country.</span></p>
+        <p class="err" id="bf-country-err" role="alert" hidden><span class="ph">Please choose a country.</span></p>
       </div>
       <div class="bq-step" data-check="stage" hidden>
-        <fieldset class="chipset" aria-describedby="bf-stage-err">
-          <legend class="bq-q">Where are you in your <span class="nw">GLP-1</span> journey?</legend>
+        <fieldset class="chipset" role="radiogroup" aria-required="true" aria-labelledby="bf-stage-lbl" aria-describedby="bf-stage-err">
+          <legend class="bq-q" id="bf-stage-lbl">Where are you in your <span class="nw">GLP-1</span> journey?</legend>
           <div class="chips-r bq-chips"><label class="chip"><input type="radio" name="stage" value="considering"><span>Considering</span></label><label class="chip"><input type="radio" name="stage" value="starting"><span>Starting</span></label><label class="chip"><input type="radio" name="stage" value="on-treatment"><span>On treatment</span></label><label class="chip"><input type="radio" name="stage" value="tapering"><span>Tapering</span></label><label class="chip"><input type="radio" name="stage" value="maintaining"><span>Maintaining</span></label></div>
-          <p class="err" id="bf-stage-err" hidden><span class="ph">Please choose where you are.</span></p>
+          <p class="err" id="bf-stage-err" role="alert" hidden><span class="ph">Please choose where you are.</span></p>
         </fieldset>
       </div>
       <!-- Consent: Margarida's wording of 5 Oct (one required box in place of two, shorter first line). Not yet seen by Filipa.
@@ -1301,10 +1356,13 @@ html.motion .phone-lift{will-change:transform}
       <div class="bq-step" data-check="consent" hidden>
         <p class="bq-q">Your consent</p>
         <p class="bq-legal">Lotta is responsible for your information. Read how we use it in our <a href="legal.html#privacy" target="_blank" rel="noopener">Privacy Policy</a>.</p>
-        <label class="consent"><input type="checkbox" id="bf-consent" name="consent" aria-describedby="bf-consent-err"><span><span class="c-tag">Required</span>I agree that Lotta can use the information in this form, including the one regarding the usage of <span class="nw">GLP-1</span> medication, to manage my waitlist place, review my beta application and e-mail me about it. I can withdraw this consent at any time by emailing <span class="bq-mail">privacy@<wbr>lotta.health</span>.</span></label>
-        <label class="consent"><input type="checkbox" id="bf-news" name="news"><span><span class="c-tag c-opt">Optional</span>I'd like to get news and updates about Lotta by email. I can unsubscribe at any time.</span></label>
-        <p class="err" id="bf-consent-err" hidden><span class="ph">Please tick the required box to continue.</span></p>
+        <label class="consent"><input type="checkbox" id="bf-consent" name="consent" required aria-describedby="bf-consent-err"><span><span class="c-tag">Required</span> I agree that Lotta can use the information in this form, including the one regarding the usage of <span class="nw">GLP-1</span> medication, to manage my waitlist place, review my beta application and e-mail me about it. I can withdraw this consent at any time by emailing <span class="bq-mail">privacy@<wbr>lotta.health</span>.</span></label>
+        <label class="consent"><input type="checkbox" id="bf-news" name="news"><span><span class="c-tag c-opt">Optional</span> I'd like to get news and updates about Lotta by email. I can unsubscribe at any time.</span></label>
+        <p class="err" id="bf-consent-err" role="alert" hidden><span class="ph">Please tick the required box to continue.</span></p>
+        <!-- shown when the sign-up could not be sent (no signal, or something blocking the sign-up service). Sample wording, hers to change. -->
+        <p class="err" id="bf-send-err" role="alert" hidden><span class="ph">That didn't go through. Please try again, or write to hello@lotta.health.</span></p>
       </div>
+      <p class="bq-meta" id="bq-meta">iOS only · opening November</p>
       <button class="btn btn-primary btn-block bq-next" type="submit"><span>Continue</span><svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
     </form>
     <!-- last screen -->
@@ -1312,6 +1370,9 @@ html.motion .phone-lift{will-change:transform}
       <span class="thanks-ic" aria-hidden="true"><svg><use href="#i-check"/></svg></span>
       <p class="thanks-t" tabindex="-1">You're on the list<span class="bq-hi2" hidden>, <span class="bq-name2"></span></span>.</p>
       <p class="bq-note">We've sent you a welcome e-mail.<br>More news to come soon!</p>
+      <!-- what happens next, and two places to go (audit decision B6). Sample wording, hers to change. -->
+      <p class="bq-after"><span class="ph">We'll e-mail you when the beta opens in November. Testers download the app through Apple's TestFlight, and the beta is free.</span></p>
+      <p class="bq-links"><a href="blog/"><span class="ph">Read the blog</span></a><a href="https://www.instagram.com/joinlotta/" target="_blank" rel="noopener"><span class="ph">Follow on Instagram</span></a></p>
       <button class="btn btn-primary btn-block bq-close-done" type="button">Close</button>
     </div>
     </div>
@@ -1325,11 +1386,12 @@ html.motion .phone-lift{will-change:transform}
         <div class="foot-brand">
           <a class="foot-logo" href="#top" aria-label="Lotta, back to the top"><span class="logo" role="img" aria-hidden="true"></span></a>
           <p class="foot-say"><label for="fn-email"><b>Get the new articles by e-mail.</b></label> New posts about your journey, as soon as they're out.</p>
-          <form class="foot-nl" id="fn-form" novalidate>
+          <form class="foot-nl" id="fn-form" novalidate onsubmit="return false">
             <input id="fn-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="Your e-mail" required aria-describedby="fn-err">
             <button class="btn btn-primary btn-sm" type="submit">Subscribe</button>
           </form>
-          <p class="foot-err" id="fn-err" hidden>Please enter a valid e-mail address.</p>
+          <p class="foot-err" id="fn-err" role="alert" hidden>Please enter a valid e-mail address.</p>
+          <p class="foot-err" id="fn-fail" role="alert" hidden><span class="ph">That didn't go through. Please try again, or write to hello@lotta.health.</span></p>
           <p class="foot-thanks" id="fn-thanks" tabindex="-1" hidden><span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12.6 4.4 4.4L19 7.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Thank you. We've sent you a welcome e-mail.</p>
         </div>
         <div class="foot-cols">
@@ -1339,6 +1401,7 @@ html.motion .phone-lift{will-change:transform}
               <li><a href="#inside"><span>What's inside</span></a></li>
               <li><a href="#journey"><span>The journey</span></a></li>
               <li><a href="blog/"><span>Blog</span></a></li>
+              <li><a href="#faq"><span>FAQ</span></a></li>
             </ul>
           </div>
           <div class="foot-col">
@@ -1346,7 +1409,7 @@ html.motion .phone-lift{will-change:transform}
             <ul class="foot-links">
               <li><a href="https://www.instagram.com/joinlotta/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3.9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="7" r="1.15" fill="currentColor"/></svg><span>Instagram</span></a></li>
               <li><a href="https://www.linkedin.com/company/lotta-health" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.1 10.6v5.9M11.6 16.5v-5.9M11.6 13.4c0-1.7.9-2.9 2.3-2.9 1.3 0 2 .95 2 2.6v3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.1" cy="7.7" r="1.05" fill="currentColor"/></svg><span>LinkedIn</span></a></li>
-              <li><p class="foot-mail">hello@lotta.health</p></li>
+              <li><p class="foot-mail"><a href="mailto:hello@lotta.health">hello@lotta.health</a></p></li>
             </ul>
           </div>
           <div class="foot-col">
@@ -1362,28 +1425,33 @@ html.motion .phone-lift{will-change:transform}
       <div class="foot-base"><p>© 2026 Lotta, Lda</p><p>Lotta does not replace healthcare professionals.</p></div>
     </div>
     <script>
-      /* The footer's newsletter box: check the address, hand it to site.js, then say thank you. */
+      /* The footer's newsletter box: check the address, hand it to site.js, and say thank you once it has really left. */
       (function () {
         var f = document.getElementById('fn-form'); if (!f) return;
-        var i = document.getElementById('fn-email'), err = document.getElementById('fn-err'), th = document.getElementById('fn-thanks');
+        var i = document.getElementById('fn-email'), err = document.getElementById('fn-err'), fail = document.getElementById('fn-fail'), th = document.getElementById('fn-thanks');
         var OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
         function bad(on) { err.hidden = !on; f.classList.toggle('is-bad', on); if (on) i.setAttribute('aria-invalid', 'true'); else i.removeAttribute('aria-invalid'); }
         f.addEventListener('submit', function (e) {
           e.preventDefault();
           var v = i.value.trim();
           if (!OK.test(v)) { bad(true); i.focus(); return; }
-          bad(false);
-          if (window.lottaSend) window.lottaSend('newsletter', { email: v });
-          f.hidden = true; th.hidden = false; th.focus({ preventScroll: true });
+          bad(false); fail.hidden = true;
+          if (!window.lottaDeliver) { fail.hidden = false; return; }
+          window.lottaDeliver('newsletter', { email: v }, f.querySelector('button'), function (sent) {
+            if (sent) { f.hidden = true; th.hidden = false; th.focus({ preventScroll: true }); }
+            else fail.hidden = false;
+          });
         });
         i.addEventListener('input', function () { if (!err.hidden && OK.test(i.value.trim())) bad(false); });
       })();
     </script>
   </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<!-- The three animation files (GSAP 3.12.5, its ScrollTrigger, Lenis 1.1.13) are kept on this site too (the vendor folder inside assets): the same
+     files the page used to fetch from two outside servers. If one of those stalled, the buttons did nothing until it gave up. -->
+<script src="assets/vendor/gsap-3.12.5.min.js"></script>
+<script src="assets/vendor/ScrollTrigger-3.12.5.min.js"></script>
+<script src="assets/vendor/lenis-1.1.13.min.js"></script>
 <script src="site.js" defer></script>
 <script>
 (function () {
@@ -1414,6 +1482,19 @@ html.motion .phone-lift{will-change:transform}
     vids.forEach(function (v) { io.observe(v); });
   })();
 
+
+  /* ---------- Pictures further down the page: fetched when the visitor is within about a screen of them ---------- */
+  (function latePictures() {
+    var late = qa('.bg-late');
+    if (!('IntersectionObserver' in window)) { late.forEach(function (el) { el.classList.add('bg-in'); }); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('bg-in'); io.unobserve(e.target); } });
+    }, { rootMargin: '80% 0px' });
+    /* started once the page has taken its final shape (the first screen holds for a while as one scrolls, which pushes everything below it down) */
+    var started = false;
+    function start() { if (started) return; started = true; late.forEach(function (el) { io.observe(el); }); }
+    if (d.readyState === 'complete') setTimeout(start, 300); else { window.addEventListener('load', function () { setTimeout(start, 300); }); setTimeout(start, 2500); }
+  })();
 
   /* ---------- Marta's sun (gradient 8): rises once, then rests high and breathes ---------- */
   var sunV = q('.sun-a'), sunIn = q('.sun-in'), sunStarted = false, sunRisen = false, sunVisible = true, breath = null;
@@ -1478,9 +1559,10 @@ html.motion .phone-lift{will-change:transform}
   window.addEventListener('scroll', setNav, { passive: true }); window.addEventListener('resize', setNav); setNav();
 
   /* ---------- Phone menu sheet ---------- */
-  var sheet = q('#sheet'), menuBtn = q('.nav-menu'), closeBtn = q('.sheet-close');
+  var sheet = q('#sheet'), menuBtn = q('.nav-menu'), closeBtn = q('.sheet-close'), behindSheet = qa('#nav, main, footer.foot');
   function openSheet() {
     sheet.hidden = false; menuBtn.setAttribute('aria-expanded', 'true');
+    behindSheet.forEach(function (el) { el.setAttribute('inert', ''); });
     if (lenis) lenis.stop(); else d.body.style.overflow = 'hidden';
     if (motion) gsap.fromTo(qa('.sheet-links a, .sheet > .btn'), { y: 28, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .7, stagger: .05, ease: 'expo.out' });
     closeBtn.focus();
@@ -1488,6 +1570,7 @@ html.motion .phone-lift{will-change:transform}
   function closeSheet(returnFocus) {
     if (sheet.hidden) return;
     sheet.hidden = true; menuBtn.setAttribute('aria-expanded', 'false');
+    behindSheet.forEach(function (el) { el.removeAttribute('inert'); });
     if (lenis) lenis.start(); else d.body.style.overflow = '';
     if (returnFocus) menuBtn.focus();
   }
@@ -1526,12 +1609,12 @@ html.motion .phone-lift{will-change:transform}
     if (!t) return;
     e.preventDefault();
     closeSheet(false);
-    if (id === '#top') { if (lenis) lenis.scrollTo(0, { duration: 1.6 }); else window.scrollTo(0, 0); }
-    else if (lenis) lenis.scrollTo(landAt(t), { duration: 1.6, easing: function (x) { return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; } });
+    if (id === '#top') { if (lenis) lenis.scrollTo(0, { duration: .9 }); else window.scrollTo(0, 0); }
+    else if (lenis) lenis.scrollTo(landAt(t), { duration: .9, easing: function (x) { return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; } });
     else window.scrollTo(0, landAt(t));
     var focusEl = t;
     if (!focusEl.hasAttribute('tabindex')) focusEl.setAttribute('tabindex', '-1');
-    setTimeout(function () { try { focusEl.focus({ preventScroll: true }); } catch (_) {} }, lenis ? 1650 : 0);
+    setTimeout(function () { try { focusEl.focus({ preventScroll: true }); } catch (_) {} }, lenis ? 950 : 0);
   });
 
   /* ---------- FAQ: each question opens and closes by itself; several can stay open ---------- */
@@ -1552,14 +1635,32 @@ html.motion .phone-lift{will-change:transform}
     errEl.hidden = !bad;
     if (input) { if (bad) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid'); }
   }
-  var nlForm = q('#nl-form'), nlEmail = q('#nl-email'), nlErr = q('#nl-err'), nlThanks = q('#nl-thanks');
+  /* Hands a sign-up to site.js and waits for the answer: done(true) once it has left (or, on the preview, would have left),
+     done(false) when it could not be sent or nothing came back in 15 seconds. The button rests while it waits. */
+  function lottaDeliver(kind, data, btn, done) {
+    if (btn && btn.disabled) return;
+    if (!window.lottaSend) { done(false); return; }
+    var settled = false, t;
+    function finish(res) {
+      if (settled) return; settled = true; clearTimeout(t);
+      if (btn) { btn.disabled = false; btn.removeAttribute('aria-busy'); }
+      done(res === 'sent' || res === 'opened' || res === 'preview');
+    }
+    if (btn) { btn.disabled = true; btn.setAttribute('aria-busy', 'true'); }
+    t = setTimeout(function () { finish('error'); }, 15000);
+    try { Promise.resolve(window.lottaSend(kind, data)).then(finish, function () { finish('error'); }); } catch (_) { finish('error'); }
+  }
+  window.lottaDeliver = lottaDeliver;   // the footer's own small script uses it too
+  var nlForm = q('#nl-form'), nlEmail = q('#nl-email'), nlErr = q('#nl-err'), nlFail = q('#nl-fail'), nlThanks = q('#nl-thanks');
   nlForm.addEventListener('submit', function (e) {
     e.preventDefault();
     var ok = EMAIL.test(nlEmail.value.trim());
-    flag(nlEmail, nlErr, !ok);
+    flag(nlEmail, nlErr, !ok); nlFail.hidden = true;
     if (!ok) { nlEmail.focus(); return; }
-    if (window.lottaSend) window.lottaSend('newsletter', { email: nlEmail.value.trim() });
-    nlForm.hidden = true; nlThanks.hidden = false; nlThanks.focus({ preventScroll: true });
+    lottaDeliver('newsletter', { email: nlEmail.value.trim() }, q('button', nlForm), function (sent) {
+      if (sent) { nlForm.hidden = true; nlThanks.hidden = false; nlThanks.focus({ preventScroll: true }); }
+      else nlFail.hidden = false;
+    });
   });
   nlEmail.addEventListener('input', function () { if (!nlErr.hidden && EMAIL.test(nlEmail.value.trim())) flag(nlEmail, nlErr, false); });
 
@@ -1567,7 +1668,8 @@ html.motion .phone-lift{will-change:transform}
   var dlg = q('#bq'), bf = q('#beta-form'), steps = qa('.bq-step', dlg), segs = qa('.bq-prog i', dlg);
   var bBack = q('.bq-back', dlg), bNext = q('.bq-next', dlg), bKick = q('#bq-kick'), bThanks = q('#bf-thanks');
   var bName = q('#bf-name'), bEmail = q('#bf-email'), bConsent = q('#bf-consent'), bNews = q('#bf-news');
-  var cur = 0, bOpener = null, bOpen = false, bIntro = q('.bq-intro', dlg), bTop = q('.bq-top', dlg);
+  var cur = 0, bOpener = null, bOpen = false, bMeta = q('#bq-meta'), bSendErr = q('#bf-send-err'), bSending = false;
+  var finePointer = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);   // a mouse, not a finger
   segs.forEach(function (g, k) { if (k >= steps.length) g.remove(); });
   segs = qa('.bq-prog i', dlg);
   function radioVal(n) { var r = qa('input[name="' + n + '"]', bf).filter(function (x) { return x.checked; })[0]; return r ? r.value : ''; }
@@ -1580,11 +1682,18 @@ html.motion .phone-lift{will-change:transform}
     consent: function () { return { input: bConsent, err: q('#bf-consent-err'), ok: bConsent.checked, focus: bConsent }; }
   };
   function stepCheck(k) { return CHECKS[steps[k].getAttribute('data-check')](); }
-  function focusStep() { var c = stepCheck(cur); try { c.focus.focus({ preventScroll: true }); } catch (_) {} }
+  /* The cursor goes into the box of the question on show. One exception: when the pop-up opens on a phone at the first question,
+     the keyboard is not raised by itself, so the welcome lines can be read first; the line "Step 1 of 5" takes the focus instead. */
+  function focusStep(opening) {
+    var c = stepCheck(cur), el = opening && cur === 0 && !finePointer ? bKick : c.focus;
+    try { el.focus({ preventScroll: true }); } catch (_) {}
+  }
   function paint() {
     steps.forEach(function (st, k) { st.hidden = k !== cur; });
     segs.forEach(function (g, k) { g.classList.toggle('on', k <= cur); });
-    bBack.disabled = false;
+    bBack.disabled = cur === 0;
+    bMeta.hidden = cur !== 0;
+    bSendErr.hidden = true;
     bKick.textContent = 'Step ' + (cur + 1) + ' of ' + steps.length;
     dlg.setAttribute('data-step', steps[cur].getAttribute('data-check'));   /* the look can follow the question (the glass rises for consent) */
     q('span', bNext).textContent = cur === steps.length - 1 ? 'Join the beta' : 'Continue';
@@ -1592,7 +1701,8 @@ html.motion .phone-lift{will-change:transform}
   function goStep(k, dir) {
     var nm = bName.value.trim(); q('.bq-name', dlg).textContent = nm; q('.bq-hi', dlg).hidden = !nm;
     cur = k; paint();
-    if (motion) gsap.fromTo(steps[cur], { x: 24 * (dir || 1), autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: .3, ease: 'power3.out' });
+    /* fade with opacity, never autoAlpha: autoAlpha hides the step for an instant, and a hidden box cannot take the cursor */
+    if (motion) gsap.fromTo(steps[cur], { x: 24 * (dir || 1), opacity: 0 }, { x: 0, opacity: 1, duration: .3, ease: 'power3.out' });
     focusStep();
   }
   /* The pop-up's picture is fetched ahead of time: once the page has settled, or the moment someone points at or touches a
@@ -1617,9 +1727,9 @@ html.motion .phone-lift{will-change:transform}
     html.classList.add('bq-open'); if (lenis) lenis.stop();
     if (motion) {
       gsap.fromTo(q('.bq-veil', dlg), { autoAlpha: 0 }, { autoAlpha: 1, duration: .3, ease: 'power2.out' });
-      gsap.fromTo(q('.bq-card', dlg), { y: 24, scale: .97, autoAlpha: 0 }, { y: 0, scale: 1, autoAlpha: 1, duration: .35, ease: 'power3.out' });
+      gsap.fromTo(q('.bq-card', dlg), { y: 24, scale: .97, opacity: 0, visibility: 'visible' }, { y: 0, scale: 1, opacity: 1, duration: .35, ease: 'power3.out' });   // visible from the first instant, so the focus below can land
     }
-    if (!bIntro.hidden) q('.bq-start', dlg).focus({ preventScroll: true }); else if (!bf.hidden) focusStep(); else { var t = q('.bq-done:not([hidden]) .thanks-t', dlg); if (t) t.focus({ preventScroll: true }); }
+    if (!bf.hidden) focusStep(true); else { var t = q('.bq-done:not([hidden]) .thanks-t', dlg); if (t) t.focus({ preventScroll: true }); }
   }
   function closeBeta() {
     if (!bOpen) return;
@@ -1639,16 +1749,7 @@ html.motion .phone-lift{will-change:transform}
   q('.bq-veil', dlg).addEventListener('click', closeBeta);
   dlg.addEventListener('click', function (e) { if (e.target === dlg) closeBeta(); });
   q('.bq-close-done', dlg).addEventListener('click', closeBeta);
-  function showIntro(animate) {
-    bIntro.hidden = false; bf.hidden = true; bTop.classList.add('is-intro'); dlg.classList.add('is-intro'); bKick.textContent = 'Join the beta';
-    if (animate && motion) gsap.fromTo(bIntro, { x: -24, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: .3, ease: 'power3.out' });
-    q('.bq-start', dlg).focus({ preventScroll: true });
-  }
-  q('.bq-start', dlg).addEventListener('click', function () {
-    bIntro.hidden = true; bf.hidden = false; bTop.classList.remove('is-intro'); dlg.classList.remove('is-intro');
-    goStep(0, 1);
-  });
-  bBack.addEventListener('click', function () { if (cur > 0) goStep(cur - 1, -1); else showIntro(true); });
+  bBack.addEventListener('click', function () { if (cur > 0) goStep(cur - 1, -1); });
   bf.addEventListener('submit', function (e) {
     e.preventDefault();
     var c = stepCheck(cur);
@@ -1656,17 +1757,20 @@ html.motion .phone-lift{will-change:transform}
     if (!c.ok) { try { c.focus.focus(); } catch (_) {} if (c.err.scrollIntoView) c.err.scrollIntoView({ block: 'nearest' }); return; }   /* on a small phone the message may be below the fold */
     if (cur < steps.length - 1) { goStep(cur + 1, 1); return; }
     for (var k = 0; k < steps.length; k++) { var ck = stepCheck(k); if (!ck.ok) { goStep(k, -1); flag(ck.input, ck.err, true); return; } }
-    if (window.lottaSend) {
-      window.lottaSend('beta', { firstName: bName.value.trim(), email: bEmail.value.trim(), country: q('#bf-country').value, stage: radioVal('stage') });
-      if (bNews.checked) window.lottaSend('newsletter', { email: bEmail.value.trim() });   // the optional box = the newsletter list
-    }
-    showDone(bThanks);
+    /* The thank-you is shown only once the sign-up has really left (audit decision B3). If it cannot be sent (no signal, something
+       blocking the sign-up service, site.js missing), the answers stay and a line says so. */
+    var data = { firstName: bName.value.trim(), email: bEmail.value.trim(), country: q('#bf-country').value, stage: radioVal('stage') }, news = bNews.checked;
+    bSendErr.hidden = true;
+    lottaDeliver('beta', data, bNext, function (ok) {
+      if (ok) { if (news && window.lottaSend) window.lottaSend('newsletter', { email: data.email }); showDone(bThanks); }   // the optional box = the newsletter list
+      else { bSendErr.hidden = false; if (bSendErr.scrollIntoView) bSendErr.scrollIntoView({ block: 'nearest' }); }
+    });
   });
   function showDone(panel) {
-    bf.hidden = true; bIntro.hidden = true; bBack.disabled = true; dlg.classList.add('is-done');
+    bf.hidden = true; bBack.disabled = true; dlg.classList.add('is-done');
     var nm2 = bName.value.trim(); q('.bq-name2', dlg).textContent = nm2; q('.bq-hi2', dlg).hidden = !nm2; bKick.textContent = 'Join the beta';
     panel.hidden = false;
-    if (motion) gsap.from(panel.children, { y: 24, autoAlpha: 0, duration: .9, stagger: .08, ease: 'expo.out' });
+    if (motion) gsap.from(panel.children, { y: 24, opacity: 0, duration: .9, stagger: .08, ease: 'expo.out' });
     q('.thanks-t', panel).focus({ preventScroll: true });
   }
   /* Choosing an answer never moves on by itself: the visitor always presses Continue (or Enter). */
@@ -1676,10 +1780,10 @@ html.motion .phone-lift{will-change:transform}
       var c = stepCheck(cur); if (!c.err.hidden && c.ok) flag(c.input, c.err, false);
     });
   });
-  paint(); showIntro(false);
+  paint();
   if (location.hash === '#join-beta') {
     try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
-    setTimeout(function () { openBeta(null); }, motion ? 4200 : 300);
+    setTimeout(function () { openBeta(null); }, html.classList.contains('intro') ? 4200 : 300);
   }
   /* Country: a dropdown with a search box */
   (function () {
@@ -1694,7 +1798,27 @@ html.motion .phone-lift{will-change:transform}
       li.addEventListener('click', function () { choose(li); });
       ul.appendChild(li);
     });
-    var items = qa('li', ul);
+    /* The likely country comes first, above a thin line: read from the region in the device's language settings ("pt-PT" gives Portugal).
+       Nothing is sent anywhere and nothing is chosen for the visitor; it only saves scrolling. The full list follows, A to Z. */
+    (function likely() {
+      var CODES = { US: 'United States', GB: 'United Kingdom', PT: 'Portugal', IE: 'Ireland', CA: 'Canada', AU: 'Australia', NZ: 'New Zealand', ES: 'Spain', FR: 'France', DE: 'Germany', IT: 'Italy', NL: 'Netherlands', BE: 'Belgium', CH: 'Switzerland', AT: 'Austria', SE: 'Sweden', NO: 'Norway', DK: 'Denmark', FI: 'Finland', BR: 'Brazil', MX: 'Mexico', IN: 'India', ZA: 'South Africa', SG: 'Singapore', AE: 'United Arab Emirates', PL: 'Poland', GR: 'Greece', LU: 'Luxembourg', IL: 'Israel', JP: 'Japan' };
+      var seen = {}, top = [];
+      (navigator.languages || [navigator.language || '']).forEach(function (l) {
+        var m = /-([A-Za-z]{2})\b/.exec(l || ''), name = m && CODES[m[1].toUpperCase()];
+        if (name && !seen[name] && LIST.indexOf(name) > -1 && top.length < 2) { seen[name] = 1; top.push(name); }
+      });
+      if (!top.length) return;
+      var first = ul.firstChild;
+      top.forEach(function (name, k) {
+        var li = d.createElement('li'); li.id = 'bf-c-top-' + k; li.setAttribute('role', 'option'); li.setAttribute('aria-selected', 'false'); li.textContent = name;
+        li._key = norm(name + ' ' + (ALIAS[name] || '')); li._top = true;
+        li.addEventListener('mousedown', function (e) { e.preventDefault(); });
+        li.addEventListener('click', function () { choose(li); });
+        ul.insertBefore(li, first);
+      });
+      var sep = d.createElement('li'); sep.className = 'cb-sep'; sep.setAttribute('role', 'presentation'); sep.setAttribute('aria-hidden', 'true'); ul.insertBefore(sep, first);
+    })();
+    var items = qa('li[role="option"]', ul), sepEl = q('.cb-sep', ul);
     function setAct(k) {
       if (act > -1 && shown[act]) shown[act].classList.remove('act');
       act = k;
@@ -1706,7 +1830,9 @@ html.motion .phone-lift{will-change:transform}
     }
     function filter() {
       var t = norm(inp.value.trim());
-      shown = items.filter(function (li) { var on = !t || li._key.indexOf(t) > -1; li.hidden = !on; return on; });
+      /* while searching, the likely country is not shown twice */
+      shown = items.filter(function (li) { var on = t ? !li._top && li._key.indexOf(t) > -1 : true; li.hidden = !on; return on; });
+      if (sepEl) sepEl.hidden = !!t;
       none.hidden = shown.length > 0;
       setAct(t && shown.length ? 0 : -1);
     }
@@ -1719,7 +1845,7 @@ html.motion .phone-lift{will-change:transform}
     function close(focusBtn) { if (pop.hidden) return; pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); if (focusBtn) btn.focus({ preventScroll: true }); }
     function choose(li) {
       val.value = li.textContent; q('.cb-val', cb).textContent = li.textContent; cb.classList.add('has-val');
-      items.forEach(function (x) { x.setAttribute('aria-selected', x === li ? 'true' : 'false'); });
+      items.forEach(function (x) { x.setAttribute('aria-selected', x.textContent === li.textContent ? 'true' : 'false'); });
       flag(null, q('#bf-country-err'), false);
       close(true);
     }
@@ -1792,10 +1918,12 @@ html.motion .phone-lift{will-change:transform}
     if (introTl) introTl.progress(1).kill();
     var loader = q('.loader'), num = q('.loader-num'), bar = q('.loader-bar i'), barW = q('.loader-bar'), logo = q('.loader-logo');
     html.classList.add('intro');
+    try { sessionStorage.setItem('lotta-opening', '1'); } catch (_) {}   // once per visit: later loads in this tab go straight to the settled page
     if (lenis) lenis.stop();
     sunReset();
+    sunPlay();   // under the counter's blue, unseen: it makes the film start arriving now (an iPhone fetches a film only once it plays); sunStart() below rewinds it
     loader.style.background = ''; loader.style.pointerEvents = '';
-    var o = { v: 0 }, waited = 0, deskNow = window.matchMedia('(min-width: 900px)').matches;
+    var o = { v: 0 }, deskNow = window.matchMedia('(min-width: 900px)').matches;
     num.textContent = '0';
     function count() { num.textContent = Math.round(o.v); }
     introTl = gsap.timeline();
@@ -1805,13 +1933,8 @@ html.motion .phone-lift{will-change:transform}
       .set('.sun', { yPercent: 12 })
       .to(o, { v: 86, duration: 1.05, ease: 'power2.inOut', onUpdate: count }, 0)
       .fromTo(bar, { scaleX: 0 }, { scaleX: .86, duration: 1.05, ease: 'power2.inOut' }, 0)
-      /* hold here until the sun video can play (at most about 3 seconds) */
-      .addPause(1.05, function () {
-        (function check() {
-          if (sunReady() || waited > 3000) { introTl.resume(); return; }
-          waited += 100; setTimeout(check, 100);
-        })();
-      })
+      /* Until 6 Oct 2026 the counter waited here, up to 3 seconds, for the sun film to be ready (on an iPhone that was every visit).
+         It no longer waits: the film's still picture is already there, and the film joins in as soon as it can. */
       /* the counter's blue is the sky: the loader turns see-through and the sun starts rising under the last numbers */
       .call(function () { loader.style.background = 'transparent'; loader.style.pointerEvents = 'none'; sunStart(); }, null, 1.06)
       .to(o, { v: 100, duration: .7, ease: 'power1.out', onUpdate: count }, 1.06)
@@ -1833,8 +1956,30 @@ html.motion .phone-lift{will-change:transform}
       }, null, 2.75);
   }
 
-  /* where the phone rests after the opening on desktop: low, tilted, over the sun */
-  var PEEK = { y: function () { return window.innerHeight * .47; }, rotateX: 12, rotateY: -12, rotateZ: 6, scale: .94 };
+  /* The page as it stands once the opening has played, without playing it: the sun already up and breathing. */
+  function settle() {
+    html.classList.remove('intro');
+    sunV.poster = 'assets/sun8-up-poster.jpg';
+    sunUp(); sunBreathe();
+  }
+  /* Arriving at a part of the page (lotta.health/#faq): land where the menu's own links land. Repeated once the fonts and pictures
+     are in, unless the visitor has started to move the page. */
+  var arriveAt = null, moved = false;
+  try { if (!html.classList.contains('intro') && location.hash.length > 1 && location.hash !== '#top') arriveAt = d.getElementById(decodeURIComponent(location.hash.slice(1))); } catch (_) {}
+  ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (ev) { window.addEventListener(ev, function () { moved = true; }, { passive: true, once: true }); });
+  function arrive() {
+    if (!arriveAt || moved) return;
+    var y = landAt(arriveAt);
+    if (lenis) lenis.scrollTo(y, { immediate: true, force: true }); else window.scrollTo(0, y);
+    ScrollTrigger.update();
+  }
+
+  /* where the phone rests after the opening on desktop: low, tilted, over the sun. Never higher than just under the words and
+     buttons, so in a short window it does not cover them (audit D5); in a tall one it rests where it always did. */
+  var PEEK = { y: function () {
+      var H = window.innerHeight, ph = q('.hero-phone .phone').offsetHeight * .94, copy = q('.hero-copy');
+      return Math.max(H * .47, copy.offsetTop + copy.offsetHeight + 28 - H / 2 + ph / 2);
+    }, rotateX: 12, rotateY: -12, rotateZ: 6, scale: .94 };
   /* phones: the phone rests just under the beta line, tilted a little less */
   var PEEK_M = {
     y: function () {
@@ -1886,10 +2031,10 @@ html.motion .phone-lift{will-change:transform}
       gsap.from(qa('.w > span', h), { yPercent: 115, duration: 1.2, ease: 'expo.out', stagger: .06, scrollTrigger: { trigger: h, start: 'top 88%', once: true } });
     });
     qa('.rv').forEach(function (el) {
-      gsap.from(el, { y: 36, autoAlpha: 0, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
+      gsap.from(el, { y: 36, opacity: 0, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%', once: true } });   // opacity, not autoAlpha: a section still to arrive must stay reachable by keyboard and screen reader
     });
     qa('[data-stagger]').forEach(function (g) {
-      gsap.from(g.children, { y: 48, autoAlpha: 0, duration: 1.1, ease: 'expo.out', stagger: .09, scrollTrigger: { trigger: g, start: 'top 88%', once: true } });
+      gsap.from(g.children, { y: 48, opacity: 0, duration: 1.1, ease: 'expo.out', stagger: .09, scrollTrigger: { trigger: g, start: 'top 88%', once: true } });
     });
     /* the FAQ's picture opens up as it arrives, and drifts slightly inside its frame while the section passes */
     var fp = q('.faq-pic');
@@ -1947,9 +2092,9 @@ html.motion .phone-lift{will-change:transform}
     journeyPath();
     tilt();
     ScrollTrigger.sort();
-    playIntro();
-    if (d.fonts && d.fonts.ready) d.fonts.ready.then(function () { ScrollTrigger.refresh(); });
-    window.addEventListener('load', function () { ScrollTrigger.refresh(); });
+    if (html.classList.contains('intro')) playIntro(); else { settle(); arrive(); }
+    if (d.fonts && d.fonts.ready) d.fonts.ready.then(function () { ScrollTrigger.refresh(); arrive(); });
+    window.addEventListener('load', function () { ScrollTrigger.refresh(); arrive(); });
   } catch (err) { teardown(err); sunUp(); }
 })();
 </script>

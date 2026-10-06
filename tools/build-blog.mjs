@@ -77,11 +77,10 @@ const shellSrc = readFileSync(SHELL, 'utf8');
 const grab = (re, what) => { const m = shellSrc.match(re); if (!m) { console.error(`Could not find the ${what} in ${SHELL}.`); process.exit(1); } return m[0]; };
 const up = html => html.replace(/\b(href|src)="(?!#|\/|https?:|mailto:|tel:|data:)([^"]*)"/g, '$1="../$2"');   // the blog pages sit one folder down
 const current = html => html.replace(/ aria-current="page"/g, '').replace(/(<a href="[^"]*blog\/(?:index\.html)?")>(<span>)?Blog</g, '$1 aria-current="page">$2Blog<');
-const NAV = current(up(grab(/<header class="nav">[\s\S]*?<\/header>/, 'menu')));
+const NAV = current(up(grab(/<header class="nav">[\s\S]*?<\/header>/, 'menu') + '\n' + ((shellSrc.match(/<!-- sheet -->[\s\S]*?<!-- \/sheet -->/) || [''])[0])));   // the menu bar and, with it, the phone menu
 const FOOT = current(up(grab(/<footer class="foot">[\s\S]*?<\/footer>/, 'footer')));
 const up2 = html => html.replace(/\b(href|src)="\.\.\//g, '$1="../../');                          // the same pieces, for a page one folder further down
 const ICON = up((shellSrc.match(/<link rel="(?:icon|apple-touch-icon)"[^>]*>/g) || []).join('\n'));   // the icon files sit at the site's root
-const FONTS = (shellSrc.match(/<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com[^>]*>/) || [''])[0];
 
 /* ---------- the articles ---------- */
 const fmtDate = iso => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Europe/Lisbon' });
@@ -127,11 +126,11 @@ const SAMPLES = [
 
 /* ---------- pictures: copied next to the site, so the pages do not depend on Ghost being up ---------- */
 const ghostImage = u => /\/content\/images\//.test(u) && (u.startsWith(GHOST.url + '/') || u.startsWith('https://storage.ghost.io/'));   // Ghost(Pro) keeps uploads on storage.ghost.io
-const sized = (u, w) => ghostImage(u) && !/\.(svg|gif)(\?|$)/i.test(u) && !u.includes('/content/images/size/') ? u.replace('/content/images/', `/content/images/size/w${w}/`) : u;
+const sized = (u, w, webp) => ghostImage(u) && !/\.(svg|gif)(\?|$)/i.test(u) && !u.includes('/content/images/size/') ? u.replace('/content/images/', `/content/images/size/w${w}/${webp ? 'format/webp/' : ''}`) : u;   // Ghost's own picture service resizes and converts
 const EXT = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/svg+xml': 'svg', 'image/avif': 'avif' };
-async function keep(url, name, width) {            // -> the picture's address as seen from a page inside blog/, or the original address if it cannot be fetched
+async function keep(url, name, width, webp) {      // -> the picture's address as seen from a page inside blog/, or the original address if it cannot be fetched
   try {
-    const r = await fetch(sized(url, width));
+    const r = await fetch(sized(url, width, webp));
     const type = (r.headers.get('content-type') || '').split(';')[0];
     if (!r.ok || !EXT[type]) throw new Error(`${r.status} ${type}`);
     const file = `${name}.${EXT[type]}`;
@@ -176,9 +175,12 @@ for (const g of raw) {
   p.img = cover.href; p.imgAbs = cover.abs; p.srcset = ''; p.alt = plain(g.feature_image_alt);
   const shareSrc = g.og_image || g.twitter_image;                  // a separate picture for link previews, if one was set in Ghost
   p.share = shareSrc && !g._img ? (await keep(shareSrc, g.slug + '-share', 1200)).abs : '';
-  if (g.feature_image && ghostImage(g.feature_image) && cover.href.startsWith('../')) {       // a second, smaller file for phones and for the small cards
-    const small = await keep(g.feature_image, g.slug + '-1000', 1000);
-    if (small.href.startsWith('../')) { p.srcset = `${small.href} 1000w, ${cover.href} 1600w`; p.imgS = small.href; }
+  /* Lighter copies of the cover for the pages themselves (audit A4): the WebP format at three widths, so a phone fetches a file a
+     fifth of the size. The JPEG above stays as the fallback and is the one named for link previews and search engines. */
+  if (g.feature_image && ghostImage(g.feature_image) && cover.href.startsWith('../')) {
+    const set = [];
+    for (const w of [800, 1200, 1600]) { const v = await keep(g.feature_image, `${g.slug}-${w}`, w, true); if (v.href.startsWith('../') && v.href.endsWith('.webp')) set.push([v.href, w]); }
+    if (set.length) { p.srcset = set.map(([h, w]) => `${h} ${w}w`).join(', '); p.imgS = set[0][0]; p.imgL = set[set.length - 1][0]; }
   }
   p.face = g.primary_author?.profile_image ? (await keep(g.primary_author.profile_image.replace(/^\/\//, 'https://'), 'author-' + (g.primary_author.slug || 'x'), 160)).href : '';
   // the article's own words: pictures are copied over, links to the Ghost copy point at our pages instead
@@ -252,9 +254,8 @@ ${SAMPLE ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hre
 ${image ? `<meta property="og:image" content="${esc(image)}">${og.alt ? `\n<meta property="og:image:alt" content="${esc(og.alt)}">` : ''}\n<meta name="twitter:card" content="summary_large_image">` : '<meta name="twitter:card" content="summary">'}${extra ? '\n' + extra : ''}
 ${deep ? up2(ICON) : ICON}${SAMPLE ? '' : `\n<link rel="alternate" type="application/rss+xml" title="${esc(BLOG.name)}, the Lotta blog" href="${deep ? '../' : ''}rss.xml">`}
 <meta name="theme-color" content="#F9F5EF">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-${FONTS}
+<link rel="preload" href="${root}assets/fonts/instrument-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="${root}assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${root}pages.css">
 ${ld && !SAMPLE ? `<script type="application/ld+json">${json(ld)}</script>` : ''}
 <script>
@@ -265,14 +266,16 @@ ${ld && !SAMPLE ? `<script type="application/ld+json">${json(ld)}</script>` : ''
 </script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 ${deep ? up2(NAV) : NAV}
 `;
 }
-const NL_FORM = `<form class="nl-form" id="nl-form" novalidate>
+const NL_FORM = `<form class="nl-form" id="nl-form" novalidate onsubmit="return false">
           <input id="nl-email" type="email" name="email" autocomplete="email" inputmode="email" placeholder="Your e-mail" aria-label="Your e-mail" required>
           <button class="btn btn-primary" type="submit">Subscribe</button>
         </form>
-        <p class="nl-err" id="nl-err" hidden>Please enter a valid e-mail address.</p>
+        <p class="nl-err" id="nl-err" role="alert" hidden>Please enter a valid e-mail address.</p>
+        <p class="nl-err" id="nl-fail" role="alert" hidden><span class="ph">That didn't go through. Please try again, or write to hello@lotta.health.</span></p>
         <p class="nl-thanks" id="nl-thanks" tabindex="-1" hidden>Thank you. We've sent you a welcome e-mail.</p>`;
 // The almond sign-up box that used to close the blog page and every article was taken out on 5 Oct 2026:
 // the footer now carries the newsletter sign-up on every page.
@@ -283,16 +286,19 @@ const EMPTY = `<section class="jr-empty" aria-labelledby="jr-empty-h">
       </section>`;
 const NL_JS = `<script>
 (function () {
-  var f = document.getElementById('nl-form'), i = document.getElementById('nl-email'), err = document.getElementById('nl-err'), th = document.getElementById('nl-thanks');
+  var f = document.getElementById('nl-form'), i = document.getElementById('nl-email'), err = document.getElementById('nl-err'), fail = document.getElementById('nl-fail'), th = document.getElementById('nl-thanks');
   if (!f) return;
   var OK = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/;
   f.addEventListener('submit', function (e) {
     e.preventDefault();
     var v = i.value.trim();
     if (!OK.test(v)) { err.hidden = false; i.setAttribute('aria-invalid', 'true'); i.focus(); return; }
-    err.hidden = true; i.removeAttribute('aria-invalid');
-    if (window.lottaSend) window.lottaSend('newsletter', { email: v });
-    f.hidden = true; th.hidden = false; th.focus({ preventScroll: true });
+    err.hidden = true; fail.hidden = true; i.removeAttribute('aria-invalid');
+    if (!window.lottaDeliver) { fail.hidden = false; return; }
+    window.lottaDeliver('newsletter', { email: v }, f.querySelector('button'), function (sent) {   // the thank-you only once it has really left
+      if (sent) { f.hidden = true; th.hidden = false; th.focus({ preventScroll: true }); }
+      else fail.hidden = false;
+    });
   });
 })();
 </script>`;
@@ -395,10 +401,10 @@ ${body}
 const fromHome = u => u.replace(/^\.\.\//, '');                                  // an address as seen from the home page, not from inside blog/
 function homeBlock(list) {
   if (list.length === 1) {
-    const p = list[0], img = fromHome(p.img);
+    const p = list[0], img = fromHome(p.imgL || p.img), imgS = fromHome(p.imgS || '');
     return `
     <article class="cover rv">
-      <div class="cover-img" aria-hidden="true"><div class="ci"${img ? ` style="background-image:url('${esc(img)}')"` : ''}></div></div>
+      <div class="bg-late cover-img" aria-hidden="true"><div class="ci"${img ? ` style="--cover:url('${esc(img)}')${imgS ? `; --cover-s:url('${esc(imgS)}')` : ''}"` : ''}></div></div>
       <div class="cover-body">
         <p class="cover-meta">${p.isNew ? '<span class="cover-new">New</span>' : p.tag ? `<span class="cover-new">${esc(p.tag)}</span>` : ''}<span>${esc(p.read)}</span></p>
         <h3 class="cover-t"><a class="cover-link post-link" href="${DIR}/${postHref(p.slug)}">${txt(p.title)}</a></h3>${p.excerpt ? `\n        <p class="cover-hook">${txt(p.excerpt)}</p>` : ''}
@@ -414,7 +420,7 @@ function homeBlock(list) {
     return `
       <li class="post">
         <article class="post-card">
-          <div class="post-img"><div class="pi"${img ? ` style="background-image:url('${esc(img)}')"` : ''}></div>${p.tag ? `<span class="tag">${esc(p.tag)}</span>` : ''}</div>
+          <div class="bg-late post-img"><div class="pi"${img ? ` style="background-image:url('${esc(img)}')"` : ''}></div>${p.tag ? `<span class="tag">${esc(p.tag)}</span>` : ''}</div>
           <div class="post-body">
             <h3 class="post-t"><a class="post-link" href="${DIR}/${postHref(p.slug)}">${txt(p.title)}</a></h3>${p.excerpt ? `\n            <p class="post-hook">${txt(p.excerpt)}</p>` : ''}
             <div class="post-meta"><span>${esc(p.read)}</span><button class="share" type="button" data-url="${url}"><svg class="i-ln" aria-hidden="true"><use href="#i-link"/></svg><svg class="i-ok" aria-hidden="true"><use href="#i-check"/></svg><span class="share-l">Share</span></button></div>

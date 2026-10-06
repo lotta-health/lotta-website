@@ -19,9 +19,8 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="alternate" type="application/rss+xml" title="Between Appointments, the Lotta blog" href="blog/rss.xml">
 <meta name="theme-color" content="#F9F5EF">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap">
+<link rel="preload" href="assets/fonts/instrument-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="pages.css">
 <script>
   /* A page opened by a link starts at its top, whatever the browser carried over from the page before; Back, Forward and reload keep their place. */
@@ -31,6 +30,7 @@
 </script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header class="nav">
   <div class="nav-in">
     <a class="nav-logo" href="/"><span class="logo" role="img" aria-label="Lotta, home"></span></a>
@@ -40,9 +40,50 @@
       <a href="blog/">Blog</a>
       <a href="/#faq">FAQ</a>
     </nav>
-    <a class="btn btn-primary btn-sm" href="/#join-beta">Join the beta</a>
+    <div class="nav-cta">
+      <a class="btn btn-primary btn-sm" href="/#join-beta">Join the beta</a>
+      <button class="nav-menu" type="button" aria-expanded="false" aria-controls="sheet" aria-label="Menu"><i></i><i></i></button>
+    </div>
   </div>
 </header>
+<!-- sheet -->
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+  <div class="sheet-top">
+    <a class="nav-logo" href="/"><span class="logo" role="img" aria-label="Lotta, home"></span></a>
+    <button class="sheet-close" type="button" aria-label="Close menu"></button>
+  </div>
+  <nav class="sheet-links" aria-label="Main">
+    <a href="/#inside">What's inside<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12h15M13.5 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <a href="/#journey">The journey<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12h15M13.5 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <a href="blog/">Blog<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12h15M13.5 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <a href="/#faq">FAQ<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12h15M13.5 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  </nav>
+  <a class="btn btn-primary" href="/#join-beta">Join the beta</a>
+</div>
+<script>
+  /* The phone menu: opens over the page, keeps the keyboard inside it, closes with its button, with Escape, or when a link is chosen. */
+  (function () {
+    var d = document, sheet = d.getElementById('sheet'), btn = d.querySelector('.nav-menu'); if (!sheet || !btn) return;
+    var close = sheet.querySelector('.sheet-close');
+    function behind() { return [].slice.call(d.querySelectorAll('header.nav, main, footer.foot')); }
+    function open() { sheet.hidden = false; btn.setAttribute('aria-expanded', 'true'); behind().forEach(function (e) { e.setAttribute('inert', ''); }); d.documentElement.style.overflow = 'hidden'; close.focus(); }
+    function shut(back) { if (sheet.hidden) return; sheet.hidden = true; btn.setAttribute('aria-expanded', 'false'); behind().forEach(function (e) { e.removeAttribute('inert'); }); d.documentElement.style.overflow = ''; if (back) btn.focus(); }
+    btn.addEventListener('click', open);
+    close.addEventListener('click', function () { shut(true); });
+    sheet.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('a')) shut(false); });
+    d.addEventListener('keydown', function (e) {
+      if (sheet.hidden) return;
+      if (e.key === 'Escape') { shut(true); return; }
+      if (e.key === 'Tab') {
+        var f = [].slice.call(sheet.querySelectorAll('a, button')), first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && d.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && d.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+    window.addEventListener('resize', function () { if (window.innerWidth >= 900) shut(false); });
+  })();
+</script>
+<!-- /sheet -->
 
 <main id="main">
   <div class="page">
@@ -425,11 +466,12 @@
       <div class="foot-brand">
         <a class="foot-logo" href="/" aria-label="Lotta, home"><span class="logo" role="img" aria-hidden="true"></span></a>
         <p class="foot-say"><label for="fn-email"><b>Get the new articles by e-mail.</b></label> New posts about your journey, as soon as they're out.</p>
-        <form class="foot-nl" id="fn-form" novalidate>
+        <form class="foot-nl" id="fn-form" novalidate onsubmit="return false">
           <input id="fn-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="Your e-mail" required aria-describedby="fn-err">
           <button class="btn btn-primary btn-sm" type="submit">Subscribe</button>
         </form>
-        <p class="foot-err" id="fn-err" hidden>Please enter a valid e-mail address.</p>
+        <p class="foot-err" id="fn-err" role="alert" hidden>Please enter a valid e-mail address.</p>
+        <p class="foot-err" id="fn-fail" role="alert" hidden><span class="ph">That didn't go through. Please try again, or write to hello@lotta.health.</span></p>
         <p class="foot-thanks" id="fn-thanks" tabindex="-1" hidden><span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12.6 4.4 4.4L19 7.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Thank you. We've sent you a welcome e-mail.</p>
       </div>
       <div class="foot-cols">
@@ -439,6 +481,7 @@
             <li><a href="/#inside"><span>What's inside</span></a></li>
             <li><a href="/#journey"><span>The journey</span></a></li>
             <li><a href="blog/"><span>Blog</span></a></li>
+            <li><a href="/#faq"><span>FAQ</span></a></li>
           </ul>
         </div>
         <div class="foot-col">
@@ -446,7 +489,7 @@
           <ul class="foot-links">
             <li><a href="https://www.instagram.com/joinlotta/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3.9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="7" r="1.15" fill="currentColor"/></svg><span>Instagram</span></a></li>
             <li><a href="https://www.linkedin.com/company/lotta-health" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.1 10.6v5.9M11.6 16.5v-5.9M11.6 13.4c0-1.7.9-2.9 2.3-2.9 1.3 0 2 .95 2 2.6v3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.1" cy="7.7" r="1.05" fill="currentColor"/></svg><span>LinkedIn</span></a></li>
-            <li><p class="foot-mail">hello@lotta.health</p></li>
+            <li><p class="foot-mail"><a href="mailto:hello@lotta.health">hello@lotta.health</a></p></li>
           </ul>
         </div>
         <div class="foot-col">
@@ -462,19 +505,23 @@
     <div class="foot-base"><p>© 2026 Lotta, Lda</p><p>Lotta does not replace healthcare professionals.</p></div>
   </div>
   <script>
-    /* The footer's newsletter box: check the address, hand it to site.js, then say thank you. */
+    /* The footer's newsletter box: check the address, hand it to site.js, and say thank you once it has really left
+       (window.lottaDeliver, in site.js, waits for the answer). If it cannot be sent, the box stays and a line says so. */
     (function () {
       var f = document.getElementById('fn-form'); if (!f) return;
-      var i = document.getElementById('fn-email'), err = document.getElementById('fn-err'), th = document.getElementById('fn-thanks');
+      var i = document.getElementById('fn-email'), err = document.getElementById('fn-err'), fail = document.getElementById('fn-fail'), th = document.getElementById('fn-thanks');
       var OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
       function bad(on) { err.hidden = !on; f.classList.toggle('is-bad', on); if (on) i.setAttribute('aria-invalid', 'true'); else i.removeAttribute('aria-invalid'); }
       f.addEventListener('submit', function (e) {
         e.preventDefault();
         var v = i.value.trim();
         if (!OK.test(v)) { bad(true); i.focus(); return; }
-        bad(false);
-        if (window.lottaSend) window.lottaSend('newsletter', { email: v });
-        f.hidden = true; th.hidden = false; th.focus({ preventScroll: true });
+        bad(false); fail.hidden = true;
+        if (!window.lottaDeliver) { fail.hidden = false; return; }
+        window.lottaDeliver('newsletter', { email: v }, f.querySelector('button'), function (sent) {
+          if (sent) { f.hidden = true; th.hidden = false; th.focus({ preventScroll: true }); }
+          else fail.hidden = false;
+        });
       });
       i.addEventListener('input', function () { if (!err.hidden && OK.test(i.value.trim())) bad(false); });
     })();

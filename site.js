@@ -207,4 +207,21 @@
       try { return Promise.resolve('error'); } catch (_) { return undefined; }
     }
   };
+
+  /* window.lottaDeliver(kind, data, button, done): hands a sign-up to lottaSend and waits for the answer, so a page can say
+     "thank you" only once the sign-up has really left. done(true) when it left (or, on the preview, would have left);
+     done(false) when it could not be sent, or nothing came back within 15 seconds. The button rests while it waits.
+     The home page carries the same few lines itself, so its forms still answer honestly if this file fails to load. */
+  window.lottaDeliver = function (kind, data, btn, done) {
+    if (btn && btn.disabled) return;
+    var settled = false, t;
+    function finish(res) {
+      if (settled) return; settled = true; clearTimeout(t);
+      if (btn) { btn.disabled = false; btn.removeAttribute('aria-busy'); }
+      done(res === 'sent' || res === 'opened' || res === 'preview');
+    }
+    if (btn) { btn.disabled = true; btn.setAttribute('aria-busy', 'true'); }
+    t = setTimeout(function () { finish('error'); }, 15000);
+    try { Promise.resolve(window.lottaSend(kind, data)).then(finish, function () { finish('error'); }); } catch (_) { finish('error'); }
+  };
 })();
