@@ -1,0 +1,6 @@
+# www.lotta.health
+# Everyone may read every page. The list of the site's addresses is below.
+User-agent: *
+Allow: /
+
+Sitemap: https://www.lotta.health/sitemap.xml

@@ -84,7 +84,7 @@ html.show-ph .ph{background:rgba(255,150,36,.30); box-shadow:0 0 0 2px rgba(255,
 .jr-empty{position:relative; overflow:hidden; margin-top:56px; padding:40px 24px; border-radius:32px; background:linear-gradient(180deg,#8EBFFB 0%,#C9DDF7 46%,#FEE8CB 78%,#FFC49B 100%); text-align:center}
 .jr-empty::after{content:""; position:absolute; left:50%; top:58%; width:min(760px, 90%); aspect-ratio:1; transform:translateX(-50%); border-radius:50%; background:radial-gradient(closest-side, rgba(255,100,22,.55), rgba(255,150,36,.25) 55%, rgba(255,150,36,0)); pointer-events:none}
 .jr-empty > *{position:relative; z-index:1}
-.jr-empty h2{margin:0 auto; max-width:18ch; font-family:var(--f-display); font-weight:400; font-size:clamp(1.8rem, 1.3rem + 2vw, 3rem); line-height:1.05; letter-spacing:-.035em; text-wrap:balance}
+.jr-empty h2, .jr-empty h1{margin:0 auto; max-width:18ch; font-family:var(--f-display); font-weight:400; font-size:clamp(1.8rem, 1.3rem + 2vw, 3rem); line-height:1.05; letter-spacing:-.035em; text-wrap:balance}
 .jr-empty p{margin:14px auto 0; max-width:40ch; font-size:17px; color:rgba(36,29,25,.8)}
 .nl-form{margin:26px auto 0; max-width:460px; display:flex; gap:8px; padding:6px; border-radius:999px; background:rgba(249,245,239,.7); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px); box-shadow:inset 0 0 0 1px rgba(255,255,255,.7)}
 .nl-form input{flex:1; min-width:0; height:48px; padding:0 18px; border:0; border-radius:999px; background:transparent; font-size:16px}
@@ -95,6 +95,12 @@ html.show-ph .ph{background:rgba(255,150,36,.30); box-shadow:0 0 0 2px rgba(255,
 .nl-thanks{margin-top:22px; font-weight:600}
 [hidden]{display:none!important}
 @media (min-width:900px){ .jr-empty{padding:72px 48px} }
+/* the "page not found" page (404.html): the same panel, with two buttons */
+.nf{margin-top:0}
+.nf > p{max-width:52ch}
+.nf-go{display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-top:28px !important; max-width:none !important}
+.nf-quiet{background:rgba(249,245,239,.82); color:var(--ink)}
+.nf-quiet:hover{background:#F9F5EF}
 
 /* Footer: the same card as on the home page (option-b.html), chosen on 5 Oct 2026 ("2, the rising card").
    Behind it, on every page since 5 Oct (night): the "Colour glow", her choice in place of the sunrise picture. No picture:

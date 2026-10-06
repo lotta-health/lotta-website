@@ -3,11 +3,14 @@
 # In plain words. This job runs on GitHub, in three situations:
 #   1. when the website's files change (Margarida publishes with her two commands);
 #   2. every ten minutes, to look for changes in Ghost (a new article, an edit, an article taken down);
+#      GitHub's own timer has been unreliable since late August 2026 (checks arrive hours late or not at all), so the same
+#      check can also be started from outside, by a timer service that starts this job with "timed" switched on
+#      (or sends this repository the signal "timed-check");
 #   3. when someone presses "Run workflow" on GitHub, or Ghost sends a signal (ready for later).
 # Each time it puts the site together from the files in this repository, rebuilds the blog pages fresh
 # from the articles published in Ghost (tools/build-blog.mjs), points the home page's blog block at the newest article,
 # and publishes the result.
-# On the ten-minute check it publishes only if something in Ghost has changed,
+# On a timed check (GitHub's own or one started from outside) it publishes only if something in Ghost has changed,
 # or if the website's files here are newer than what is on the live site (a publish that did not go through
 # is picked up by the next check, without anyone having to publish again).
 #
@@ -28,8 +31,13 @@ on:
   schedule:
     - cron: '7-59/10 * * * *'        # every ten minutes, off the hour (GitHub's busiest moment)
   workflow_dispatch:
+    inputs:
+      timed:
+        description: 'A timed check: publish only if something changed. Leave unticked to publish now.'
+        type: boolean
+        default: false
   repository_dispatch:
-    types: [ghost-published]
+    types: [ghost-published, timed-check]
 
 permissions:
   contents: read
@@ -63,8 +71,11 @@ jobs:
           old=$(curl -fsS --max-time 20 "https://www.lotta.health/blog/stamp.txt?t=$(date +%s)" 2>/dev/null || echo none)
           here=$(git rev-parse HEAD)
           live=$(curl -fsS --max-time 20 "https://www.lotta.health/published.txt?t=$(date +%s)" 2>/dev/null || echo unknown)
-          echo "Ghost now: $new   On the live site: $old   Website files here: ${here:0:7}   On the live site: ${live:0:7}   Started by: ${{ github.event_name }}"
-          if [ "${{ github.event_name }}" != "schedule" ]; then
+          # a timed check: GitHub's own timer, or the same check started from outside
+          timed=no
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event.action }}" = "timed-check" ] || [ "${{ inputs.timed }}" = "true" ]; then timed=yes; fi
+          echo "Ghost now: $new   On the live site: $old   Website files here: ${here:0:7}   On the live site: ${live:0:7}   Started by: ${{ github.event_name }} ${{ github.event.action }}   Timed check: $timed"
+          if [ "$timed" = "no" ]; then
             echo "go=yes" >> "$GITHUB_OUTPUT"
           elif [ "$live" != "unknown" ] && [ "$live" != "$here" ]; then
             echo "::notice::The website's files here are newer than what is on the live site: an earlier publish did not go through. Publishing now."

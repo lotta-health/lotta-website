@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>Between Appointments</title>
+  <link>https://www.lotta.health/blog/</link>
+  <description>Honest conversations about life on GLP-1s, from Lotta.</description>
+  <language>en</language>
+  <atom:link href="https://www.lotta.health/blog/rss.xml" rel="self" type="application/rss+xml"/>
+  <lastBuildDate>Mon, 05 Oct 2026 19:02:29 GMT</lastBuildDate>
+  <item>
+    <title>Meet Lotta: why we're building it</title>
+    <link>https://www.lotta.health/blog/meet-lotta-why-were-building-it/</link>
+    <guid isPermaLink="true">https://www.lotta.health/blog/meet-lotta-why-were-building-it/</guid>
+    <pubDate>Mon, 05 Oct 2026 17:35:35 GMT</pubDate>
+    <dc:creator>Lotta Team</dc:creator>
+    <description>If you're here, you probably already know that GLP-1 medications can change your life. What most people don't realise is that they change more than just how you eat.</description>
+  </item>
+</channel>
+</rss>

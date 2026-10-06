@@ -1,17 +1,27 @@
 #!/usr/bin/env node
 // Builds the Lotta blog from the articles published in Ghost (https://between-appointments.ghost.io).
 //
-//   node build-blog.mjs             preview: writes blog/index.html, blog/<article>.html and assets/blog/* in this folder.
+//   node build-blog.mjs             preview: writes blog/index.html, blog/<article>/index.html and assets/blog/* in this folder.
 //                                   While Ghost has no article yet, the preview shows the seven sample articles instead (marked as samples),
 //                                   so the layout can be seen; the live form never does this.
 //   node build-blog.mjs --sample    preview with seven sample articles, into blog-sample/ (to judge the layout; never published)
 //   node build-blog.mjs --live --out DIR --shell FILE
-//                                   the form the live site uses (clean addresses such as /blog/meet-lotta); run by deploy.mjs,
+//                                   the form the live site uses (clean addresses such as /blog/meet-lotta/); run by deploy.mjs,
 //                                   and by the refresh job on GitHub (github/publish.yml), where this file sits in tools/
 //   --home FILE                     also rewrites the blog block on the home page in FILE: one article = the big cover, two or more = a row of
 //                                   cards with the latest three. In the preview this is option-b.html by itself; the live form must be told.
 //   node build-blog.mjs --stamp     prints a short fingerprint of what is published in Ghost right now, and writes nothing.
 //                                   The refresh job compares it with blog/stamp.txt on the live site to see whether anything changed.
+//
+// For search engines and AI assistants it also writes, each time: sitemap.xml (the list of the site's addresses, with the date each
+// article last changed), blog/rss.xml (the blog's feed), and inside every page the title, description, share picture and
+// "structured data" (who published what, when, and where the page sits in the site). What the writer fills in under an article's
+// settings in Ghost is honoured: "Meta title", "Meta description", "Canonical URL", the X/Facebook card fields, the picture's alt text,
+// the excerpt, tags, and the author's own page (bio, website, LinkedIn). An empty field falls back to the article's own words.
+//
+// Each article is a folder with one page inside (blog/<article>/index.html). On GitHub Pages that gives every article exactly one
+// address, /blog/<article>/, and the same address typed without the last slash is forwarded to it by GitHub itself. (A single file
+// blog/<article>.html, the earlier form, answered at two addresses and gave "not found" for the form with a slash.)
 //
 // The menu and footer are lifted from an existing inner page (legal.html), so they can never drift from the rest of the site.
 // The cards on the blog page are drawn by blog.js, which the page also loads to re-draw them when a topic is picked.
@@ -42,7 +52,7 @@ const warnings = [];
 const warn = m => { warnings.push(m); };
 
 /* The fingerprint: it changes when an article is published, edited, re-tagged or taken down, and when one stops being "New". */
-const stampOf = list => createHash('sha1').update(JSON.stringify(list.map(g => [g.id, g.slug, g.published_at, g.updated_at, (g.tags || []).map(t => t.name), g.primary_author?.name || '', Date.now() - Date.parse(g.published_at) < NEW_DAYS * 864e5]))).digest('hex').slice(0, 16);
+const stampOf = list => createHash('sha1').update(JSON.stringify(list.map(g => [g.id, g.slug, g.published_at, g.updated_at, (g.tags || []).map(t => t.name), (g.authors || [g.primary_author]).filter(Boolean).map(a => [a.name, a.bio, a.website, a.linkedin, a.profile_image]), Date.now() - Date.parse(g.published_at) < NEW_DAYS * 864e5]))).digest('hex').slice(0, 16);
 if (flag('stamp')) { console.log(stampOf(await fromGhost())); process.exit(0); }
 
 // blog.js sits beside this file in the working folder, and one folder up when this file is in tools/ on GitHub
@@ -52,10 +62,14 @@ await import(pathToFileURL(BLOG_JS).href);
 const { main: drawMain, cards: drawCards, pic: drawPic, esc, txt } = globalThis.LottaBlog;
 
 /* ---------- addresses ---------- */
-const listHref = LIVE ? './' : 'index.html';                       // from any page inside blog/
-const postHref = slug => LIVE ? slug : slug + '.html';
+const listHref = LIVE ? './' : 'index.html';                       // from the blog page (blog/index.html)
+const postHref = slug => LIVE ? slug + '/' : slug + '/index.html'; // an article, as seen from the blog page
 const listUrl = SITE + '/blog/';
-const postUrl = slug => `${SITE}/blog/${slug}`;
+const postUrl = slug => `${SITE}/blog/${slug}/`;
+// An article's page sits one folder further down (blog/<article>/index.html), so from there everything is one step further up.
+const backToList = LIVE ? '../' : '../index.html';
+const deeper = s => s ? String(s).replace(/(^|,\s*)\.\.\//g, '$1../../') : s;                    // a picture's address (or a list of them)
+const fromPost = o => ({ ...o, href: '../' + o.href, img: deeper(o.img), srcset: deeper(o.srcset) });    // a card shown on an article page
 
 /* ---------- the menu and footer, from an existing inner page ---------- */
 if (!existsSync(SHELL)) { console.error(`Cannot find ${SHELL} (the page the menu and footer are taken from). Run python3 make-pages.py first.`); process.exit(1); }
@@ -65,7 +79,8 @@ const up = html => html.replace(/\b(href|src)="(?!#|\/|https?:|mailto:|tel:|data
 const current = html => html.replace(/ aria-current="page"/g, '').replace(/(<a href="[^"]*blog\/(?:index\.html)?")>(<span>)?Blog</g, '$1 aria-current="page">$2Blog<');
 const NAV = current(up(grab(/<header class="nav">[\s\S]*?<\/header>/, 'menu')));
 const FOOT = current(up(grab(/<footer class="foot">[\s\S]*?<\/footer>/, 'footer')));
-const ICON = (shellSrc.match(/<link rel="icon"[^>]*>/) || [''])[0];
+const up2 = html => html.replace(/\b(href|src)="\.\.\//g, '$1="../../');                          // the same pieces, for a page one folder further down
+const ICON = up((shellSrc.match(/<link rel="(?:icon|apple-touch-icon)"[^>]*>/g) || []).join('\n'));   // the icon files sit at the site's root
 const FONTS = (shellSrc.match(/<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com[^>]*>/) || [''])[0];
 
 /* ---------- the articles ---------- */
@@ -145,14 +160,22 @@ for (const g of raw) {
   const tags = (g.tags || []).filter(t => t.visibility !== 'internal' && !String(t.name).startsWith('#')).map(t => t.name);
   const p = {
     slug: g.slug, title: plain(g.title), excerpt: plain(g.custom_excerpt), tag: tags[0] || '', tags,
-    desc: clip(g.meta_description || g.custom_excerpt || g.excerpt, 160),
+    desc: clip(g.meta_description || g.custom_excerpt, 160),          // if both are empty in Ghost, it is taken from the article's first sentences, further down
     iso: g.published_at, mod: g.updated_at || g.published_at, date: fmtDate(g.published_at), read: Math.max(1, g.reading_time || 1) + ' min read',
     isNew: now - Date.parse(g.published_at) < NEW_DAYS * 864e5, author: g.primary_author?.name || 'The Lotta team',
     credit: g.feature_image_caption || '', href: postHref(g.slug), pos: g._pos || '',
+    // what the writer filled in under the article's settings in Ghost (empty when left blank)
+    metaTitle: plain(g.meta_title), canonical: /^https?:\/\//.test(g.canonical_url || '') ? g.canonical_url : '',
+    ogTitle: plain(g.og_title || g.twitter_title), ogDesc: plain(g.og_description || g.twitter_description),
+    words: plain(String(g.html || '').replace(/<[^>]+>/g, ' ')).split(' ').filter(Boolean).length,
+    by: (g.authors?.length ? g.authors : [g.primary_author]).filter(Boolean).map(a => ({ name: plain(a.name), bio: plain(a.bio), site: a.website || '',
+      same: [a.linkedin && 'https://www.linkedin.com/' + String(a.linkedin).replace(/^\//, ''), a.instagram && 'https://www.instagram.com/' + String(a.instagram).replace(/^@/, '')].filter(Boolean) })),
   };
   const cover = g._img ? { href: g._img, abs: '' } : g.feature_image ? await keep(g.feature_image, g.slug, 1600) : fallbackCover();
   if (!g._img && !g.feature_image) warn(`"${p.title}" has no feature picture in Ghost; it shows the default picture`);
   p.img = cover.href; p.imgAbs = cover.abs; p.srcset = ''; p.alt = plain(g.feature_image_alt);
+  const shareSrc = g.og_image || g.twitter_image;                  // a separate picture for link previews, if one was set in Ghost
+  p.share = shareSrc && !g._img ? (await keep(shareSrc, g.slug + '-share', 1200)).abs : '';
   if (g.feature_image && ghostImage(g.feature_image) && cover.href.startsWith('../')) {       // a second, smaller file for phones and for the small cards
     const small = await keep(g.feature_image, g.slug + '-1000', 1000);
     if (small.href.startsWith('../')) { p.srcset = `${small.href} 1000w, ${cover.href} 1600w`; p.imgS = small.href; }
@@ -188,6 +211,16 @@ for (const g of raw) {
     seen.add(id);
     return `<h2${attrs} id="${id}">${inner}</h2>`;
   });
+  // No description written in Ghost: the article's own opening sentences (whole sentences from its paragraphs, never a heading,
+  // never cut in the middle), up to about 160 characters. Search engines show this under the page's title.
+  if (!p.desc) {
+    const paras = [...html.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/g)].map(m => plain(m[1].replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#39;|&rsquo;/g, "'").replace(/&quot;/g, '"'))).filter(t => t.length > 40);
+    let d = '';
+    for (const sentence of paras.join(' ').match(/[^.!?]+[.!?]+(?=\s|$)/g) || []) { if (d && (d + sentence).length > 165) break; d += sentence; if (d.length > 110) break; }
+    p.desc = d.trim().length > 200 ? clip(d, 160) : d.trim() || clip(g.excerpt, 160);
+    if (!g._img) warn(`"${p.title}" has no excerpt or meta description in Ghost; search engines are shown its opening sentences instead: "${p.desc}"`);
+  }
+  if (!g._img && !p.alt) warn(`"${p.title}": its cover picture has no description (alt text) in Ghost; people using a screen reader, and search engines, get none`);
   const left = plain(html.replace(/<[^>]+>/g, ' ')).match(/\[[^\]\n]{2,40}\]/g);
   if (left) warn(`"${p.title}" still has ${left.length === 1 ? 'a placeholder' : 'placeholders'} in its text: ${[...new Set(left)].join(', ')}`);
   if (/<(script|iframe)\b/i.test(html)) warn(`"${p.title}" embeds something from another site (a video, a post, a script). Such embeds can set cookies on visitors: check before publishing.`);
@@ -201,7 +234,8 @@ const topics = [...TOPIC_ORDER.filter(t => used.includes(t)), ...used.filter(t =
 
 /* ---------- the pieces of a page ---------- */
 const json = o => JSON.stringify(o).replace(/</g, '\\u003c');
-function head({ title, desc, url, image, type, ld }) {
+function head({ title, desc, url, image, type, ld, og = {}, extra = '', deep = false }) {
+  const root = deep ? '../../' : '../';                    // the way back to the site's root from this page
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -209,19 +243,19 @@ function head({ title, desc, url, image, type, ld }) {
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
-${SAMPLE ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${url}">`}
+${SAMPLE ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${url}">\n<meta name="robots" content="max-image-preview:large">`}
 <meta property="og:site_name" content="Lotta">
 <meta property="og:type" content="${type}">
-<meta property="og:title" content="${esc(title.replace(/ · Lotta$/, ''))}">
-<meta property="og:description" content="${esc(desc)}">
+<meta property="og:title" content="${esc(og.title || title.replace(/ · Lotta$/, ''))}">
+<meta property="og:description" content="${esc(og.desc || desc)}">
 <meta property="og:url" content="${url}">
-${image ? `<meta property="og:image" content="${esc(image)}">\n<meta name="twitter:card" content="summary_large_image">` : '<meta name="twitter:card" content="summary">'}
-${ICON}
+${image ? `<meta property="og:image" content="${esc(image)}">${og.alt ? `\n<meta property="og:image:alt" content="${esc(og.alt)}">` : ''}\n<meta name="twitter:card" content="summary_large_image">` : '<meta name="twitter:card" content="summary">'}${extra ? '\n' + extra : ''}
+${deep ? up2(ICON) : ICON}${SAMPLE ? '' : `\n<link rel="alternate" type="application/rss+xml" title="${esc(BLOG.name)}, the Lotta blog" href="${deep ? '../' : ''}rss.xml">`}
 <meta name="theme-color" content="#F9F5EF">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 ${FONTS}
-<link rel="stylesheet" href="../pages.css">
+<link rel="stylesheet" href="${root}pages.css">
 ${ld && !SAMPLE ? `<script type="application/ld+json">${json(ld)}</script>` : ''}
 <script>
   /* A page opened by a link starts at its top, whatever the browser carried over from the page before; Back, Forward and reload keep their place. */
@@ -231,7 +265,7 @@ ${ld && !SAMPLE ? `<script type="application/ld+json">${json(ld)}</script>` : ''
 </script>
 </head>
 <body>
-${NAV}
+${deep ? up2(NAV) : NAV}
 `;
 }
 const NL_FORM = `<form class="nl-form" id="nl-form" novalidate>
@@ -262,23 +296,26 @@ const NL_JS = `<script>
   });
 })();
 </script>`;
-const TAIL = extra => `
-${FOOT}
+const TAIL = (extra, deep = false) => `
+${deep ? up2(FOOT) : FOOT}
 ${SAMPLE ? '<p class="bl-sample">Sample articles, to show the layout</p>' : ''}
-<script src="../site.js" defer></script>
+<script src="${deep ? '../../' : '../'}site.js" defer></script>
 ${extra}
 </body>
 </html>
 `;
 const BACK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-const ORG = { '@type': 'Organization', name: 'Lotta', url: SITE + '/' };
+const ORG_ID = SITE + '/#organization', SITE_ID = SITE + '/#website';     // the same names the home page gives the company and the site
+const ORG = { '@type': 'Organization', '@id': ORG_ID, name: 'Lotta', url: SITE + '/', logo: { '@type': 'ImageObject', url: SITE + '/assets/lotta-logo.png', width: 2400, height: 761 } };
+const isTeam = n => /\bteam\b/i.test(n) || /^lotta$/i.test(n);            // "Lotta Team" is the company writing, not a person
 
 /* ---------- the blog page ---------- */
 function listPage() {
   const pills = posts.length > 1 && topics.length > 1
     ? `\n        <div class="bl-pills" role="group" aria-label="Filter by topic"><span>Filter by:</span><button type="button" data-tag="" aria-pressed="true">All</button>${topics.map(t => `<button type="button" data-tag="${esc(t)}" aria-pressed="false">${esc(t)}</button>`).join('')}</div>` : '';
   return head({ title: `Blog · ${BLOG.name} · Lotta`, desc: BLOG.desc, url: listUrl, image: posts[0]?.imgAbs, type: 'website',
-    ld: { '@context': 'https://schema.org', '@type': 'Blog', name: BLOG.name, description: BLOG.desc, url: listUrl, publisher: ORG } }) + `
+    ld: { '@context': 'https://schema.org', '@type': 'Blog', '@id': listUrl + '#blog', name: BLOG.name, description: BLOG.desc, url: listUrl, inLanguage: 'en', publisher: ORG, isPartOf: { '@id': SITE_ID },
+      blogPost: posts.slice(0, 30).map(p => ({ '@type': 'BlogPosting', headline: p.title, url: p.canonical || postUrl(p.slug), datePublished: p.iso, dateModified: p.mod })) } }) + `
 <main id="main">
   <div class="page blog">
     <div class="wrap">
@@ -295,31 +332,42 @@ function listPage() {
 
 /* ---------- one article ---------- */
 function postPage(p) {
-  const others = lean.filter(o => o.slug !== p.slug).slice(0, 3);
-  const face = p.face ? `<i style="background-image:url('${esc(p.face)}')"></i>` : '<i><span class="logo"></span></i>';
-  return head({ title: `${p.title} · Lotta`, desc: p.desc || BLOG.desc, url: postUrl(p.slug), image: p.imgAbs, type: 'article',
-    ld: { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: p.title, description: p.desc, image: p.imgAbs ? [p.imgAbs] : undefined, datePublished: p.iso, dateModified: p.mod,
-      author: { '@type': p.author === 'The Lotta team' ? 'Organization' : 'Person', name: p.author }, publisher: ORG, mainEntityOfPage: postUrl(p.slug), isPartOf: { '@type': 'Blog', name: BLOG.name, url: listUrl } } }) + `
+  const others = lean.filter(o => o.slug !== p.slug).slice(0, 3).map(fromPost);
+  const face = p.face ? `<i style="background-image:url('${esc(deeper(p.face))}')"></i>` : '<i><span class="logo"></span></i>';
+  // the article's own pictures, and its links to other articles, as seen from one folder further down
+  const body = p.html.replace(/\b(src|href)="\.\.\//g, '$1="../../').replace(/\bhref="(?!#|\/|\.\.\/|https?:|mailto:|tel:)([^"]*)"/g, 'href="../$1"');
+  const url = p.canonical || postUrl(p.slug);
+  const authors = (p.by.length ? p.by : [{ name: p.author, bio: '', site: '', same: [] }]).map(a => isTeam(a.name) ? { '@type': 'Organization', '@id': ORG_ID, name: 'Lotta', url: SITE + '/' }
+    : { '@type': 'Person', name: a.name, description: a.bio || undefined, url: a.site || a.same[0] || undefined, sameAs: a.same.length ? a.same : undefined });
+  return head({ deep: true, title: p.metaTitle || `${p.title} · Lotta`, desc: p.desc || BLOG.desc, url, image: p.share || p.imgAbs, type: 'article',
+    og: { title: p.ogTitle || p.title, desc: p.ogDesc, alt: p.share ? '' : p.alt },
+    extra: `<meta property="article:published_time" content="${esc(p.iso)}">\n<meta property="article:modified_time" content="${esc(p.mod)}">${p.tag ? `\n<meta property="article:section" content="${esc(p.tag)}">` : ''}`,
+    ld: { '@context': 'https://schema.org', '@graph': [
+      { '@type': 'BlogPosting', '@id': url + '#article', headline: p.title, description: p.desc, image: p.imgAbs ? [p.imgAbs] : undefined, datePublished: p.iso, dateModified: p.mod,
+        author: authors.length === 1 ? authors[0] : authors, publisher: ORG, mainEntityOfPage: { '@type': 'WebPage', '@id': url }, url, inLanguage: 'en', wordCount: p.words || undefined,
+        articleSection: p.tag || undefined, keywords: p.tags.length ? p.tags.join(', ') : undefined, isPartOf: { '@type': 'Blog', '@id': listUrl + '#blog', name: BLOG.name, url: listUrl } },
+      { '@type': 'BreadcrumbList', itemListElement: [['Lotta', SITE + '/'], [BLOG.name, listUrl], [p.title, url]].map(([name, item], i) => ({ '@type': 'ListItem', position: i + 1, name, item })) },
+    ] } }) + `
 <main id="main">
   <article class="art">
     <div class="wrap">
       <header class="bl-ph art-cover">
-        ${drawPic(p, '(min-width:1336px) 1240px, 100vw', true).replace(' alt=""', ` alt="${esc(p.alt)}"`)}
+        ${drawPic(fromPost(p), '(min-width:1336px) 1240px, 100vw', true).replace(' alt=""', ` alt="${esc(p.alt)}"`)}
         <div class="bl-in">
           <p class="bl-meta">${p.tag ? `<span class="bl-new">${esc(p.tag)}</span>` : ''}${esc(p.read)}</p>
           <h1 class="bl-t">${txt(p.title)}</h1>${p.excerpt ? `\n          <p class="bl-hook">${txt(p.excerpt)}</p>` : ''}
         </div>
       </header>${p.credit ? `\n      <p class="art-credit">${p.credit}</p>` : ''}
       <div class="art-under">
-        <a class="art-back" href="${listHref}">${BACK}All articles</a>
+        <a class="art-back" href="${backToList}">${BACK}All articles</a>
         <p class="art-by">${face}<span><b>${esc(p.author)}</b> · <time datetime="${esc(p.iso)}">${esc(p.date)}</time></span></p>
       </div>
       <div class="art-prose">
-${p.html}
+${body}
       </div>
       <div class="art-end">
-        <a class="art-back" href="${listHref}">${BACK}All articles</a>
-        <button class="art-share" type="button" id="art-share" data-url="${postUrl(p.slug)}">Copy link</button>
+        <a class="art-back" href="${backToList}">${BACK}All articles</a>
+        <button class="art-share" type="button" id="art-share" data-url="${url}">Copy link</button>
       </div>${others.length ? `
       <section class="art-more" aria-labelledby="art-more-h">
         <h2 class="bl-h" id="art-more-h">Keep reading</h2>
@@ -338,7 +386,7 @@ ${p.html}
     catch (e) { window.prompt('Copy this link:', b.getAttribute('data-url')); }
   });
 })();
-</script>`);
+</script>`, true);
 }
 
 /* ---------- the home page's blog block ----------
@@ -401,17 +449,53 @@ if (flag('sample') && existsSync(join(OUT, 'option-b.html'))) {
 /* ---------- write ---------- */
 const dir = join(OUT, DIR);
 mkdirSync(dir, { recursive: true });
-for (const f of readdirSync(dir)) if (f.endsWith('.html')) rmSync(join(dir, f));      // this folder belongs to the builder: articles taken down in Ghost disappear here too
+// this folder belongs to the builder: articles taken down in Ghost disappear here too (as do the single-file pages of the earlier form)
+for (const f of readdirSync(dir, { withFileTypes: true })) {
+  if (f.isFile() && f.name.endsWith('.html')) rmSync(join(dir, f.name));
+  else if (f.isDirectory() && existsSync(join(dir, f.name, 'index.html'))) rmSync(join(dir, f.name), { recursive: true });
+}
 writeFileSync(join(dir, 'index.html'), listPage());
 if (!SAMPLE) writeFileSync(join(dir, 'stamp.txt'), stampOf(raw) + '\n');     // what the refresh job compares against
-for (const p of posts) writeFileSync(join(dir, p.slug + '.html'), postPage(p));
+for (const p of posts) { mkdirSync(join(dir, p.slug), { recursive: true }); writeFileSync(join(dir, p.slug, 'index.html'), postPage(p)); }
 if (DIR === 'blog') {
-  // the old address blog.html keeps working: it hands over to the blog page
-  const to = LIVE ? 'blog/' : 'blog/index.html';
-  writeFileSync(join(OUT, 'blog.html'), `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<title>Blog · ${BLOG.name} · Lotta</title>\n<link rel="canonical" href="${listUrl}">\n<meta http-equiv="refresh" content="0; url=${to}">\n</head>\n<body>\n<p><a href="${to}">${BLOG.name}, the Lotta blog</a></p>\n</body>\n</html>\n`);
+  // The stand-in page blog.html (which handed the old address over to the blog page) is gone: while it existed, the address /blog
+  // answered with it. Without it GitHub forwards /blog to /blog/ by itself, and the "not found" page sends /blog.html there too.
+  const old = join(OUT, 'blog.html');
+  if (existsSync(old) && /http-equiv="refresh"/.test(readFileSync(old, 'utf8'))) rmSync(old);
+}
+/* ---------- for search engines: the list of the site's addresses, and the blog's feed ---------- */
+if (!SAMPLE) {
+  const x = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const stamp = iso => new Date(iso).toISOString().replace(/\.\d{3}Z$/, 'Z');
+  const newest = posts.length ? new Date(Math.max(...posts.map(p => Date.parse(p.mod)))).toISOString() : '';
+  // The home page and the blog page change when an article does, so they carry the newest article's date; the legal page carries none
+  // (a date is only useful to a search engine when it is true, and this builder does not know when it was last edited).
+  // Only /legal is listed: /privacy and /terms repeat its text and point to it as the one to keep.
+  const rows = [[SITE + '/', newest], [listUrl, newest], ...posts.filter(p => !p.canonical).map(p => [postUrl(p.slug), p.mod]), [`${SITE}/legal`, '']];
+  writeFileSync(join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${rows.map(([loc, mod]) => `  <url><loc>${x(loc)}</loc>${mod ? `<lastmod>${stamp(mod)}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`);
+  writeFileSync(join(dir, 'rss.xml'), `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>${x(BLOG.name)}</title>
+  <link>${listUrl}</link>
+  <description>${x(BLOG.desc)}</description>
+  <language>en</language>
+  <atom:link href="${listUrl}rss.xml" rel="self" type="application/rss+xml"/>${newest ? `\n  <lastBuildDate>${new Date(newest).toUTCString()}</lastBuildDate>` : ''}
+${posts.slice(0, 50).map(p => `  <item>
+    <title>${x(p.title)}</title>
+    <link>${x(p.canonical || postUrl(p.slug))}</link>
+    <guid isPermaLink="true">${x(postUrl(p.slug))}</guid>
+    <pubDate>${new Date(p.iso).toUTCString()}</pubDate>
+    <dc:creator>${x(p.author)}</dc:creator>${p.tags.map(t => `\n    <category>${x(t)}</category>`).join('')}
+    <description>${x(p.desc || p.excerpt)}</description>
+  </item>`).join('\n')}
+</channel>
+</rss>
+`);
 }
 console.log(`${stoodIn ? 'Blog (preview form), SAMPLE ARTICLES because Ghost has none yet' : SAMPLE ? 'Sample blog' : LIVE ? 'Blog (live form)' : 'Blog (preview form)'}: ${posts.length} article${posts.length === 1 ? '' : 's'} written to ${dir}`);
 for (const p of posts) console.log(`  ${p.date.padEnd(13)} ${p.slug}${p.tags.length ? '   [' + p.tags.join(', ') + ']' : ''}`);
 if (!posts.length) console.log('  No articles are published in Ghost yet: the blog page shows "The first articles are on their way."');
 if (homeNote) console.log('  ' + homeNote);
+if (!SAMPLE) console.log(`  For search engines: sitemap.xml (${posts.length + 3} addresses) and ${DIR}/rss.xml (the feed).`);
 if (warnings.length) { console.log(`\nWARNINGS (${warnings.length}):`); for (const w of warnings) console.log('  ! ' + w); }
