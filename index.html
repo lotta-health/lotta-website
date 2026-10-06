@@ -522,9 +522,13 @@ html.motion .wi-ph li.now::after{content:""; position:absolute; left:0; top:50%;
 /* the cover picture, with a small blur over it (5 Oct); the box is a little larger than the card so the blurred edge never shows */
 /* two candidates for the cover (5 Oct): blog-cover-body.jpg (shown) and blog-cover-face.jpg (position 62% 12%) */
 .cover-img .ci{position:absolute; inset:-3%; background:url(assets/blog-cover-body.jpg) 50% 45%/cover no-repeat; filter:blur(3px); transition:transform 1s var(--ease)}
-/* the article's own cover, written in by build-blog.mjs as two addresses: the large copy, and a lighter one for phones */
-.cover-img .ci[style*="--cover"]{background-image:var(--cover)}
-@media (max-width:699.98px){ .cover-img .ci[style*="--cover-s"]{background-image:var(--cover-s)} }
+/* the article's own cover from Ghost, written in by build-blog.mjs as two addresses: the standard copy, and the largest one for sharp screens.
+   It is shown as uploaded: centered and with no blur (6 Oct: her cover carries the Lotta mark in its middle; the blur above stays for the built-in picture) */
+.cover-img .ci[style*="--cover"]{inset:0; background-image:var(--cover); background-position:50% 50%; filter:none}
+@media (min-width:700px) and (-webkit-min-device-pixel-ratio:1.5), (min-width:700px) and (min-resolution:1.5dppx), (-webkit-min-device-pixel-ratio:2.5), (min-resolution:2.5dppx){
+  .cover-img .ci[style*="--cover-x"]{background-image:var(--cover-x)}
+}
+@media (max-width:699.98px){ .cover{min-height:540px} }   /* a little taller on phones (was 480px), so a mark or face in the picture's middle keeps clear of the words below it */
 @media (max-width:699.98px){ .cover-img .ci{background-position:36% 45%} }
 .cover::after{content:""; position:absolute; inset:0; z-index:-1; pointer-events:none; background:linear-gradient(180deg, rgba(36,29,25,0) 30%, rgba(36,29,25,.22) 55%, rgba(36,29,25,.58) 100%)}
 @media (min-width:900px){ .cover::after{background:radial-gradient(110% 95% at 0% 100%, rgba(36,29,25,.6) 0%, rgba(36,29,25,.28) 42%, rgba(36,29,25,0) 72%)} }
@@ -1229,7 +1233,7 @@ html.motion .phone-lift{will-change:transform}
          One article: the big cover. Two or more: a row of cards with the latest three (the original "Sunrise" blog block,
          kept in saved-sections/blog-cards-1oct.html). Changes made here by hand are overwritten. -->
     <article class="cover rv">
-      <div class="bg-late cover-img" aria-hidden="true"><div class="ci" style="--cover:url('assets/blog/meet-lotta-why-were-building-it-1600.webp'); --cover-s:url('assets/blog/meet-lotta-why-were-building-it-800.webp')"></div></div>
+      <div class="bg-late cover-img" aria-hidden="true"><div class="ci" style="--cover:url('assets/blog/meet-lotta-why-were-building-it-1600.webp'); --cover-x:url('assets/blog/meet-lotta-why-were-building-it-max.webp')"></div></div>
       <div class="cover-body">
         <p class="cover-meta"><span class="cover-new">New</span><span>2 min read</span></p>
         <h3 class="cover-t"><a class="cover-link post-link" href="blog/meet-lotta-why-were-building-it/">Meet Lotta: why we're building it</a></h3>

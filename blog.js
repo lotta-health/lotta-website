@@ -9,7 +9,7 @@
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   /* a title or line of text; "GLP-1" never breaks across two lines */
   function txt(s) { return esc(s).replace(/GLP-1s?/g, '<span class="nw">$&</span>'); }
-  /* the picture: a small and a large file where the builder made both, so phones fetch the small one; only the cover loads at once */
+  /* the picture: several sizes of file where the builder made them, and the browser fetches the one that fits; only the cover loads at once */
   function pic(p, sizes, first) {
     if (!p.img) return '';
     return '<img class="bl-img" src="' + esc(p.img) + '"' + (p.srcset ? ' srcset="' + esc(p.srcset) + '" sizes="' + sizes + '"' : '') + ' alt=""' +
@@ -19,8 +19,10 @@
   /* the round ">" on the highlighted articles (the cover and the tiles beside it); it slides forward when the card is pointed at (pages.css) */
   var ARROW = '<span class="bl-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9.5 5.5 16 12l-6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
 
-  function cover(p) {
-    return '<article class="bl-ph bl-cover">' + pic(p, '(min-width:1000px) 66vw, 100vw', true) + '<div class="bl-in"><p class="bl-meta">' +
+  /* On a phone the cover is a tall card (about 460 px) over a wide picture, so the picture is shown wider than the screen:
+     its height times its shape (p.ar, width divided by height). Without this the browser fetched too small a file and the cover looked soft. */
+  function cover(p, alone) {
+    return '<article class="bl-ph bl-cover">' + pic(p, '(max-width:560px) ' + Math.ceil(460 * (p.ar || 1.5)) + 'px, ' + (alone ? '(min-width:1336px) 1240px, 100vw' : '(min-width:1000px) 66vw, 100vw'), true) + '<div class="bl-in"><p class="bl-meta">' +
       (p.isNew ? '<span class="bl-new">New</span>' : p.tag ? '<span class="bl-new">' + esc(p.tag) + '</span>' : '') + esc(p.read) + '</p>' +
       '<h2 class="bl-t">' + go(p) + '</h2>' + (p.excerpt ? '<p class="bl-hook">' + txt(p.excerpt) + '</p>' : '') + '</div>' + ARROW + '</article>';
   }
@@ -33,7 +35,7 @@
   function main(posts) {
     if (!posts.length) return '';
     var tiles = posts.slice(1, 4), rest = posts.slice(4);
-    return '<div class="bl-mosaic' + (tiles.length ? '' : ' bl-one') + '">' + cover(posts[0]) + (tiles.length ? '<div class="bl-tiles">' + tiles.map(tile).join('') + '</div>' : '') + '</div>' +
+    return '<div class="bl-mosaic' + (tiles.length ? '' : ' bl-one') + '">' + cover(posts[0], !tiles.length) + (tiles.length ? '<div class="bl-tiles">' + tiles.map(tile).join('') + '</div>' : '') + '</div>' +
       (rest.length ? '<section class="bl-latest" aria-labelledby="bl-latest-h"><h2 class="bl-h" id="bl-latest-h">Latest</h2><ul class="bl-grid">' + rest.map(card).join('') + '</ul></section>' : '');
   }
   function cards(posts) { return posts.map(card).join(''); }

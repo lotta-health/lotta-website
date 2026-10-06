@@ -126,18 +126,27 @@ const SAMPLES = [
 
 /* ---------- pictures: copied next to the site, so the pages do not depend on Ghost being up ---------- */
 const ghostImage = u => /\/content\/images\//.test(u) && (u.startsWith(GHOST.url + '/') || u.startsWith('https://storage.ghost.io/'));   // Ghost(Pro) keeps uploads on storage.ghost.io
-const sized = (u, w, webp) => ghostImage(u) && !/\.(svg|gif)(\?|$)/i.test(u) && !u.includes('/content/images/size/') ? u.replace('/content/images/', `/content/images/size/w${w}/${webp ? 'format/webp/' : ''}`) : u;   // Ghost's own picture service resizes and converts
+const sized = (u, w, as) => ghostImage(u) && !/\.(svg|gif)(\?|$)/i.test(u) && !u.includes('/content/images/size/') ? u.replace('/content/images/', `/content/images/size/w${w}/${as ? `format/${as === true ? 'webp' : as}/` : ''}`) : u;   // Ghost's own picture service resizes and converts
+const photo = u => /\.png(\?|$)/i.test(u) ? 'jpeg' : false;      // a cover uploaded as a PNG is asked for as a JPEG: the same picture at a fraction of the weight (1.7 MB became 120 KB on 6 Oct), which link previews need
 const EXT = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/svg+xml': 'svg', 'image/avif': 'avif' };
-async function keep(url, name, width, webp) {      // -> the picture's address as seen from a page inside blog/, or the original address if it cannot be fetched
+async function keep(url, name, width, as) {      // -> the picture's address as seen from a page inside blog/, or the original address if it cannot be fetched
   try {
-    const r = await fetch(sized(url, width, webp));
+    const r = await fetch(sized(url, width, as));
     const type = (r.headers.get('content-type') || '').split(';')[0];
     if (!r.ok || !EXT[type]) throw new Error(`${r.status} ${type}`);
-    const file = `${name}.${EXT[type]}`;
+    const file = `${name}.${EXT[type]}`, bytes = Buffer.from(await r.arrayBuffer());
     mkdirSync(join(OUT, 'assets', 'blog'), { recursive: true });
-    writeFileSync(join(OUT, 'assets', 'blog', file), Buffer.from(await r.arrayBuffer()));
-    return { href: '../assets/blog/' + file, abs: `${SITE}/assets/blog/${file}` };
+    writeFileSync(join(OUT, 'assets', 'blog', file), bytes);
+    return { href: '../assets/blog/' + file, abs: `${SITE}/assets/blog/${file}`, ...(type === 'image/webp' ? webpSize(bytes) : {}) };
   } catch (e) { warn(`could not copy the picture ${url} (${e.message}); the page points at Ghost for it instead`); return { href: url, abs: url }; }
+}
+function webpSize(b) {      // a WebP picture's real width and height, read from the first bytes of the file (Ghost never enlarges: asked for more than the original, it hands back the original's size)
+  if (b.length < 30 || b.toString('ascii', 0, 4) !== 'RIFF' || b.toString('ascii', 8, 12) !== 'WEBP') return {};
+  const kind = b.toString('ascii', 12, 16);
+  if (kind === 'VP8X') return { w: 1 + b.readUIntLE(24, 3), h: 1 + b.readUIntLE(27, 3) };
+  if (kind === 'VP8 ') return { w: b.readUInt16LE(26) & 0x3fff, h: b.readUInt16LE(28) & 0x3fff };
+  if (kind === 'VP8L') { const v = b.readUInt32LE(21); return { w: 1 + (v & 0x3fff), h: 1 + ((v >>> 14) & 0x3fff) }; }
+  return {};
 }
 function fallbackCover() {
   const src = [join(OUT, 'assets', 'wave-poster.jpg'), join(HERE, 'assets', 'wave-poster.jpg'), join(HERE, '..', 'assets', 'wave-poster.jpg')].find(existsSync);
@@ -170,17 +179,26 @@ for (const g of raw) {
     by: (g.authors?.length ? g.authors : [g.primary_author]).filter(Boolean).map(a => ({ name: plain(a.name), bio: plain(a.bio), site: a.website || '',
       same: [a.linkedin && 'https://www.linkedin.com/' + String(a.linkedin).replace(/^\//, ''), a.instagram && 'https://www.instagram.com/' + String(a.instagram).replace(/^@/, '')].filter(Boolean) })),
   };
-  const cover = g._img ? { href: g._img, abs: '' } : g.feature_image ? await keep(g.feature_image, g.slug, 1600) : fallbackCover();
+  const cover = g._img ? { href: g._img, abs: '' } : g.feature_image ? await keep(g.feature_image, g.slug, 1600, photo(g.feature_image)) : fallbackCover();
   if (!g._img && !g.feature_image) warn(`"${p.title}" has no feature picture in Ghost; it shows the default picture`);
   p.img = cover.href; p.imgAbs = cover.abs; p.srcset = ''; p.alt = plain(g.feature_image_alt);
   const shareSrc = g.og_image || g.twitter_image;                  // a separate picture for link previews, if one was set in Ghost
-  p.share = shareSrc && !g._img ? (await keep(shareSrc, g.slug + '-share', 1200)).abs : '';
-  /* Lighter copies of the cover for the pages themselves (audit A4): the WebP format at three widths, so a phone fetches a file a
-     fifth of the size. The JPEG above stays as the fallback and is the one named for link previews and search engines. */
+  p.share = shareSrc && !g._img ? (await keep(shareSrc, g.slug + '-share', 1200, photo(shareSrc))).abs : '';
+  /* Copies of the cover for the pages themselves, in the WebP format: three lighter widths (audit A4), and the largest one, up to
+     2400 px across, for sharp screens (6 Oct: a tall card on a phone shows only the middle of a wide picture, so it needs far more of
+     the picture than the phone is wide; the copies were too small and the cover looked soft). Each is listed with its real width.
+     The JPEG above stays as the fallback and is the one named for link previews and search engines. */
   if (g.feature_image && ghostImage(g.feature_image) && cover.href.startsWith('../')) {
     const set = [];
-    for (const w of [800, 1200, 1600]) { const v = await keep(g.feature_image, `${g.slug}-${w}`, w, true); if (v.href.startsWith('../') && v.href.endsWith('.webp')) set.push([v.href, w]); }
-    if (set.length) { p.srcset = set.map(([h, w]) => `${h} ${w}w`).join(', '); p.imgS = set[0][0]; p.imgL = set[set.length - 1][0]; }
+    for (const [w, tail] of [[800, 800], [1200, 1200], [1600, 1600], [2400, 'max']]) {
+      const v = await keep(g.feature_image, `${g.slug}-${tail}`, w, true);
+      if (!v.href.startsWith('../') || !v.href.endsWith('.webp')) continue;
+      const real = v.w || w;
+      if (set.some(x => x[1] >= real)) { rmSync(join(OUT, 'assets', 'blog', v.href.split('/').pop()), { force: true }); continue; }   // the original is no larger than a copy already made
+      set.push([v.href, real]); if (v.w && v.h) p.ar = Math.round(v.w / v.h * 100) / 100;
+    }
+    const upTo = w => (set.filter(x => x[1] <= w).pop() || set[0])[0];
+    if (set.length) { p.srcset = set.map(([h, w]) => `${h} ${w}w`).join(', '); p.imgS = upTo(1200); p.imgM = upTo(1600); p.imgL = set[set.length - 1][0]; }
   }
   p.face = g.primary_author?.profile_image ? (await keep(g.primary_author.profile_image.replace(/^\/\//, 'https://'), 'author-' + (g.primary_author.slug || 'x'), 160)).href : '';
   // the article's own words: pictures are copied over, links to the Ghost copy point at our pages instead
@@ -230,7 +248,7 @@ for (const g of raw) {
   posts.push(p);
 }
 // what the page hands to blog.js: only what the cards need
-const lean = posts.map(({ slug, title, excerpt, tag, tags, date, read, isNew, img, srcset, pos, href }) => ({ slug, title, excerpt, tag, tags, date, read, isNew, img, srcset, pos, href }));
+const lean = posts.map(({ slug, title, excerpt, tag, tags, date, read, isNew, img, srcset, ar, pos, href }) => ({ slug, title, excerpt, tag, tags, date, read, isNew, img, srcset, ar, pos, href }));
 const used = [...new Set(posts.flatMap(p => p.tags))];
 const topics = [...TOPIC_ORDER.filter(t => used.includes(t)), ...used.filter(t => !TOPIC_ORDER.includes(t)).sort((a, b) => a.localeCompare(b))];
 
@@ -358,7 +376,7 @@ function postPage(p) {
   <article class="art">
     <div class="wrap">
       <header class="bl-ph art-cover">
-        ${drawPic(fromPost(p), '(min-width:1336px) 1240px, 100vw', true).replace(' alt=""', ` alt="${esc(p.alt)}"`)}
+        ${drawPic(fromPost(p), `(max-width:560px) ${Math.ceil(340 * (p.ar || 1.5))}px, (min-width:1336px) 1240px, 100vw`, true).replace(' alt=""', ` alt="${esc(p.alt)}"`)}
         <div class="bl-in">
           <p class="bl-meta">${p.tag ? `<span class="bl-new">${esc(p.tag)}</span>` : ''}${esc(p.read)}</p>
           <h1 class="bl-t">${txt(p.title)}</h1>${p.excerpt ? `\n          <p class="bl-hook">${txt(p.excerpt)}</p>` : ''}
@@ -401,10 +419,10 @@ ${body}
 const fromHome = u => u.replace(/^\.\.\//, '');                                  // an address as seen from the home page, not from inside blog/
 function homeBlock(list) {
   if (list.length === 1) {
-    const p = list[0], img = fromHome(p.imgL || p.img), imgS = fromHome(p.imgS || '');
+    const p = list[0], img = fromHome(p.imgM || p.img), imgX = p.imgL && p.imgL !== p.imgM ? fromHome(p.imgL) : '';   // the standard copy, and the largest one for sharp screens
     return `
     <article class="cover rv">
-      <div class="bg-late cover-img" aria-hidden="true"><div class="ci"${img ? ` style="--cover:url('${esc(img)}')${imgS ? `; --cover-s:url('${esc(imgS)}')` : ''}"` : ''}></div></div>
+      <div class="bg-late cover-img" aria-hidden="true"><div class="ci"${img ? ` style="--cover:url('${esc(img)}')${imgX ? `; --cover-x:url('${esc(imgX)}')` : ''}"` : ''}></div></div>
       <div class="cover-body">
         <p class="cover-meta">${p.isNew ? '<span class="cover-new">New</span>' : p.tag ? `<span class="cover-new">${esc(p.tag)}</span>` : ''}<span>${esc(p.read)}</span></p>
         <h3 class="cover-t"><a class="cover-link post-link" href="${DIR}/${postHref(p.slug)}">${txt(p.title)}</a></h3>${p.excerpt ? `\n        <p class="cover-hook">${txt(p.excerpt)}</p>` : ''}
