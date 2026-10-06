@@ -588,14 +588,15 @@ select.inp option{color:var(--dark); background:#fff}
 
 /* ============ Beta pop-up ============ */
 /* A picture fills the whole pop-up (.bq-pic). Everything you read and fill in sits on one glass panel over it (.bq-glass), the
-   same clear glass as the cards in "What's inside". One question per step; the first question carries the welcome lines.
+   same clear glass as the cards in "What's inside". A first screen (the five steps listed, then Start), then one question per step.
      Computer (880px and wider): a wide card. The picture is clear on the left, the glass panel is on the right.
      Narrower windows:           a tall card. The picture shows at the top, the glass panel covers the rest.
      Phone (under 700px):        the tall layout, filling the whole screen.
-   The pop-up keeps one size on every screen. In the tall layout only the glass moves: lower on the last screen
+   The pop-up keeps one size on every screen. In the tall layout only the glass moves: lower on the first and last screens
    (more picture), higher on the questions, highest on the consent screen (so its text fits without scrolling).
-   In the tall layout and on phones the Continue button sits just under the box being filled in, so a phone's keyboard does not cover it;
-   on a computer it stays at the foot of the glass.
+   In the tall layout and on phones, on the three questions where a keyboard appears (name, e-mail, the country search), the Continue
+   button sits just under the box, so the keyboard does not cover it; on the journey and consent questions, and on a computer, it stays
+   at the foot of the glass.
    The settings to play with are the lines just below.
    Earlier looks: option-b-v38-before-popup-picture-top-5oct.html (frosted card with the ball) and
    option-b-v39-before-popup-glass-on-picture-5oct.html (solid card, picture in a frame on top). */
@@ -624,8 +625,8 @@ html.bq-open{overflow:hidden}
 .bq-logo{position:absolute; left:22px; top:20px; width:78px; color:#fff; pointer-events:none}   /* the Lotta logo, white, on the picture */
 /* the glass panel */
 .bq{--bq-top:clamp(96px, 19%, 150px)}                                                  /* where the glass starts, on the questions */
-.bq.is-done{--bq-top:clamp(84px, calc(100% - 600px), 44%)}                             /* last screen: more picture */
-.bq[data-step="consent"]:not(.is-done){--bq-top:62px}                                  /* consent: as much room as possible */
+.bq.is-intro, .bq.is-done{--bq-top:clamp(84px, calc(100% - 600px), 44%)}               /* first and last screens: more picture */
+.bq[data-step="consent"]:not(.is-intro):not(.is-done){--bq-top:62px}                   /* consent: as much room as possible */
 .bq-glass{position:absolute; left:10px; right:10px; bottom:10px; top:var(--bq-top); display:flex; flex-direction:column; padding:18px 20px 20px; border-radius:22px;
   background:linear-gradient(160deg, rgba(255,255,255,.1), rgba(255,255,255,.02)), rgba(36,29,25,var(--bq-tint));
   -webkit-backdrop-filter:blur(var(--bq-blur)) saturate(1.3); backdrop-filter:blur(var(--bq-blur)) saturate(1.3);
@@ -640,27 +641,34 @@ html.bq-open{overflow:hidden}
 .bq-x{position:absolute; z-index:2; top:14px; right:14px; background:rgba(36,29,25,.34); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px)}
 .bq-x:hover{background:rgba(36,29,25,.55)}
 .bq-top{flex:none; display:flex; align-items:center; gap:14px}
-.bq.is-done .bq-top{display:none}
+.bq-top.is-intro, .bq.is-done .bq-top{display:none}
 .bq-back svg{transform:rotate(180deg)}
 .bq-back[disabled]{visibility:hidden}
 .bq-prog{flex:1; display:flex; gap:6px}
 .bq-prog i{position:relative; flex:1; height:4px; border-radius:4px; overflow:hidden; background:rgba(255,255,255,.3)}
 .bq-prog i::after{content:""; position:absolute; inset:0; border-radius:inherit; background:#fff; transform:scaleX(0); transform-origin:0 50%; transition:transform .5s var(--ease)}
 .bq-prog i.on::after{transform:scaleX(1)}
-/* the small line above each question: "Step 2 of 5" */
+/* the small line above the title: "Join the beta" on the first screen, then "Step 2 of 5" */
 .bq-kick{flex:none; margin-top:14px; font-family:var(--f-display); font-size:var(--bq-text); font-weight:600; line-height:1.3; color:rgba(255,255,255,.92)}
 .bq.is-done .bq-kick{display:none}
-.bq-kick:focus{outline:none}
-.bq form, .bq-done{flex:1; min-height:0; display:flex; flex-direction:column}
-.bq form[hidden], .bq-done[hidden]{display:none}
+.bq.is-intro .bq-kick{margin-top:2px}
+/* the three screens share the glass: the first screen, the questions, the last screen */
+.bq-intro, .bq form, .bq-done{flex:1; min-height:0; display:flex; flex-direction:column}
+.bq-intro[hidden], .bq form[hidden], .bq-done[hidden]{display:none}
+/* the first screen (put back on 6 Oct, as she designed it on 5 Oct). On a phone too short to show it whole, the list slides
+   under the Start button, which stays in view at the foot */
+.bq-intro{overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none}
+.bq-intro::-webkit-scrollbar{display:none}
+.bq-title{margin-top:8px; font-family:var(--f-display); font-weight:var(--bq-weight); font-size:clamp(1.75rem, 1.5rem + .9vw, 2.1rem); line-height:1.06; letter-spacing:-.03em; text-wrap:balance}
+.bq-sub{margin-top:10px; font-size:var(--bq-text); line-height:1.45; color:rgba(255,255,255,.92); text-wrap:pretty}
 .bq-note{margin-top:20px; font-size:var(--bq-text); font-weight:600; line-height:1.3; color:rgba(255,255,255,.92)}
-/* the welcome lines above the first question (they were the first screen until 6 Oct) */
-.bq-lead{margin-top:8px; font-size:var(--bq-text); line-height:1.45; color:rgba(255,255,255,.92); text-wrap:pretty}
-.bq-lead b{font-weight:600; color:#fff}
-.bq-lead + .bq-q{margin-top:16px}
-/* "iOS only · opening November": on the first question only, 24px above the button, as it sat above Start */
+/* the five steps, numbered, with a short line joining one number to the next */
+.bq-list{margin-top:8px; counter-reset:bq-n}
+.bq-list li{position:relative; display:flex; align-items:center; gap:14px; height:40px; font-size:var(--bq-text); font-weight:500; line-height:1; counter-increment:bq-n}
+.bq-list li::before{content:counter(bq-n); flex:none; width:26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--sky); color:#fff; font-family:var(--f-display); font-size:13px; font-weight:700; font-variant-numeric:tabular-nums}
+.bq-list li + li::after{content:""; position:absolute; left:12.25px; top:-4px; width:1.5px; height:8px; border-radius:2px; background:rgba(255,255,255,.5)}
+/* "iOS only · opening November": on the first screen, 24px above Start */
 .bq-meta{flex:none; margin-top:auto; padding-top:18px; font-size:var(--bq-text); line-height:1.3; text-align:center; color:rgba(255,255,255,.92)}
-.bq-meta[hidden]{display:none}
 .bq-meta::before{content:""; display:inline-block; vertical-align:middle; width:8px; height:8px; margin:-2px 11px 0 0; border-radius:50%; background:#fff; box-shadow:0 0 0 4px rgba(255,255,255,.25)}
 /* the dot pulses, slowly, like the "Tapering" dot on the cards (still when the visitor asked for less motion) */
 html.motion .bq-meta::before{animation:bq-pulse 2.6s cubic-bezier(.25,.1,.25,1) infinite}
@@ -670,7 +678,7 @@ html.motion .bq-meta::before{animation:bq-pulse 2.6s cubic-bezier(.25,.1,.25,1) 
 .bq .btn-primary:hover{background:var(--ww)}
 .bq .btn-primary:focus-visible{outline-color:#fff}
 .bq-next, .bq-close-done{margin-top:auto}
-.bq-meta:not([hidden]) + .bq-next{margin-top:24px}
+.bq-start{position:sticky; bottom:0; margin-top:24px}
 .bq .btn-primary[disabled]{opacity:.72; cursor:default}                                /* while the sign-up is being sent */
 /* the questions */
 /* a step scrolls inside the glass if a small phone can't fit it; its top and bottom edges fade, so cut-off words read as "there is more" */
@@ -748,12 +756,15 @@ html.motion .bq-meta::before{animation:bq-pulse 2.6s cubic-bezier(.25,.1,.25,1) 
   .bq-logo{left:32px; top:30px; width:96px}
   .bq-x:hover{background:rgba(255,255,255,.32)}
   .bq-top{padding-right:50px}
+  .bq.is-intro .bq-kick{margin-top:12px; padding-right:50px}
+  .bq-title{margin-top:10px}
 }
-/* narrower than a computer (phones, tablets): the button comes right after the box, where a keyboard cannot cover it */
+/* narrower than a computer (phones, tablets): on the questions where a keyboard appears, the button comes right after the box, where
+   the keyboard cannot cover it (her word, 6 Oct: "Keep the continue button on mobile above the keyboard"). On the journey and
+   consent questions, which are tapped and never typed, it stays at the foot, as designed. */
 @media (max-width:879.98px){
-  .bq-step{flex:0 1 auto}
-  .bq-next{margin-top:6px}
-  .bq-meta{margin-top:0; padding-top:10px}
+  .bq[data-step="name"] .bq-step, .bq[data-step="email"] .bq-step, .bq[data-step="country"] .bq-step{flex:0 1 auto}
+  .bq[data-step="name"] .bq-next, .bq[data-step="email"] .bq-next, .bq[data-step="country"] .bq-next{margin-top:6px}
 }
 /* phone: the pop-up fills the screen */
 @media (max-width:699.98px){
@@ -761,7 +772,7 @@ html.motion .bq-meta::before{animation:bq-pulse 2.6s cubic-bezier(.25,.1,.25,1) 
   .bq[open]{display:block}
   .bq-veil{background:var(--ink); -webkit-backdrop-filter:none; backdrop-filter:none}
   .bq-card{max-width:none; height:100%; border-radius:0; box-shadow:none}
-  .bq[data-step="consent"]:not(.is-done){--bq-top:calc(env(safe-area-inset-top, 0px) + 62px)}
+  .bq[data-step="consent"]:not(.is-intro):not(.is-done){--bq-top:calc(env(safe-area-inset-top, 0px) + 62px)}
   .bq-glass{bottom:calc(env(safe-area-inset-bottom, 0px) + 10px); padding:18px 18px 18px}
   .bq-x{top:calc(env(safe-area-inset-top, 0px) + 14px)}
   .bq-logo{top:calc(env(safe-area-inset-top, 0px) + 20px)}
@@ -1320,12 +1331,26 @@ html.motion .phone-lift{will-change:transform}
       <button class="bq-btn bq-back" type="button" aria-label="Back"><svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
       <div class="bq-prog" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
     </div>
-    <p class="bq-kick" id="bq-kick" tabindex="-1">Step 1 of 5</p>
-    <!-- the five questions. Until 6 Oct 2026 a first screen came before them (the five steps listed, then Start); it is folded into
-         the first question now, one tap fewer (audit decision B4). The first screen as it was: saved-sections/popup-first-screen-6oct.html. -->
-    <form id="beta-form" novalidate onsubmit="return false">
+    <p class="bq-kick" id="bq-kick">Join the beta</p>
+    <!-- first screen: her design of 5 Oct. It was folded into the first question for a few hours on 6 Oct (audit item B4) and
+         put back the same day on her word: "put the first screen back but keep it as was". -->
+    <div class="bq-intro">
+      <p class="bq-title">Be one of the first to try Lotta.</p>
+      <p class="bq-sub">Your feedback will shape what we build next.</p>
+      <p class="bq-note" id="bq-list-h"><span class="ph">5 quick questions, under a minute.</span></p>
+      <ol class="bq-list" aria-labelledby="bq-list-h">
+        <li><span class="ph">Your name</span></li>
+        <li><span class="ph">Your e-mail</span></li>
+        <li><span class="ph">Where you live</span></li>
+        <li><span class="ph">Your <span class="nw">GLP-1</span> journey</span></li>
+        <li><span class="ph">Your consent</span></li>
+      </ol>
+      <p class="bq-meta">iOS only · opening November</p>
+      <button class="btn btn-primary btn-block bq-start" type="button">Start<svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+    </div>
+    <!-- the five questions -->
+    <form id="beta-form" novalidate onsubmit="return false" hidden>
       <div class="bq-step" data-check="name">
-        <p class="bq-lead"><b>Be one of the first to try Lotta.</b> Your feedback will shape what we build next. <span class="ph">5 quick questions, under a minute.</span></p>
         <label class="bq-q" for="bf-name">What should we call you?</label>
         <input class="inp" id="bf-name" name="first-name" type="text" autocomplete="given-name" enterkeyhint="next" placeholder="Your name" required aria-describedby="bf-name-err">
         <p class="err" id="bf-name-err" role="alert" hidden><span class="ph">Please add your name.</span></p>
@@ -1366,7 +1391,6 @@ html.motion .phone-lift{will-change:transform}
         <!-- shown when the sign-up could not be sent (no signal, or something blocking the sign-up service). Sample wording, hers to change. -->
         <p class="err" id="bf-send-err" role="alert" hidden><span class="ph">That didn't go through. Please try again, or write to hello@lotta.health.</span></p>
       </div>
-      <p class="bq-meta" id="bq-meta">iOS only · opening November</p>
       <button class="btn btn-primary btn-block bq-next" type="submit"><span>Continue</span><svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
     </form>
     <!-- last screen -->
@@ -1672,8 +1696,7 @@ html.motion .phone-lift{will-change:transform}
   var dlg = q('#bq'), bf = q('#beta-form'), steps = qa('.bq-step', dlg), segs = qa('.bq-prog i', dlg);
   var bBack = q('.bq-back', dlg), bNext = q('.bq-next', dlg), bKick = q('#bq-kick'), bThanks = q('#bf-thanks');
   var bName = q('#bf-name'), bEmail = q('#bf-email'), bConsent = q('#bf-consent'), bNews = q('#bf-news');
-  var cur = 0, bOpener = null, bOpen = false, bMeta = q('#bq-meta'), bSendErr = q('#bf-send-err'), bSending = false;
-  var finePointer = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);   // a mouse, not a finger
+  var cur = 0, bOpener = null, bOpen = false, bIntro = q('.bq-intro', dlg), bTop = q('.bq-top', dlg), bSendErr = q('#bf-send-err'), bSending = false;
   segs.forEach(function (g, k) { if (k >= steps.length) g.remove(); });
   segs = qa('.bq-prog i', dlg);
   function radioVal(n) { var r = qa('input[name="' + n + '"]', bf).filter(function (x) { return x.checked; })[0]; return r ? r.value : ''; }
@@ -1686,17 +1709,12 @@ html.motion .phone-lift{will-change:transform}
     consent: function () { return { input: bConsent, err: q('#bf-consent-err'), ok: bConsent.checked, focus: bConsent }; }
   };
   function stepCheck(k) { return CHECKS[steps[k].getAttribute('data-check')](); }
-  /* The cursor goes into the box of the question on show. One exception: when the pop-up opens on a phone at the first question,
-     the keyboard is not raised by itself, so the welcome lines can be read first; the line "Step 1 of 5" takes the focus instead. */
-  function focusStep(opening) {
-    var c = stepCheck(cur), el = opening && cur === 0 && !finePointer ? bKick : c.focus;
-    try { el.focus({ preventScroll: true }); } catch (_) {}
-  }
+  /* The cursor goes into the box of the question on show, so typing can start at once (on a phone the keyboard rises). */
+  function focusStep() { var c = stepCheck(cur); try { c.focus.focus({ preventScroll: true }); } catch (_) {} }
   function paint() {
     steps.forEach(function (st, k) { st.hidden = k !== cur; });
     segs.forEach(function (g, k) { g.classList.toggle('on', k <= cur); });
-    bBack.disabled = cur === 0;
-    bMeta.hidden = cur !== 0;
+    bBack.disabled = false;
     bSendErr.hidden = true;
     bKick.textContent = 'Step ' + (cur + 1) + ' of ' + steps.length;
     dlg.setAttribute('data-step', steps[cur].getAttribute('data-check'));   /* the look can follow the question (the glass rises for consent) */
@@ -1733,7 +1751,7 @@ html.motion .phone-lift{will-change:transform}
       gsap.fromTo(q('.bq-veil', dlg), { autoAlpha: 0 }, { autoAlpha: 1, duration: .3, ease: 'power2.out' });
       gsap.fromTo(q('.bq-card', dlg), { y: 24, scale: .97, opacity: 0, visibility: 'visible' }, { y: 0, scale: 1, opacity: 1, duration: .35, ease: 'power3.out' });   // visible from the first instant, so the focus below can land
     }
-    if (!bf.hidden) focusStep(true); else { var t = q('.bq-done:not([hidden]) .thanks-t', dlg); if (t) t.focus({ preventScroll: true }); }
+    if (!bIntro.hidden) q('.bq-start', dlg).focus({ preventScroll: true }); else if (!bf.hidden) focusStep(); else { var t = q('.bq-done:not([hidden]) .thanks-t', dlg); if (t) t.focus({ preventScroll: true }); }
   }
   function closeBeta() {
     if (!bOpen) return;
@@ -1753,7 +1771,17 @@ html.motion .phone-lift{will-change:transform}
   q('.bq-veil', dlg).addEventListener('click', closeBeta);
   dlg.addEventListener('click', function (e) { if (e.target === dlg) closeBeta(); });
   q('.bq-close-done', dlg).addEventListener('click', closeBeta);
-  bBack.addEventListener('click', function () { if (cur > 0) goStep(cur - 1, -1); });
+  /* the first screen: shown when the pop-up first opens, and again when Back is pressed on the first question */
+  function showIntro(animate) {
+    bIntro.hidden = false; bf.hidden = true; bTop.classList.add('is-intro'); dlg.classList.add('is-intro'); bKick.textContent = 'Join the beta';
+    if (animate && motion) gsap.fromTo(bIntro, { x: -24, opacity: 0 }, { x: 0, opacity: 1, duration: .3, ease: 'power3.out' });   // opacity, not autoAlpha: Start must be able to take the cursor at once
+    if (bOpen) q('.bq-start', dlg).focus({ preventScroll: true });
+  }
+  q('.bq-start', dlg).addEventListener('click', function () {
+    bIntro.hidden = true; bf.hidden = false; bTop.classList.remove('is-intro'); dlg.classList.remove('is-intro');
+    goStep(0, 1);
+  });
+  bBack.addEventListener('click', function () { if (cur > 0) goStep(cur - 1, -1); else showIntro(true); });
   bf.addEventListener('submit', function (e) {
     e.preventDefault();
     var c = stepCheck(cur);
@@ -1771,7 +1799,7 @@ html.motion .phone-lift{will-change:transform}
     });
   });
   function showDone(panel) {
-    bf.hidden = true; bBack.disabled = true; dlg.classList.add('is-done');
+    bf.hidden = true; bIntro.hidden = true; bBack.disabled = true; dlg.classList.add('is-done');
     var nm2 = bName.value.trim(); q('.bq-name2', dlg).textContent = nm2; q('.bq-hi2', dlg).hidden = !nm2; bKick.textContent = 'Join the beta';
     panel.hidden = false;
     if (motion) gsap.from(panel.children, { y: 24, opacity: 0, duration: .9, stagger: .08, ease: 'expo.out' });
@@ -1784,7 +1812,7 @@ html.motion .phone-lift{will-change:transform}
       var c = stepCheck(cur); if (!c.err.hidden && c.ok) flag(c.input, c.err, false);
     });
   });
-  paint();
+  paint(); showIntro(false);
   if (location.hash === '#join-beta') {
     try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
     setTimeout(function () { openBeta(null); }, html.classList.contains('intro') ? 4200 : 300);
