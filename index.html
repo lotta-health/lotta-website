@@ -1243,14 +1243,31 @@ html.motion .phone-lift{will-change:transform}
     <!-- blog:latest  What sits between these two lines is written by build-blog.mjs from the articles published in Ghost.
          One article: the big cover. Two or more: a row of cards with the latest three (the original "Sunrise" blog block,
          kept in saved-sections/blog-cards-1oct.html). Changes made here by hand are overwritten. -->
-    <article class="cover rv">
-      <div class="bg-late cover-img" aria-hidden="true"><div class="ci" style="--cover:url('assets/blog/meet-lotta-why-were-building-it-1600.webp'); --cover-x:url('assets/blog/meet-lotta-why-were-building-it-max.webp')"></div></div>
-      <div class="cover-body">
-        <p class="cover-meta"><span class="cover-new">New</span><span>2 min read</span></p>
-        <h3 class="cover-t"><a class="cover-link post-link" href="blog/meet-lotta-why-were-building-it/">Meet Lotta: why we're building it</a></h3>
-        <span class="cover-cta" aria-hidden="true">Read the article<svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
-      </div>
-    </article>
+    <ul class="posts posts-2" data-stagger>
+      <li class="post">
+        <article class="post-card">
+          <div class="bg-late post-img"><div class="pi" style="background-image:url('assets/blog/how-glp-1-medicines-work-1200.webp')"></div></div>
+          <div class="post-body">
+            <h3 class="post-t"><a class="post-link" href="blog/how-glp-1-medicines-work/">How <span class="nw">GLP-1</span> medicines work</a></h3>
+            <p class="post-hook">What happens when you take them and why</p>
+            <div class="post-meta"><span>4 min read</span><button class="share" type="button" data-url="https://www.lotta.health/blog/how-glp-1-medicines-work/"><svg class="i-ln" aria-hidden="true"><use href="#i-link"/></svg><svg class="i-ok" aria-hidden="true"><use href="#i-check"/></svg><span class="share-l">Share</span></button></div>
+            <p class="share-url" hidden>https://www.lotta.health/blog/how-glp-1-medicines-work/</p>
+            <p class="share-status sr-only" aria-live="polite"></p>
+          </div>
+        </article>
+      </li>
+      <li class="post">
+        <article class="post-card">
+          <div class="bg-late post-img"><div class="pi" style="background-image:url('assets/blog/meet-lotta-why-were-building-it-1200.webp')"></div></div>
+          <div class="post-body">
+            <h3 class="post-t"><a class="post-link" href="blog/meet-lotta-why-were-building-it/">Meet Lotta: why we're building it</a></h3>
+            <div class="post-meta"><span>2 min read</span><button class="share" type="button" data-url="https://www.lotta.health/blog/meet-lotta-why-were-building-it/"><svg class="i-ln" aria-hidden="true"><use href="#i-link"/></svg><svg class="i-ok" aria-hidden="true"><use href="#i-check"/></svg><span class="share-l">Share</span></button></div>
+            <p class="share-url" hidden>https://www.lotta.health/blog/meet-lotta-why-were-building-it/</p>
+            <p class="share-status sr-only" aria-live="polite"></p>
+          </div>
+        </article>
+      </li>
+    </ul>
     <!-- /blog:latest -->
 
     <div class="news rv" id="newsletter">

@@ -206,7 +206,8 @@ for (const g of raw) {
   html = await replaceAsync(html, /<img\b[^>]*>/g, async tag => {
     const src = (tag.match(/\bsrc="([^"]+)"/) || [])[1];
     if (!src || !ghostImage(src)) return tag;
-    const k = await keep(src.replace(/\/content\/images\/size\/w\d+\//, '/content/images/'), `${g.slug}-${++n}`, 1400);
+    // asked for as WebP (29 Oct: three charts uploaded as PNG came to 3.8 MB; as WebP 230 KB, small writing as sharp and see-through corners kept)
+    const k = await keep(src.replace(/\/content\/images\/size\/w\d+\//, '/content/images/'), `${g.slug}-${++n}`, 1400, true);
     let t = tag.replace(/\s(srcset|sizes)="[^"]*"/g, '').replace(/\bsrc="[^"]+"/, `src="${k.href}"`);
     if (!/\bloading=/.test(t)) t = t.replace(/<img\b/, '<img loading="lazy" decoding="async"');
     return t;
@@ -376,7 +377,7 @@ function postPage(p) {
   <article class="art">
     <div class="wrap">
       <header class="bl-ph art-cover">
-        ${drawPic(fromPost(p), `(max-width:560px) ${Math.ceil(340 * (p.ar || 1.5))}px, (min-width:1336px) 1240px, 100vw`, true).replace(' alt=""', ` alt="${esc(p.alt)}"`)}
+        ${drawPic(fromPost(p), `(max-width:560px) ${Math.ceil(460 * (p.ar || 1.5))}px, (min-width:1336px) 1240px, 100vw`, true).replace(' alt=""', ` alt="${esc(p.alt)}"`)}
         <div class="bl-in">
           <p class="bl-meta">${p.tag ? `<span class="bl-new">${esc(p.tag)}</span>` : ''}${esc(p.read)}</p>
           <h1 class="bl-t">${txt(p.title)}</h1>${p.excerpt ? `\n          <p class="bl-hook">${txt(p.excerpt)}</p>` : ''}

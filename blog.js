@@ -19,10 +19,10 @@
   /* the round ">" on the highlighted articles (the cover and the tiles beside it); it slides forward when the card is pointed at (pages.css) */
   var ARROW = '<span class="bl-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9.5 5.5 16 12l-6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
 
-  /* On a phone the cover is a tall card (about 460 px) over a wide picture, so the picture is shown wider than the screen:
+  /* On a phone the cover is a tall card (540 px, pages.css) over a wide picture, so the picture is shown wider than the screen:
      its height times its shape (p.ar, width divided by height). Without this the browser fetched too small a file and the cover looked soft. */
   function cover(p, alone) {
-    return '<article class="bl-ph bl-cover">' + pic(p, '(max-width:560px) ' + Math.ceil(460 * (p.ar || 1.5)) + 'px, ' + (alone ? '(min-width:1336px) 1240px, 100vw' : '(min-width:1000px) 66vw, 100vw'), true) + '<div class="bl-in"><p class="bl-meta">' +
+    return '<article class="bl-ph bl-cover">' + pic(p, '(max-width:560px) ' + Math.ceil(540 * (p.ar || 1.5)) + 'px, ' + (alone ? '(min-width:1336px) 1240px, 100vw' : '(min-width:1000px) 66vw, 100vw'), true) + '<div class="bl-in"><p class="bl-meta">' +
       (p.isNew ? '<span class="bl-new">New</span>' : p.tag ? '<span class="bl-new">' + esc(p.tag) + '</span>' : '') + esc(p.read) + '</p>' +
       '<h2 class="bl-t">' + go(p) + '</h2>' + (p.excerpt ? '<p class="bl-hook">' + txt(p.excerpt) + '</p>' : '') + '</div>' + ARROW + '</article>';
   }
