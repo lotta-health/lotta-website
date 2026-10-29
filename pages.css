@@ -476,3 +476,9 @@ html.lg-tabs .lg-article{margin-top:0; padding-top:0; border-top:0}
   .bl-ph.art-cover{min-height:460px}
   .bl-ph.bl-cover{min-height:540px}
 }
+
+/* An article's sources (29 Oct, her word): numbered in Instrument Sans bold orange in place of the dots, the number before each link,
+   so a reader can match "(5)" in the text to the fifth source. The list is written by build-blog.mjs. */
+.art-prose ol.art-sources{list-style:none; padding-left:0; counter-reset:src}
+.art-sources li{position:relative; padding-left:2.1em; counter-increment:src}
+.art-sources li::before{content:counter(src); position:absolute; left:0; top:0; font-family:var(--f-display); font-weight:700; color:var(--orange); font-variant-numeric:tabular-nums}

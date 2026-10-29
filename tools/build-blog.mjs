@@ -216,6 +216,9 @@ for (const g of raw) {
   // A short line that is entirely bold is a section heading (Margarida's rule, 5 Oct): text pasted from Word or Google Docs arrives that way.
   // Not when it ends like a sentence or a label (. , ; :), and not when it is longer than 80 characters.
   html = html.replace(/<p>\s*<(strong|b)>([^<]{2,80})<\/\1>\s*(?:<br\s*\/?>)?\s*<\/p>/g, (m, t, text) => /[.,;:]\s*$/.test(text.replace(/&nbsp;/g, ' ')) ? m : `<h2>${text.trim()}</h2>`);
+  // The list under a "Sources" or "References" heading is numbered, so each source carries the number the text cites, e.g. "(5)"
+  // (her word, 29 Oct: numbers in place of the dots). A list already numbered in Ghost is left as it is.
+  html = html.replace(/(<h[2-4][^>]*>\s*(?:sources|references)\s*<\/h[2-4]>\s*)<ul>([\s\S]*?)<\/ul>/i, '$1<ol class="art-sources">$2</ol>');
   // The article's title is the page's main heading, so its sections are second-level headings whichever size was picked in Ghost:
   // an article written with only the smaller heading has its headings moved up one size.
   if (!/<h2[\s>]/i.test(html) && /<h3[\s>]/i.test(html)) html = html.replace(/<(\/?)h([3-5])(\s[^>]*)?>/gi, (m, c, n, a = '') => `<${c}h${n - 1}${a}>`);
