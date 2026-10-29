@@ -466,7 +466,7 @@ html.motion .wi-ph li.now::after{content:""; position:absolute; left:0; top:50%;
 .posts{margin-top:40px; display:grid; gap:16px}
 .post{perspective:1000px}
 .post-card{position:relative; height:100%; display:flex; flex-direction:column; background:var(--lift); border-radius:28px; box-shadow:inset 0 0 0 1px rgba(36,29,25,.06); transition:box-shadow .45s var(--ease), background-color .45s var(--ease)}
-.post-card:hover{background:var(--lift2); box-shadow:inset 0 0 0 1px rgba(36,29,25,.14), 0 30px 60px -30px rgba(36,29,25,.22)}
+.post-card:hover{box-shadow:inset 0 0 0 1px rgba(36,29,25,.04), 0 26px 52px -24px rgba(36,29,25,.16), 0 10px 22px -16px rgba(36,29,25,.10)}   /* 29 Oct, her word: the card keeps its colour; a soft glow beneath it, the edge line softer */
 .post-img{position:relative; margin:8px; aspect-ratio:16/10; border-radius:22px; overflow:hidden}
 @media (min-width:900px){ .post-img{aspect-ratio:4/3} }
 .post-img .pi{position:absolute; inset:-6%; transition:transform .9s var(--ease)}
@@ -478,7 +478,10 @@ html.motion .wi-ph li.now::after{content:""; position:absolute; left:0; top:50%;
 .tag{position:absolute; z-index:2; left:14px; top:14px; padding:7px 12px; border-radius:999px; background:rgba(249,245,239,.92); color:var(--ink); font-family:var(--f-display); font-size:12px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; line-height:1}
 .post-body{display:flex; flex-direction:column; flex:1; padding:18px 22px 20px}
 .post-t{font-family:var(--f-display); font-weight:500; font-size:clamp(1.45rem, 1.15rem + .7vw, 1.8rem); line-height:1.12; letter-spacing:-.025em; text-wrap:balance}
-.post-link{border-radius:4px}
+.post-link{border-radius:4px; background:linear-gradient(currentColor, currentColor) 100% 100% / 0 1.5px no-repeat; transition:background-size .55s var(--ease)}
+/* pointing at a card underlines its title from left to right, like the article cards on the blog page (her option C, 29 Oct); the card itself stays still, so Share stays under the pointer */
+@media (hover:hover){ .post-card:hover .post-link{background-position:0 100%; background-size:100% 1.5px} }
+@media (prefers-reduced-motion:reduce){ .post-link{transition:none} }
 .post-link::after{content:""; position:absolute; inset:0; z-index:1; border-radius:28px}
 .post-link:focus-visible{outline:none}
 .post-link:focus-visible::after{outline:2px solid var(--blue); outline-offset:3px}
@@ -2093,20 +2096,7 @@ html.motion .phone-lift{will-change:transform}
     }
   }
 
-  function tilt() {
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    qa('.post-card').forEach(function (card) {
-      gsap.set(card, { transformPerspective: 900 });
-      var rx = gsap.quickTo(card, 'rotationX', { duration: .6, ease: 'power3.out' });
-      var ry = gsap.quickTo(card, 'rotationY', { duration: .6, ease: 'power3.out' });
-      card.addEventListener('pointermove', function (e) {
-        var r = card.getBoundingClientRect();
-        ry(((e.clientX - r.left) / r.width - .5) * 12);
-        rx(-((e.clientY - r.top) / r.height - .5) * 12);
-      });
-      card.addEventListener('pointerleave', function () { rx(0); ry(0); });
-    });
-  }
+  /* The blog cards' 3D tilt under the pointer was removed on 29 Oct (her word: it made Share harder to click). */
 
   function teardown(err) {
     if (err && window.console) console.error(err);
@@ -2139,7 +2129,6 @@ html.motion .phone-lift{will-change:transform}
     });
     reveals();
     journeyPath();
-    tilt();
     ScrollTrigger.sort();
     if (html.classList.contains('intro')) playIntro(); else { settle(); arrive(); }
     if (d.fonts && d.fonts.ready) d.fonts.ready.then(function () { ScrollTrigger.refresh(); arrive(); });
